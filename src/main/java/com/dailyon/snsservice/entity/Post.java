@@ -33,19 +33,19 @@ public class Post extends BaseEntity {
   @Column(name = "weight")
   private Double weight;
 
-  @Column(name = "view_count", nullable = false)
+  @Column(name = "view_count", nullable = false, columnDefinition = "integer default 0")
   @Builder.Default
   private Integer viewCount = 0;
 
-  @Column(name = "like_count", nullable = false)
+  @Column(name = "like_count", nullable = false, columnDefinition = "integer default 0")
   @Builder.Default
   private Integer likeCount = 0;
 
-  @Column(name = "comment_count", nullable = false)
+  @Column(name = "comment_count", nullable = false, columnDefinition = "integer default 0")
   @Builder.Default
   private Integer commentCount = 0;
 
-  @Column(name = "is_deleted", nullable = false)
+  @Column(name = "is_deleted", nullable = false, columnDefinition = "boolean default false")
   @Builder.Default
   private Boolean isDeleted = false;
 

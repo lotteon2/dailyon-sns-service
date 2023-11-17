@@ -20,18 +20,18 @@ public class Member {
   @Column(name = "nickname", nullable = false)
   private String nickname;
 
-  @Column(name = "profile_img_url")
+  @Column(name = "profile_img_url", columnDefinition = "varchar default '/member/default-profile-img.png'")
   @Builder.Default
   private String profileImgUrl = "/member/default-profile-img.png";
 
   @Column(name = "code", nullable = false)
   private String code;
 
-  @Column(name = "following_count", nullable = false)
+  @Column(name = "following_count", nullable = false, columnDefinition = "integer default 0")
   @Builder.Default
   private Integer followingCount = 0;
 
-  @Column(name = "follower_count", nullable = false)
+  @Column(name = "follower_count", nullable = false, columnDefinition = "integer default 0")
   @Builder.Default
   private Integer followerCount = 0;
 

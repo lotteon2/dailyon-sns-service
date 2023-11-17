@@ -12,7 +12,7 @@ import javax.persistence.*;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class PostImageProductDetail extends BaseEntity {
 
-  @Id
+  @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
   @Column(name = "id")
   private Long id;
 
@@ -27,8 +27,8 @@ public class PostImageProductDetail extends BaseEntity {
   private String productSize;
 
   @Column(name = "left_gap_percent", nullable = false)
-  private String leftGapPercent;
+  private Double leftGapPercent;
 
   @Column(name = "top_gap_percent", nullable = false)
-  private String topGapPercent;
+  private Double topGapPercent;
 }
