@@ -24,6 +24,7 @@ public class Comment extends BaseEntity {
   private Comment parent;
 
   @OneToMany(mappedBy = "parent")
+  @Builder.Default
   private List<Comment> children = new ArrayList<>();
 
   @ManyToOne
