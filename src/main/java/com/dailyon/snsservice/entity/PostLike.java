@@ -4,6 +4,7 @@ import com.dailyon.snsservice.entity.ids.PostLikeId;
 import lombok.*;
 
 import javax.persistence.*;
+import java.util.ArrayList;
 
 @Getter
 @Entity
@@ -24,6 +25,8 @@ public class PostLike {
   private Post post;
 
   public static PostLike createPostLike(Member member, Post post) {
-    return PostLike.builder().member(member).post(post).build();
+    PostLike postLike = PostLike.builder().member(member).post(post).build();
+    post.getPostLikes().add(postLike);
+    return postLike;
   }
 }

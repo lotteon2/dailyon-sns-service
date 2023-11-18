@@ -12,7 +12,8 @@ import javax.persistence.*;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class PostImageProductDetail extends BaseEntity {
 
-  @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+  @Id
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
   @Column(name = "id")
   private Long id;
 
@@ -31,4 +32,18 @@ public class PostImageProductDetail extends BaseEntity {
 
   @Column(name = "top_gap_percent", nullable = false)
   private Double topGapPercent;
+
+  public static PostImageProductDetail createPostImageProductDetail(
+      Long productId, String productSize, Double leftGapPercent, Double topGapPercent) {
+    return PostImageProductDetail.builder()
+        .productId(productId)
+        .productSize(productSize)
+        .leftGapPercent(leftGapPercent)
+        .topGapPercent(topGapPercent)
+        .build();
+  }
+
+  public void setPostImage(PostImage postImage) {
+    this.postImage = postImage;
+  }
 }

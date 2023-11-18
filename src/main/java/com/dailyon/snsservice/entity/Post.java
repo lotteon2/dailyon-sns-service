@@ -4,6 +4,8 @@ import com.dailyon.snsservice.entity.common.BaseEntity;
 import lombok.*;
 
 import javax.persistence.*;
+import java.util.ArrayList;
+import java.util.List;
 
 @Getter
 @Entity
@@ -20,6 +22,18 @@ public class Post extends BaseEntity {
   @OneToOne
   @JoinColumn(name = "member_id")
   private Member member;
+
+  @OneToMany(
+      mappedBy = "post",
+      fetch = FetchType.LAZY,
+      cascade = {CascadeType.PERSIST, CascadeType.REMOVE})
+  @Builder.Default
+  private List<PostLike> postLikes = new ArrayList<>();
+
+  @OneToOne(
+      mappedBy = "post",
+      cascade = {CascadeType.PERSIST, CascadeType.REMOVE})
+  private PostImage postImage;
 
   @Column(name = "title", nullable = false)
   private String title;
@@ -50,13 +64,34 @@ public class Post extends BaseEntity {
   private Boolean isDeleted = false;
 
   public static Post createPost(
-      Member member, String title, String description, Double stature, Double weight) {
-    return Post.builder()
-        .member(member)
-        .title(title)
-        .description(description)
-        .stature(stature)
-        .weight(weight)
-        .build();
+      Member member,
+      String title,
+      String description,
+      Double stature,
+      Double weight,
+      PostImage postImage) {
+    Post post =
+        Post.builder()
+            .member(member)
+            .title(title)
+            .description(description)
+            .stature(stature)
+            .weight(weight)
+            .postImage(postImage)
+            .build();
+    postImage.setPost(post);
+    return post;
+  }
+
+  public void addViewCount(Integer count) {
+    this.viewCount += count;
+  }
+
+  public void addLikeCount(Integer count) {
+    this.likeCount += count;
+  }
+
+  public void addCommentCount(Integer count) {
+    this.commentCount += count;
   }
 }
