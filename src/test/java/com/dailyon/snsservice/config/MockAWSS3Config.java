@@ -12,7 +12,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Primary;
 
 @TestConfiguration
-public class MockAWSS3S3Config {
+public class MockAWSS3Config {
 
   @Bean(name = "s3Mock")
   public S3Mock s3Mock() {

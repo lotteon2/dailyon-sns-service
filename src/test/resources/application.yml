@@ -10,3 +10,20 @@ spring:
   cloud:
     config:
       enabled: false
+    discovery:
+      enabled: false
+
+cloud:
+  aws:
+    region:
+      static: ap-northeast-2
+      auto: false
+    stack:
+      auto: false
+
+logging:
+  level:
+    com:
+      amazonaws:
+        util:
+          EC2MetadataUtils: error

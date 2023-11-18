@@ -58,6 +58,9 @@ dependencies {
     annotationProcessor 'org.projectlombok:lombok'
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testImplementation 'org.springframework.amqp:spring-rabbit-test'
+
+    // aws s3 mock
+    testImplementation 'io.findify:s3mock_2.12:0.2.4'
 }
 
 dependencyManagement {
