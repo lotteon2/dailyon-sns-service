@@ -3,11 +3,16 @@ package com.dailyon.snsservice.controller.rest;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 
+import com.dailyon.snsservice.dto.request.post.CreatePostImageProductDetailRequest;
+import com.dailyon.snsservice.dto.request.post.CreatePostRequest;
 import com.dailyon.snsservice.entity.*;
 import java.util.List;
 import java.util.UUID;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -30,6 +35,8 @@ class PostApiControllerTest {
   @PersistenceContext private EntityManager em;
 
   @Autowired private MockMvc mockMvc;
+
+  private final ObjectMapper objectMapper = new ObjectMapper();
 
   @BeforeEach
   void beforeEach() {
@@ -131,5 +138,49 @@ class PostApiControllerTest {
         .andExpect(MockMvcResultMatchers.jsonPath("$.posts[0].likeCount").isNumber())
         .andExpect(MockMvcResultMatchers.jsonPath("$.posts[0].viewCount").isNumber())
         .andExpect(MockMvcResultMatchers.jsonPath("$.posts[0].isLike").isBoolean());
+  }
+
+  @Test
+  @DisplayName("게시글 등록")
+  void createPost() throws Exception {
+    // given
+    Long memberId = 1L;
+    CreatePostRequest createPostRequest =
+        CreatePostRequest.builder()
+            .title("post title")
+            .description("post description")
+            .stature(180.0)
+            .weight(80.0)
+            .hashTagNames(List.of("태그 1", "태그 2", "태그 3"))
+            .postThumbnailImgName("thumbnail-img.png")
+            .postImgName("img.png")
+            .postImageProductDetails(
+                List.of(
+                    CreatePostImageProductDetailRequest.builder()
+                        .productId(1L)
+                        .productSize("XL")
+                        .leftGapPercent(40.0)
+                        .topGapPercent(30.0)
+                        .build()))
+            .build();
+
+    String requestBody = objectMapper.writeValueAsString(createPostRequest);
+
+    // when
+    ResultActions resultActions =
+        mockMvc
+            .perform(
+                post("/posts")
+                    .header("memberId", memberId)
+                    .contentType(MediaType.APPLICATION_JSON_VALUE)
+                    .content(requestBody))
+            .andExpect(MockMvcResultMatchers.status().isCreated())
+            .andExpect(
+                MockMvcResultMatchers.content().contentType(MediaType.APPLICATION_JSON_VALUE));
+
+    // then
+    resultActions
+        .andExpect(MockMvcResultMatchers.jsonPath("$.thumbnailImgPreSignedUrl").isString())
+        .andExpect(MockMvcResultMatchers.jsonPath("$.imgPreSignedUrl").isString());
   }
 }
