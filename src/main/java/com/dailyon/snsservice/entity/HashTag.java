@@ -21,4 +21,12 @@ public class HashTag extends BaseEntity {
   @ManyToOne
   @JoinColumn(name = "post_id")
   private Post post;
+
+  public static HashTag createHashTag(String name) {
+    return HashTag.builder().name(name).build();
+  }
+
+  public void setPost(Post post) {
+    this.post = post;
+  }
 }

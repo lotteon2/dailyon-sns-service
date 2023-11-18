@@ -35,24 +35,27 @@ class PostServiceTest {
 
     for (int i = 1; i <= 16; i++) {
       List<PostImageProductDetail> postImageProductDetails =
-              List.of(
-                      PostImageProductDetail.createPostImageProductDetail(
-                              Integer.toUnsignedLong(i), "size", 10.0, 10.0));
+          List.of(
+              PostImageProductDetail.createPostImageProductDetail(
+                  Integer.toUnsignedLong(i), "size", 10.0, 10.0));
 
       PostImage postImage =
-              PostImage.createPostImage(
-                      String.format("/images/thumbnail%s.png", i),
-                      String.format("/images/image%s.png", i),
-                      postImageProductDetails);
+          PostImage.createPostImage(
+              String.format("/images/thumbnail%s.png", i),
+              String.format("/images/image%s.png", i),
+              postImageProductDetails);
+
+      List<HashTag> hashTags = List.of(HashTag.createHashTag("태그" + i));
 
       Post post =
-              Post.createPost(
-                      member,
-                      String.format("post %s", i),
-                      String.format("post %s desc", i),
-                      5.6,
-                      150.0,
-                      postImage);
+          Post.createPost(
+              member,
+              String.format("post %s", i),
+              String.format("post %s desc", i),
+              5.6,
+              150.0,
+              postImage,
+              hashTags);
       em.persist(post);
 
       if (i % 2 == 0) {

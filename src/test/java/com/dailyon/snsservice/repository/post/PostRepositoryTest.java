@@ -42,6 +42,8 @@ class PostRepositoryTest {
               String.format("/images/image%s.png", i),
               postImageProductDetails);
 
+      List<HashTag> hashTags = List.of(HashTag.createHashTag("태그" + i));
+
       Post post =
           Post.createPost(
               member,
@@ -49,7 +51,8 @@ class PostRepositoryTest {
               String.format("post %s desc", i),
               5.6,
               150.0,
-              postImage);
+              postImage,
+              hashTags);
       em.persist(post);
 
       if (i % 2 == 0) {
