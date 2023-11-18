@@ -1,5 +1,8 @@
 package com.dailyon.snsservice.service;
 
+import com.dailyon.snsservice.dto.request.post.CreatePostImageProductDetailRequest;
+import com.dailyon.snsservice.dto.request.post.CreatePostRequest;
+import com.dailyon.snsservice.dto.response.post.CreatePostResponse;
 import com.dailyon.snsservice.dto.response.post.PostPageResponse;
 import com.dailyon.snsservice.dto.response.post.PostResponse;
 import com.dailyon.snsservice.entity.*;
@@ -10,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityManager;
@@ -22,6 +26,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
 @Transactional
+@ActiveProfiles(value = {"test"})
 class PostServiceTest {
 
   @PersistenceContext private EntityManager em;
@@ -97,5 +102,34 @@ class PostServiceTest {
     postPageResponse.getPosts().forEach(p -> assertNotNull(p.getIsLike()));
     assertTrue(postPageResponse.getPosts().get(0).getIsLike());
     assertTrue(postPageResponse.getHasNext());
+  }
+
+  @Test
+  @DisplayName("게시글 등록")
+  void createPost() {
+    // given
+    Long memberId = 1L;
+    CreatePostRequest createPostRequest = CreatePostRequest.builder()
+            .title("post title")
+            .description("post description")
+            .stature(180.0)
+            .weight(80.0)
+            .hashTagNames(List.of("태그 1", "태그 2", "태그 3"))
+            .postThumbnailImgName("thumbnail-img.png")
+            .postImgName("img.png")
+            .postImageProductDetails(List.of(CreatePostImageProductDetailRequest.builder()
+                    .productId(1L)
+                    .productSize("XL")
+                    .leftGapPercent(40.0)
+                    .topGapPercent(30.0)
+                    .build()))
+            .build();
+
+    // when
+    CreatePostResponse createPostResponse = postService.createPost(memberId, createPostRequest);
+
+    // then
+    assertFalse(createPostResponse.getThumbnailImgPreSignedUrl().isEmpty());
+    assertFalse(createPostResponse.getImgPreSignedUrl().isEmpty());
   }
 }
