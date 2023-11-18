@@ -15,14 +15,15 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.transaction.annotation.Transactional;
 
 @SpringBootTest
 @Transactional
+@ActiveProfiles(value = {"test"})
 class PostRepositoryTest {
 
   @PersistenceContext private EntityManager em;
-
   @Autowired private PostRepository postRepository;
 
   @BeforeEach
@@ -93,5 +94,39 @@ class PostRepositoryTest {
     assertSame(16L, posts.getTotalElements());
     assertSame(2, posts.getTotalPages());
     assertSame(1, posts.getContent().get(0).getPostLikes().size());
+  }
+
+  @Test
+  @DisplayName("게시글 등록")
+  void save() {
+    // given
+    Long memberId = 1L;
+    Member member =
+        em.createQuery("select m from Member m where m.id = :memberId", Member.class)
+            .setParameter("memberId", memberId)
+            .getSingleResult();
+    List<PostImageProductDetail> postImageProductDetails =
+        List.of(PostImageProductDetail.createPostImageProductDetail(1L, "size", 10.0, 10.0));
+
+    PostImage postImage =
+        PostImage.createPostImage(
+            "/images/thumbnail.png", "/images/img.png", postImageProductDetails);
+
+    List<HashTag> hashTags = List.of(HashTag.createHashTag("태그 1"));
+
+    Post post = Post.createPost(member, "post 1", "post desc 1", 5.6, 150.0, postImage, hashTags);
+
+    // when
+    Post savedPost = postRepository.save(post);
+
+    // then
+    assertEquals(post.getTitle(), savedPost.getTitle());
+    assertEquals(post.getDescription(), savedPost.getDescription());
+    assertEquals(
+        post.getPostImage().getThumbnailImgUrl(), savedPost.getPostImage().getThumbnailImgUrl());
+    assertEquals(post.getPostImage().getImgUrl(), savedPost.getPostImage().getImgUrl());
+    assertEquals(
+        post.getPostImage().getPostImageProductDetails().size(),
+        savedPost.getPostImage().getPostImageProductDetails().size());
   }
 }

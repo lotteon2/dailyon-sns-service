@@ -7,4 +7,5 @@ import org.springframework.data.domain.Pageable;
 public interface PostRepository {
 
   Page<Post> findAllWithIsLike(Long memberId, Pageable pageable);
+  Post save(Post post);
 }

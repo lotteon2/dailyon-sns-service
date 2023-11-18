@@ -48,6 +48,11 @@ public class PostRepositoryImpl implements PostRepository {
     return new PageImpl<>(query.fetch(), pageable, getTotalPageCount());
   }
 
+  @Override
+  public Post save(Post post) {
+    return postJpaRepository.save(post);
+  }
+
   private Long getTotalPageCount() {
     return jpaQueryFactory.select(post.count()).from(post).fetchOne();
   }
