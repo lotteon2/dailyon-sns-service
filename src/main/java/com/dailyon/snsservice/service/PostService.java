@@ -17,6 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Set;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service
@@ -30,7 +31,6 @@ public class PostService {
   private final MemberRepository memberRepository;
   private final PostRepository postRepository;
   private final S3Service s3Service;
-  private final FileService fileService;
 
   public PostPageResponse getPosts(Long memberId, Pageable pageable) {
     Page<Post> posts = postRepository.findAllWithIsLike(memberId, pageable);
@@ -42,14 +42,8 @@ public class PostService {
     Member member =
         memberRepository.findById(memberId).orElseThrow(MemberEntityNotFoundException::new);
 
-    String thumbnailImgUrl =
-        POST_STATIC_IMG_BUCKET_PREFIX
-            + "/"
-            + fileService.generateUniqueFileName(createPostRequest.getPostThumbnailImgName());
-    String imgUrl =
-        POST_STATIC_IMG_BUCKET_PREFIX
-            + "/"
-            + fileService.generateUniqueFileName(createPostRequest.getPostImgName());
+    String thumbnailImgUrl = POST_STATIC_IMG_BUCKET_PREFIX + "/" + UUID.randomUUID();
+    String imgUrl = POST_STATIC_IMG_BUCKET_PREFIX + "/" + UUID.randomUUID();
 
     Set<PostImageProductDetail> postImageProductDetails =
         createPostRequest.getPostImageProductDetails().stream()
@@ -94,8 +88,16 @@ public class PostService {
   @Transactional
   public UpdatePostResponse updatePost(Long id, UpdatePostRequest updatePostRequest) {
     Post post = postRepository.findByIdForUpdate(id);
+    post.updatePost(updatePostRequest);
 
-    return UpdatePostResponse.builder().build();
+    String thumbnailImgPreSignedUrl =
+        s3Service.getPreSignedUrl(STATIC_IMG_BUCKET, post.getPostImage().getThumbnailImgUrl());
+    String imgPreSignedUrl =
+        s3Service.getPreSignedUrl(STATIC_IMG_BUCKET, post.getPostImage().getImgUrl());
+    return UpdatePostResponse.builder()
+        .thumbnailImgPreSignedUrl(thumbnailImgPreSignedUrl)
+        .imgPreSignedUrl(imgPreSignedUrl)
+        .build();
   }
 
   @Transactional

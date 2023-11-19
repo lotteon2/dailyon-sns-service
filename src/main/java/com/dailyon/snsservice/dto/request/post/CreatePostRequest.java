@@ -1,11 +1,9 @@
 package com.dailyon.snsservice.dto.request.post;
 
+import java.util.List;
+import javax.validation.constraints.*;
 import lombok.Builder;
 import lombok.Getter;
-
-import javax.validation.constraints.*;
-import java.util.List;
-import java.util.UUID;
 
 @Getter
 @Builder
@@ -24,15 +22,11 @@ public class CreatePostRequest {
   @NotEmpty(message = "해시태그는 최소 1개 이상 입력해야 합니다.")
   private List<String> hashTagNames;
 
-  @NotBlank(message = "썸네일 이미지를 등록해주세요.")
-  private String postThumbnailImgName;
+  @AssertTrue(message = "썸네일 이미지를 등록해주세요.")
+  private Boolean isPostThumbnailImgExists;
 
-  @NotBlank(message = "이미지를 등록해주세요.")
-  private String postImgName;
+  @AssertTrue(message = "이미지를 등록해주세요.")
+  private Boolean isPostImgExists;
 
   private List<CreatePostImageProductDetailRequest> postImageProductDetails;
-
-  private String generateUniqueFileName(String filename) {
-    return UUID.randomUUID() + filename;
-  }
 }
