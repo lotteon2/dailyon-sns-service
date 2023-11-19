@@ -1,11 +1,13 @@
 package com.dailyon.snsservice.entity;
 
+import com.dailyon.snsservice.dto.request.post.UpdatePostRequest;
 import com.dailyon.snsservice.entity.common.BaseEntity;
 import lombok.*;
 
 import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Getter
 @Entity
@@ -89,6 +91,17 @@ public class Post extends BaseEntity {
     return post;
   }
 
+//  public Post updatePost(UpdatePostRequest updatePostRequest) {
+//    this.title = updatePostRequest.getTitle();
+//    this.description = updatePostRequest.getDescription();
+//    this.hashTags.clear();
+//    this.hashTags =
+//        updatePostRequest.getHashTagNames().stream()
+//            .map(HashTag::createHashTag)
+//            .collect(Collectors.toList());
+//
+//  }
+
   public void addViewCount(Integer count) {
     this.viewCount += count;
   }
@@ -99,5 +112,9 @@ public class Post extends BaseEntity {
 
   public void addCommentCount(Integer count) {
     this.commentCount += count;
+  }
+
+  public void setDeleted(Boolean deleted) {
+    this.isDeleted = deleted;
   }
 }
