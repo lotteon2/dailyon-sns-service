@@ -24,7 +24,7 @@ public class MockAWSS3Config {
   public AmazonS3 amazonS3Client() {
     AwsClientBuilder.EndpointConfiguration endpoint =
         new AwsClientBuilder.EndpointConfiguration(
-            "http://127.0.0.1:8001", null);
+            "http://127.0.0.1:8001", Regions.AP_NORTHEAST_2.name());
     AmazonS3 client =
         AmazonS3ClientBuilder.standard()
             .withPathStyleAccessEnabled(true)

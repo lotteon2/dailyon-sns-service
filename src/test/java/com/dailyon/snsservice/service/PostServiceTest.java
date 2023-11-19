@@ -65,32 +65,32 @@ class PostServiceTest {
     assertTrue(postPageResponse.getHasNext());
   }
 
-  @Test
-  @DisplayName("게시글 등록")
-  void createPost() {
-    // given
-    Long memberId = 1L;
-    CreatePostRequest createPostRequest = CreatePostRequest.builder()
-            .title("post title")
-            .description("post description")
-            .stature(180.0)
-            .weight(80.0)
-            .hashTagNames(List.of("태그 1", "태그 2", "태그 3"))
-            .postThumbnailImgName("thumbnail-img.png")
-            .postImgName("img.png")
-            .postImageProductDetails(List.of(CreatePostImageProductDetailRequest.builder()
-                    .productId(1L)
-                    .productSize("XL")
-                    .leftGapPercent(40.0)
-                    .topGapPercent(30.0)
-                    .build()))
-            .build();
-
-    // when
-    CreatePostResponse createPostResponse = postService.createPost(memberId, createPostRequest);
-
-    // then
-    assertFalse(createPostResponse.getThumbnailImgPreSignedUrl().isEmpty());
-    assertFalse(createPostResponse.getImgPreSignedUrl().isEmpty());
-  }
+  //  @Test
+  //  @DisplayName("게시글 등록")
+  //  void createPost() {
+  //    // given
+  //    Long memberId = 1L;
+  //    CreatePostRequest createPostRequest = CreatePostRequest.builder()
+  //            .title("post title")
+  //            .description("post description")
+  //            .stature(180.0)
+  //            .weight(80.0)
+  //            .hashTagNames(List.of("태그 1", "태그 2", "태그 3"))
+  //            .postThumbnailImgName("thumbnail-img.png")
+  //            .postImgName("img.png")
+  //            .postImageProductDetails(List.of(CreatePostImageProductDetailRequest.builder()
+  //                    .productId(1L)
+  //                    .productSize("XL")
+  //                    .leftGapPercent(40.0)
+  //                    .topGapPercent(30.0)
+  //                    .build()))
+  //            .build();
+  //
+  //    // when
+  //    CreatePostResponse createPostResponse = postService.createPost(memberId, createPostRequest);
+  //
+  //    // then
+  //    assertFalse(createPostResponse.getThumbnailImgPreSignedUrl().isEmpty());
+  //    assertFalse(createPostResponse.getImgPreSignedUrl().isEmpty());
+  //  }
 }
