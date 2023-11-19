@@ -1,8 +1,10 @@
 package com.dailyon.snsservice.service;
 
 import com.dailyon.snsservice.dto.request.post.CreatePostRequest;
+import com.dailyon.snsservice.dto.request.post.UpdatePostRequest;
 import com.dailyon.snsservice.dto.response.post.CreatePostResponse;
 import com.dailyon.snsservice.dto.response.post.PostPageResponse;
+import com.dailyon.snsservice.dto.response.post.UpdatePostResponse;
 import com.dailyon.snsservice.entity.*;
 import com.dailyon.snsservice.exception.MemberEntityNotFoundException;
 import com.dailyon.snsservice.repository.member.MemberRepository;
@@ -14,6 +16,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
@@ -48,7 +51,7 @@ public class PostService {
             + "/"
             + fileService.generateUniqueFileName(createPostRequest.getPostImgName());
 
-    List<PostImageProductDetail> postImageProductDetails =
+    Set<PostImageProductDetail> postImageProductDetails =
         createPostRequest.getPostImageProductDetails().stream()
             .map(
                 pipd ->
@@ -57,7 +60,7 @@ public class PostService {
                         pipd.getProductSize(),
                         pipd.getLeftGapPercent(),
                         pipd.getTopGapPercent()))
-            .collect(Collectors.toList());
+            .collect(Collectors.toSet());
 
     PostImage postImage =
         PostImage.createPostImage(thumbnailImgUrl, imgUrl, postImageProductDetails);
@@ -86,5 +89,17 @@ public class PostService {
         .thumbnailImgPreSignedUrl(thumbnailImgPreSignedUrl)
         .imgPreSignedUrl(imgPreSignedUrl)
         .build();
+  }
+
+  @Transactional
+  public UpdatePostResponse updatePost(Long id, UpdatePostRequest updatePostRequest) {
+    Post post = postRepository.findByIdForUpdate(id);
+
+    return UpdatePostResponse.builder().build();
+  }
+
+  @Transactional
+  public void softDeletePost(Long id) {
+    postRepository.softDeleteById(id);
   }
 }
