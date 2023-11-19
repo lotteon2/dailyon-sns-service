@@ -10,15 +10,15 @@ import javax.validation.constraints.NotNull;
 @Builder
 public class CreatePostImageProductDetailRequest {
 
-    @NotNull
+    @NotNull(message = "태그된 상품의 실제 id를 입력해주세요.")
     private Long productId;
 
     @NotBlank(message = "태그된 상품 치수를 등록해주세요.")
     private String productSize;
 
-    @NotNull
+    @NotNull(message = "태그된 상품의 위치를 등록해주세요.")
     private Double leftGapPercent;
 
-    @NotNull
+    @NotNull(message = "태그된 상품의 위치를 등록해주세요.")
     private Double topGapPercent;
 }
