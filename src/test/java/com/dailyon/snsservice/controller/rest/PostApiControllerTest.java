@@ -7,6 +7,7 @@ import com.dailyon.snsservice.dto.request.post.CreatePostImageProductDetailReque
 import com.dailyon.snsservice.dto.request.post.CreatePostRequest;
 import com.dailyon.snsservice.entity.*;
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -17,6 +18,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
@@ -32,49 +34,9 @@ import org.springframework.transaction.annotation.Transactional;
 @ActiveProfiles(value = {"test"})
 class PostApiControllerTest {
 
-  @PersistenceContext private EntityManager em;
-
   @Autowired private MockMvc mockMvc;
 
   private final ObjectMapper objectMapper = new ObjectMapper();
-
-  @BeforeEach
-  void beforeEach() {
-    Member member = Member.createMember(1L, "member1", UUID.randomUUID().toString());
-    em.persist(member);
-
-    for (int i = 1; i <= 16; i++) {
-      List<PostImageProductDetail> postImageProductDetails =
-          List.of(
-              PostImageProductDetail.createPostImageProductDetail(
-                  Integer.toUnsignedLong(i), "size", 10.0, 10.0));
-
-      PostImage postImage =
-          PostImage.createPostImage(
-              String.format("/images/thumbnail%s.png", i),
-              String.format("/images/image%s.png", i),
-              postImageProductDetails);
-
-      List<HashTag> hashTags = List.of(HashTag.createHashTag("태그" + i));
-
-      Post post =
-          Post.createPost(
-              member,
-              String.format("post %s", i),
-              String.format("post %s desc", i),
-              5.6,
-              150.0,
-              postImage,
-              hashTags);
-      em.persist(post);
-
-      if (i % 2 == 0) {
-        PostLike postLike = PostLike.createPostLike(member, post);
-        post.addLikeCount(1);
-        em.persist(postLike);
-      }
-    }
-  }
 
   @Test
   @DisplayName("게시글 목록 조회 - 미인증")
