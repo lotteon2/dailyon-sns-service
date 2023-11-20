@@ -7,7 +7,7 @@ import com.dailyon.snsservice.dto.response.post.PostPageResponse;
 import com.dailyon.snsservice.dto.response.post.UpdatePostResponse;
 import com.dailyon.snsservice.entity.*;
 import com.dailyon.snsservice.exception.MemberEntityNotFoundException;
-import com.dailyon.snsservice.repository.member.MemberRepository;
+import com.dailyon.snsservice.repository.member.MemberJpaRepository;
 import com.dailyon.snsservice.repository.post.PostRepository;
 import java.util.List;
 import java.util.Set;
@@ -27,7 +27,7 @@ public class PostService {
   private static final String STATIC_IMG_BUCKET = "dailyon-static-dev";
   private static final String POST_STATIC_IMG_BUCKET_PREFIX = "post-img";
 
-  private final MemberRepository memberRepository;
+  private final MemberJpaRepository memberJpaRepository;
   private final PostRepository postRepository;
   private final S3Service s3Service;
 
@@ -39,7 +39,7 @@ public class PostService {
   @Transactional
   public CreatePostResponse createPost(Long memberId, CreatePostRequest createPostRequest) {
     Member member =
-        memberRepository.findById(memberId).orElseThrow(MemberEntityNotFoundException::new);
+        memberJpaRepository.findById(memberId).orElseThrow(MemberEntityNotFoundException::new);
 
     String thumbnailImgUrl = POST_STATIC_IMG_BUCKET_PREFIX + "/" + UUID.randomUUID();
     String imgUrl = POST_STATIC_IMG_BUCKET_PREFIX + "/" + UUID.randomUUID();
