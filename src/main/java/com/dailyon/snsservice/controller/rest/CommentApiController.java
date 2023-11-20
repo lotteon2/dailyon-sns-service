@@ -1,10 +1,9 @@
 package com.dailyon.snsservice.controller.rest;
 
 import com.dailyon.snsservice.dto.request.post.CreateCommentRequest;
-import javax.validation.Valid;
-
 import com.dailyon.snsservice.dto.request.post.CreateReplyCommentRequest;
 import com.dailyon.snsservice.service.CommentService;
+import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -28,11 +27,20 @@ public class CommentApiController {
 
   @PostMapping("/{postId}/comments/{commentId}")
   public ResponseEntity<Void> createComment(
-          @RequestHeader(name = "memberId") Long memberId,
-          @PathVariable(name = "postId") Long postId,
-          @PathVariable(name = "commentId") Long commentId,
-          @Valid @RequestBody CreateReplyCommentRequest createReplyCommentRequest) {
+      @RequestHeader(name = "memberId") Long memberId,
+      @PathVariable(name = "postId") Long postId,
+      @PathVariable(name = "commentId") Long commentId,
+      @Valid @RequestBody CreateReplyCommentRequest createReplyCommentRequest) {
     commentService.createReplyComment(memberId, postId, commentId, createReplyCommentRequest);
     return ResponseEntity.status(HttpStatus.CREATED).build();
+  }
+
+  @DeleteMapping("/{postId}/comments/{commentId}")
+  public ResponseEntity<Void> deleteComment(
+      @RequestHeader(name = "memberId") Long memberId,
+      @PathVariable(name = "postId") Long postId,
+      @PathVariable(name = "commentId") Long commentId) {
+    commentService.deleteCommentById(commentId);
+    return ResponseEntity.ok().build();
   }
 }

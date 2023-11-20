@@ -23,6 +23,7 @@ public class CommentService {
   private final PostJpaRepository postJpaRepository;
   private final CommentRepository commentRepository;
 
+  @Transactional
   public Comment createComment(
       Long memberId, Long postId, CreateCommentRequest createCommentRequest) {
     Member member =
@@ -33,6 +34,7 @@ public class CommentService {
     return commentRepository.save(comment);
   }
 
+  @Transactional
   public Comment createReplyComment(
       Long memberId,
       Long postId,
@@ -47,5 +49,10 @@ public class CommentService {
         Comment.createReplyComment(
             comment, member, post, createReplyCommentRequest.getDescription());
     return commentRepository.save(replyComment);
+  }
+
+  @Transactional
+  public void deleteCommentById(Long commentId) {
+    commentRepository.deleteById(commentId);
   }
 }
