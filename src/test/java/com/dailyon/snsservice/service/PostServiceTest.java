@@ -3,6 +3,7 @@ package com.dailyon.snsservice.service;
 import com.dailyon.snsservice.dto.request.post.CreatePostImageProductDetailRequest;
 import com.dailyon.snsservice.dto.request.post.CreatePostRequest;
 import com.dailyon.snsservice.dto.response.post.CreatePostResponse;
+import com.dailyon.snsservice.dto.response.post.PostLikePageResponse;
 import com.dailyon.snsservice.dto.response.post.PostPageResponse;
 import com.dailyon.snsservice.dto.response.post.PostResponse;
 import com.dailyon.snsservice.entity.*;
@@ -63,6 +64,21 @@ class PostServiceTest {
     assertSame(8, postPageResponse.getPosts().size());
     postPageResponse.getPosts().forEach(p -> assertNotNull(p.getIsLike()));
     assertTrue(postPageResponse.getHasNext());
+  }
+
+  @Test
+  @DisplayName("게시글 좋아요 목록 조회")
+  void getPostLikes() {
+    // given
+    Long memberId = 1L;
+    PageRequest pageRequest = PageRequest.of(0, 8, Sort.by(Sort.Direction.DESC, "createdAt"));
+
+    // when
+    PostLikePageResponse postLikePageResponse = postService.getPostLikes(memberId, pageRequest);
+
+    // then
+    assertFalse(postLikePageResponse.getHasNext());
+    assertSame(1, postLikePageResponse.getPosts().size());
   }
 
   //  @Test
