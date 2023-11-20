@@ -1,6 +1,7 @@
 package com.dailyon.snsservice.service;
 
 import com.dailyon.snsservice.dto.request.post.CreateCommentRequest;
+import com.dailyon.snsservice.dto.request.post.CreateReplyCommentRequest;
 import com.dailyon.snsservice.entity.Comment;
 import com.dailyon.snsservice.repository.comment.CommentJpaRepository;
 import org.junit.jupiter.api.DisplayName;
@@ -35,5 +36,25 @@ class CommentServiceTest {
 
     // then
     assertSame(createCommentRequest.getDescription(), savedComment.getDescription());
+  }
+
+  @Test
+  @DisplayName("답글 등록")
+  void createReplyComment() {
+    // given
+    Long memberId = 1L;
+    Long postId = 3L;
+    Long commentId = 2L;
+
+    // when
+    CreateReplyCommentRequest createReplyCommentRequest = CreateReplyCommentRequest.builder()
+            .description("답글 123")
+            .build();
+    Comment savedReplyComment = commentService.createReplyComment(memberId, postId, commentId, createReplyCommentRequest);
+
+    // then
+    assertSame(createReplyCommentRequest.getDescription(), savedReplyComment.getDescription());
+    assertNotNull(savedReplyComment.getParent());
+    assertSame(commentId, savedReplyComment.getParent().getId());
   }
 }
