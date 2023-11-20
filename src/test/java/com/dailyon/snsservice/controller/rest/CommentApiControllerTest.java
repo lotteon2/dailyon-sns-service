@@ -1,10 +1,9 @@
 package com.dailyon.snsservice.controller.rest;
 
-import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 
-import com.dailyon.snsservice.dto.request.post.CreateCommentRequest;
-import com.dailyon.snsservice.dto.request.post.CreateReplyCommentRequest;
+import com.dailyon.snsservice.dto.request.comment.CreateCommentRequest;
+import com.dailyon.snsservice.dto.request.comment.CreateReplyCommentRequest;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

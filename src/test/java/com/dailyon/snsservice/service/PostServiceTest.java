@@ -1,29 +1,15 @@
 package com.dailyon.snsservice.service;
 
-import com.dailyon.snsservice.dto.request.post.CreatePostImageProductDetailRequest;
-import com.dailyon.snsservice.dto.request.post.CreatePostRequest;
-import com.dailyon.snsservice.dto.response.post.CreatePostResponse;
-import com.dailyon.snsservice.dto.response.post.PostLikePageResponse;
+import com.dailyon.snsservice.dto.response.postlike.PostLikePageResponse;
 import com.dailyon.snsservice.dto.response.post.PostPageResponse;
-import com.dailyon.snsservice.dto.response.post.PostResponse;
-import com.dailyon.snsservice.entity.*;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.transaction.annotation.Transactional;
-
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
-
-import java.util.List;
-import java.util.Set;
-import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
 

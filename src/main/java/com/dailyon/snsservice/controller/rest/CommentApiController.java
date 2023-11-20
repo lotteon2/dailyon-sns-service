@@ -1,8 +1,8 @@
 package com.dailyon.snsservice.controller.rest;
 
-import com.dailyon.snsservice.dto.request.post.CreateCommentRequest;
-import com.dailyon.snsservice.dto.request.post.CreateReplyCommentRequest;
-import com.dailyon.snsservice.dto.response.post.CommentPageResponse;
+import com.dailyon.snsservice.dto.request.comment.CreateCommentRequest;
+import com.dailyon.snsservice.dto.request.comment.CreateReplyCommentRequest;
+import com.dailyon.snsservice.dto.response.comment.CommentPageResponse;
 import com.dailyon.snsservice.service.CommentService;
 import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
