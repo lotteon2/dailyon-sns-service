@@ -12,7 +12,7 @@ spring:
   # DB settings
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://localhost:3306/sns-service
+    url: jdbc:mysql://localhost:3306/sns-service?rewriteBatchedStatements=true
     username: root
     password: 11111111
 eureka:

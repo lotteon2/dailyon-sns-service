@@ -43,7 +43,7 @@ public class PostApiController {
 
   @PutMapping("/{postId}")
   public UpdatePostResponse updatePost(
-          @RequestHeader(name = "memberId", required = false) Long memberId,
+          @RequestHeader(name = "memberId") Long memberId,
           @PathVariable("postId") Long postId,
           @Valid @RequestBody UpdatePostRequest updatePostRequest) {
     return postService.updatePost(postId, updatePostRequest);
