@@ -1,6 +1,7 @@
 package com.dailyon.snsservice.controller.rest;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 
 import com.dailyon.snsservice.dto.request.post.CreateCommentRequest;
@@ -56,17 +57,33 @@ class CommentApiControllerTest {
     Long postId = 3L;
     Long commentId = 2L;
     CreateReplyCommentRequest createReplyCommentRequest =
-            CreateReplyCommentRequest.builder().description("답글 123").build();
+        CreateReplyCommentRequest.builder().description("답글 123").build();
 
     String requestBody = objectMapper.writeValueAsString(createReplyCommentRequest);
 
     // when, then
     mockMvc
-            .perform(
-                    post("/posts/{postId}/comments/{commentId}", postId, commentId)
-                            .header("memberId", memberId)
-                            .contentType(MediaType.APPLICATION_JSON_VALUE)
-                            .content(requestBody))
-            .andExpect(MockMvcResultMatchers.status().isCreated());
+        .perform(
+            post("/posts/{postId}/comments/{commentId}", postId, commentId)
+                .header("memberId", memberId)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .content(requestBody))
+        .andExpect(MockMvcResultMatchers.status().isCreated());
+  }
+
+  @Test
+  @DisplayName("댓글 삭제")
+  void deleteComment() throws Exception {
+    // given
+    Long memberId = 1L;
+    Long postId = 2L;
+    Long commentId = 1L;
+
+    // when, then
+    mockMvc
+        .perform(
+            delete("/posts/{postId}/comments/{commentId}", postId, commentId)
+                .header("memberId", memberId))
+        .andExpect(MockMvcResultMatchers.status().isOk());
   }
 }
