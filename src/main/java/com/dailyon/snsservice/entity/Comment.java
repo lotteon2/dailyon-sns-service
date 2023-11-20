@@ -40,13 +40,21 @@ public class Comment extends BaseEntity {
   @Column(name = "description", nullable = false)
   private String description;
 
-  public static Comment createComment(
-      Comment parent, Member member, Post post, String description) {
+  public static Comment createComment(Member member, Post post, String description) {
     return Comment.builder()
-        .parent(parent)
         .member(member)
         .post(post)
         .description(description)
         .build();
+  }
+
+  public static Comment createReplyComment(
+          Comment parent, Member member, Post post, String description) {
+    return Comment.builder()
+            .parent(parent)
+            .member(member)
+            .post(post)
+            .description(description)
+            .build();
   }
 }
