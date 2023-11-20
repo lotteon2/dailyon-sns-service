@@ -14,8 +14,13 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
 
 @SpringBootTest
 @Transactional
@@ -60,5 +65,22 @@ class CommentRepositoryTest {
         CommentEntityNotFoundException.class, () -> commentRepository.findById(parentCommentId));
     assertThrowsExactly(
         CommentEntityNotFoundException.class, () -> commentRepository.findById(childCommentId));
+  }
+
+  @Test
+  @DisplayName("댓글 조회")
+  void findAllByPostId() {
+    // given
+    Long postId = 3L;
+    PageRequest pageRequest = PageRequest.of(0, 5, Sort.by(Sort.Direction.DESC, "createdAt"));
+
+    // when
+    Page<Comment> comments = commentRepository.findAllByPostId(postId, pageRequest);
+
+    // then
+    assertSame(2, comments.getTotalPages());
+    assertSame(5, comments.getContent().size());
+    assertSame(6L, comments.getTotalElements());
+    comments.getContent().stream().forEach(comment -> assertNull(comment.getParent()));
   }
 }

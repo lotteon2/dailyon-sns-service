@@ -38,6 +38,14 @@ cloud:
 
 logging:
   level:
+    org:
+      hibernate:
+        SQL: DEBUG
+        engine.jdbc.batch.internal.BatchingBatch: DEBUG
+      springframework:
+        jdbc:
+          core:
+            JdbcTemplate: DEBUG
     com:
       amazonaws:
         util:

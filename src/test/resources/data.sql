@@ -85,7 +85,17 @@ INSERT INTO comment (created_at, updated_at, parent_id, member_id, post_id, desc
 VALUES
     (NOW(), NOW(), NULL, 1, 2, 'Great post!'),
     (NOW(), NOW(), NULL, 2, 3, 'Keep up the good work!'),
-    (NOW(), NOW(), 1, 1, 3, 'I agree with you.');
+    (NOW(), NOW(), NULL, 2, 3, 'Keep up the good work!'),
+    (NOW(), NOW(), NULL, 2, 3, 'Keep up the good work!'),
+    (NOW(), NOW(), NULL, 2, 3, 'Keep up the good work!'),
+    (NOW(), NOW(), NULL, 2, 3, 'Keep up the good work!'),
+    (NOW(), NOW(), NULL, 2, 3, 'Keep up the good work!'),
+    (NOW(), NOW(), 2, 1, 3, 'I agree with you.'),
+    (NOW(), NOW(), 2, 1, 3, 'I agree with you.'),
+    (NOW(), NOW(), 2, 1, 3, 'I agree with you.'),
+    (NOW(), NOW(), 3, 1, 3, 'I agree with you.'),
+    (NOW(), NOW(), 4, 1, 3, 'I agree with you.'),
+    (NOW(), NOW(), 5, 1, 3, 'I agree with you.');
 
 -- Dummy data for the hash_tag table
 INSERT INTO hash_tag (name, created_at, updated_at, post_id)
