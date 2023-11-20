@@ -7,20 +7,22 @@ import lombok.*;
 
 @Getter
 @Entity
-@IdClass(HashTagId.class)
 @Builder(access = AccessLevel.PRIVATE)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class HashTag extends BaseEntity {
 
   @Id
-  @Column(name = "name")
-  private String name;
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  @Column(name = "id")
+  private Long id;
 
-  @Id
   @ManyToOne
   @JoinColumn(name = "post_id")
   private Post post;
+
+  @Column(name = "name")
+  private String name;
 
   public static HashTag createHashTag(String name) {
     return HashTag.builder().name(name).build();
@@ -28,5 +30,9 @@ public class HashTag extends BaseEntity {
 
   public void setPost(Post post) {
     this.post = post;
+  }
+
+  public void setName(String name) {
+    this.name = name;
   }
 }
