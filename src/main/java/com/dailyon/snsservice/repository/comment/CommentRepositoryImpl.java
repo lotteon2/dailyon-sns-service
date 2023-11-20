@@ -20,4 +20,9 @@ public class CommentRepositoryImpl implements CommentRepository {
   public Comment save(Comment comment) {
     return commentJpaRepository.save(comment);
   }
+
+  @Override
+  public void deleteById(Long commentId) {
+    commentJpaRepository.deleteById(commentId);
+  }
 }
