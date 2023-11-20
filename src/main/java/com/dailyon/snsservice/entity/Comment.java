@@ -24,11 +24,14 @@ public class Comment extends BaseEntity {
   @JoinColumn(name = "parent_id")
   private Comment parent;
 
-  @OneToMany(mappedBy = "parent", fetch = FetchType.LAZY, cascade = {CascadeType.REMOVE})
+  @OneToMany(
+      mappedBy = "parent",
+      fetch = FetchType.LAZY,
+      cascade = {CascadeType.REMOVE})
   @Builder.Default
   private List<Comment> children = new ArrayList<>();
 
-  @ManyToOne
+  @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "member_id", nullable = false)
   private Member member;
 

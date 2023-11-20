@@ -1,8 +1,7 @@
 package com.dailyon.snsservice.controller.rest;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 
 import com.dailyon.snsservice.dto.request.post.CreateCommentRequest;
 import com.dailyon.snsservice.dto.request.post.CreateReplyCommentRequest;
@@ -15,6 +14,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -27,6 +27,55 @@ class CommentApiControllerTest {
   @Autowired private MockMvc mockMvc;
 
   private final ObjectMapper objectMapper = new ObjectMapper();
+
+  @Test
+  @DisplayName("댓글 조회")
+  void getComments() throws Exception {
+    // given
+    Long memberId = 1L;
+    Long postId = 3L;
+    Integer page = 0;
+    Integer size = 5;
+    String sort = "createdAt";
+
+    // when
+    ResultActions resultActions =
+        mockMvc
+            .perform(
+                get("/posts/{postId}/comments", postId)
+                    .header("memberId", memberId)
+                    .queryParam("page", page.toString())
+                    .queryParam("size", size.toString())
+                    .queryParam("sort", sort))
+            .andExpect(MockMvcResultMatchers.status().isOk())
+            .andExpect(
+                MockMvcResultMatchers.content().contentType(MediaType.APPLICATION_JSON_VALUE));
+
+    // then
+    resultActions
+        .andExpect(MockMvcResultMatchers.jsonPath("$.totalPages").isNumber())
+        .andExpect(MockMvcResultMatchers.jsonPath("$.totalPages").isNumber())
+        .andExpect(MockMvcResultMatchers.jsonPath("$.comments.length()").value(5))
+        .andExpect(MockMvcResultMatchers.jsonPath("$.comments[0].id").isNumber())
+        .andExpect(MockMvcResultMatchers.jsonPath("$.comments[0].description").isString())
+        .andExpect(MockMvcResultMatchers.jsonPath("$.comments[0].createdAt").isString())
+        .andExpect(MockMvcResultMatchers.jsonPath("$.comments[0].member.id").isNumber())
+        .andExpect(MockMvcResultMatchers.jsonPath("$.comments[0].member.nickname").isString())
+        .andExpect(MockMvcResultMatchers.jsonPath("$.comments[0].member.profileImgUrl").isString())
+        .andExpect(MockMvcResultMatchers.jsonPath("$.comments[0].replyComments[0].id").isNumber())
+        .andExpect(
+            MockMvcResultMatchers.jsonPath("$.comments[0].replyComments[0].description").isString())
+        .andExpect(
+            MockMvcResultMatchers.jsonPath("$.comments[0].replyComments[0].createdAt").isString())
+        .andExpect(
+            MockMvcResultMatchers.jsonPath("$.comments[0].replyComments[0].member.id").isNumber())
+        .andExpect(
+            MockMvcResultMatchers.jsonPath("$.comments[0].replyComments[0].member.nickname")
+                .isString())
+        .andExpect(
+            MockMvcResultMatchers.jsonPath("$.comments[0].replyComments[0].member.profileImgUrl")
+                .isString());
+  }
 
   @Test
   @DisplayName("댓글 등록")

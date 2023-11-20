@@ -2,9 +2,13 @@ package com.dailyon.snsservice.controller.rest;
 
 import com.dailyon.snsservice.dto.request.post.CreateCommentRequest;
 import com.dailyon.snsservice.dto.request.post.CreateReplyCommentRequest;
+import com.dailyon.snsservice.dto.response.post.CommentPageResponse;
 import com.dailyon.snsservice.service.CommentService;
 import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -15,6 +19,20 @@ import org.springframework.web.bind.annotation.*;
 public class CommentApiController {
 
   private final CommentService commentService;
+
+  @GetMapping("/{postId}/comments")
+  public ResponseEntity<CommentPageResponse> getComments(
+          @RequestHeader(name = "memberId") Long memberId,
+          @PathVariable(name = "postId") Long postId,
+          @PageableDefault(
+                  page = 0,
+                  size = 5,
+                  sort = {"createdAt"},
+                  direction = Sort.Direction.DESC)
+          Pageable pageable) {
+    CommentPageResponse commentPageResponse = commentService.getComments(postId, pageable);
+    return ResponseEntity.ok(commentPageResponse);
+  }
 
   @PostMapping("/{postId}/comments")
   public ResponseEntity<Void> createComment(
