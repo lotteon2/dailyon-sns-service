@@ -54,8 +54,8 @@ class CommentRepositoryTest {
   @DisplayName("댓글 삭제")
   void deleteById() {
     // given
-    Long parentCommentId = 1L;
-    Long childCommentId = 3L;
+    Long parentCommentId = 2L;
+    Long childCommentId = 8L;
 
     // when
     commentRepository.deleteById(parentCommentId);

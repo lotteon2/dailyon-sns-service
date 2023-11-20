@@ -67,8 +67,8 @@ class CommentServiceTest {
   @DisplayName("댓글 삭제")
   void deleteComment() {
     // given
-    Long parentCommentId = 1L;
-    Long childCommentId = 3L;
+    Long parentCommentId = 2L;
+    Long childCommentId = 8L;
 
     // when
     commentService.deleteCommentById(parentCommentId);
