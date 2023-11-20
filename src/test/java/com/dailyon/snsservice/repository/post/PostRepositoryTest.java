@@ -92,4 +92,20 @@ class PostRepositoryTest {
         post.getPostImage().getPostImageProductDetails().size(),
         savedPost.getPostImage().getPostImageProductDetails().size());
   }
+
+  @Test
+  @DisplayName("게시글 좋아요 목록 조회")
+  void findAllWithPostLike() {
+    // given
+    Long memberId = 1L;
+    PageRequest pageRequest = PageRequest.of(0, 8, Sort.by(Sort.Direction.DESC, "createdAt"));
+
+    // when
+    Page<Post> posts = postRepository.findAllWithPostLike(memberId, pageRequest);
+
+    // then
+    assertFalse(posts.hasNext());
+    assertSame(1, posts.getTotalPages());
+    assertSame(1, posts.getContent().size());
+  }
 }

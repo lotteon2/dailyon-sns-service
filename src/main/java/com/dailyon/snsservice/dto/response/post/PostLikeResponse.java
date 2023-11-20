@@ -6,8 +6,8 @@ import lombok.*;
 @Builder
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PROTECTED)
-public class UpdatePostResponse {
+public class PostLikeResponse {
 
-  private String thumbnailImgPreSignedUrl;
-  private String imgPreSignedUrl;
+  private Long id;
+  private String thumbnailImgUrl;
 }

@@ -2,11 +2,13 @@ package com.dailyon.snsservice.dto.request.post;
 
 import java.util.List;
 import javax.validation.constraints.*;
-import lombok.Builder;
-import lombok.Getter;
+
+import lombok.*;
 
 @Getter
 @Builder
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor(access = AccessLevel.PROTECTED)
 public class CreatePostRequest {
 
   @NotBlank(message = "제목을 입력해주세요.")
