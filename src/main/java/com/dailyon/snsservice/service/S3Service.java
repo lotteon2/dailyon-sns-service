@@ -18,14 +18,9 @@ public class S3Service {
 
   private final AmazonS3 amazonS3;
 
-  public String getPreSignedUrl(String bucket, String prefix, String fileName) {
-    String uniqueFileName = generateUniqueFileName(fileName);
-
-    if (!prefix.isEmpty()) {
-      uniqueFileName = prefix + "/" + uniqueFileName;
-    }
+  public String getPreSignedUrl(String bucket, String filePath) {
     GeneratePresignedUrlRequest generatePresignedUrlRequest =
-        getGeneratePreSignedUrlRequest(bucket, uniqueFileName);
+        getGeneratePreSignedUrlRequest(bucket, filePath);
 
     return amazonS3.generatePresignedUrl(generatePresignedUrlRequest).toString();
   }
@@ -47,9 +42,5 @@ public class S3Service {
     expTimeMillis += 1000 * 60 * 5;
     expiration.setTime(expTimeMillis);
     return expiration;
-  }
-
-  private String generateUniqueFileName(String filename) {
-    return UUID.randomUUID() + filename;
   }
 }

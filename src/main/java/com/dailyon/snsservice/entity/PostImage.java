@@ -2,10 +2,13 @@ package com.dailyon.snsservice.entity;
 
 import com.dailyon.snsservice.entity.common.BaseEntity;
 import lombok.*;
+import org.hibernate.annotations.BatchSize;
 
 import javax.persistence.*;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Getter
 @Entity
@@ -27,8 +30,9 @@ public class PostImage extends BaseEntity {
       mappedBy = "postImage",
       fetch = FetchType.LAZY,
       cascade = {CascadeType.PERSIST, CascadeType.REMOVE})
+  @BatchSize(size = 100)
   @Builder.Default
-  private List<PostImageProductDetail> postImageProductDetails = new ArrayList<>();
+  private Set<PostImageProductDetail> postImageProductDetails = new HashSet<>();
 
   @Column(name = "thumbnail_img_url", nullable = false)
   private String thumbnailImgUrl;
@@ -37,7 +41,7 @@ public class PostImage extends BaseEntity {
   private String imgUrl;
 
   public static PostImage createPostImage(
-      String thumbnailImgUrl, String imgUrl, List<PostImageProductDetail> postImageProductDetails) {
+      String thumbnailImgUrl, String imgUrl, Set<PostImageProductDetail> postImageProductDetails) {
     PostImage postImage =
         PostImage.builder()
             .thumbnailImgUrl(thumbnailImgUrl)
@@ -47,6 +51,7 @@ public class PostImage extends BaseEntity {
     postImageProductDetails.forEach(pipd -> pipd.setPostImage(postImage));
     return postImage;
   }
+
 
   public void setPost(Post post) {
     this.post = post;
