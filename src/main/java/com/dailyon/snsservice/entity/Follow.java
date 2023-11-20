@@ -1,9 +1,8 @@
 package com.dailyon.snsservice.entity;
 
 import com.dailyon.snsservice.entity.ids.FollowId;
-import lombok.*;
-
 import javax.persistence.*;
+import lombok.*;
 
 @Getter
 @Entity

@@ -1,26 +1,36 @@
 package com.dailyon.snsservice.entity;
 
-import lombok.*;
-
+import com.dailyon.snsservice.entity.common.BaseEntity;
+import java.util.List;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
+import javax.persistence.OneToMany;
+import lombok.*;
 
 @Getter
 @Entity
 @Builder(access = AccessLevel.PRIVATE)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Member {
+public class Member extends BaseEntity {
 
   @Id
   @Column(name = "id")
   private Long id;
 
+  @OneToMany(mappedBy = "follower")
+  private List<Follow> followers;
+
+  @OneToMany(mappedBy = "following")
+  private List<Follow> following;
+
   @Column(name = "nickname", nullable = false)
   private String nickname;
 
-  @Column(name = "profile_img_url", columnDefinition = "varchar default '/member/default-profile-img.png'")
+  @Column(
+      name = "profile_img_url",
+      columnDefinition = "varchar default '/member/default-profile-img.png'")
   @Builder.Default
   private String profileImgUrl = "/member/default-profile-img.png";
 
