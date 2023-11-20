@@ -3,7 +3,8 @@ INSERT INTO member (id, nickname, profile_img_url, code, following_count, follow
 VALUES
     (1, 'JohnDoe', '/member/john-doe-profile.png', 'JD001', 20, 15),
     (2, 'AliceSmith', '/member/alice-smith-profile.png', 'AS002', 25, 18),
-    (3, 'BobJohnson', '/member/bob-johnson-profile.png', 'BJ003', 15, 22);
+    (3, 'BobJohnson', '/member/bob-johnson-profile.png', 'BJ003', 15, 22),
+    (4, 'BobJohnson', '/member/bob-johnson-profile.png', 'BJ003', 15, 22);
 
 -- Dummy data for the follow table
 INSERT INTO follow (follower_id, following_id)
