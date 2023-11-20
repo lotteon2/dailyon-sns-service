@@ -2,6 +2,7 @@ package com.dailyon.snsservice.service;
 
 import com.dailyon.snsservice.dto.request.post.CreateCommentRequest;
 import com.dailyon.snsservice.dto.request.post.CreateReplyCommentRequest;
+import com.dailyon.snsservice.dto.response.post.CommentPageResponse;
 import com.dailyon.snsservice.entity.Comment;
 import com.dailyon.snsservice.entity.Member;
 import com.dailyon.snsservice.entity.Post;
@@ -11,6 +12,8 @@ import com.dailyon.snsservice.repository.comment.CommentRepository;
 import com.dailyon.snsservice.repository.member.MemberJpaRepository;
 import com.dailyon.snsservice.repository.post.PostJpaRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -54,5 +57,10 @@ public class CommentService {
   @Transactional
   public void deleteCommentById(Long commentId) {
     commentRepository.deleteById(commentId);
+  }
+
+  public CommentPageResponse getComments(Long postId, Pageable pageable) {
+    Page<Comment> comments = commentRepository.findAllByPostId(postId, pageable);
+    return CommentPageResponse.fromEntity(comments);
   }
 }

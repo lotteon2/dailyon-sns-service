@@ -2,6 +2,7 @@ package com.dailyon.snsservice.service;
 
 import com.dailyon.snsservice.dto.request.post.CreateCommentRequest;
 import com.dailyon.snsservice.dto.request.post.CreateReplyCommentRequest;
+import com.dailyon.snsservice.dto.response.post.CommentPageResponse;
 import com.dailyon.snsservice.entity.Comment;
 import com.dailyon.snsservice.exception.CommentEntityNotFoundException;
 import com.dailyon.snsservice.repository.comment.CommentJpaRepository;
@@ -10,6 +11,8 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -75,5 +78,21 @@ class CommentServiceTest {
         CommentEntityNotFoundException.class, () -> commentRepository.findById(parentCommentId));
     assertThrowsExactly(
         CommentEntityNotFoundException.class, () -> commentRepository.findById(childCommentId));
+  }
+
+  @Test
+  @DisplayName("댓글 조회")
+  void getComments() {
+    // given
+    Long postId = 3L;
+    PageRequest pageRequest = PageRequest.of(0, 5, Sort.by(Sort.Direction.DESC, "createdAt"));
+
+    // when
+    CommentPageResponse commentPageResponse = commentService.getComments(postId, pageRequest);
+
+    // then
+    assertSame(2, commentPageResponse.getTotalPages());
+    assertSame(5, commentPageResponse.getComments().size());
+    assertSame(6L, commentPageResponse.getTotalElements());
   }
 }
