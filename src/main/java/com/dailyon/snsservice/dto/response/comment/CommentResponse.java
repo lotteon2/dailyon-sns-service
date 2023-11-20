@@ -1,5 +1,6 @@
-package com.dailyon.snsservice.dto.response.post;
+package com.dailyon.snsservice.dto.response.comment;
 
+import com.dailyon.snsservice.dto.response.member.MemberResponse;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.*;
 

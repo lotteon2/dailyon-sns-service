@@ -1,4 +1,4 @@
-package com.dailyon.snsservice.dto.response.post;
+package com.dailyon.snsservice.dto.response.postlike;
 
 import java.util.List;
 import java.util.stream.Collectors;

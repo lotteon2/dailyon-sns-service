@@ -1,11 +1,10 @@
 package com.dailyon.snsservice.service;
 
-import com.dailyon.snsservice.dto.request.post.CreateCommentRequest;
-import com.dailyon.snsservice.dto.request.post.CreateReplyCommentRequest;
-import com.dailyon.snsservice.dto.response.post.CommentPageResponse;
+import com.dailyon.snsservice.dto.request.comment.CreateCommentRequest;
+import com.dailyon.snsservice.dto.request.comment.CreateReplyCommentRequest;
+import com.dailyon.snsservice.dto.response.comment.CommentPageResponse;
 import com.dailyon.snsservice.entity.Comment;
 import com.dailyon.snsservice.exception.CommentEntityNotFoundException;
-import com.dailyon.snsservice.repository.comment.CommentJpaRepository;
 import com.dailyon.snsservice.repository.comment.CommentRepository;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

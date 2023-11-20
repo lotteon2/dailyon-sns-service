@@ -1,4 +1,4 @@
-package com.dailyon.snsservice.dto.response.post;
+package com.dailyon.snsservice.dto.response.member;
 
 import lombok.*;
 
@@ -6,8 +6,9 @@ import lombok.*;
 @Builder
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PROTECTED)
-public class PostLikeResponse {
+public class MemberResponse {
 
   private Long id;
-  private String thumbnailImgUrl;
+  private String nickname;
+  private String profileImgUrl;
 }

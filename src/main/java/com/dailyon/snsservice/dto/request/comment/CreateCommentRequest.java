@@ -1,4 +1,4 @@
-package com.dailyon.snsservice.dto.request.post;
+package com.dailyon.snsservice.dto.request.comment;
 
 
 import lombok.*;

@@ -3,7 +3,7 @@ package com.dailyon.snsservice.controller.rest;
 import com.dailyon.snsservice.dto.request.post.CreatePostRequest;
 import com.dailyon.snsservice.dto.request.post.UpdatePostRequest;
 import com.dailyon.snsservice.dto.response.post.CreatePostResponse;
-import com.dailyon.snsservice.dto.response.post.PostLikePageResponse;
+import com.dailyon.snsservice.dto.response.postlike.PostLikePageResponse;
 import com.dailyon.snsservice.dto.response.post.PostPageResponse;
 import com.dailyon.snsservice.dto.response.post.UpdatePostResponse;
 import com.dailyon.snsservice.service.PostService;
