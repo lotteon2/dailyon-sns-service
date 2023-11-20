@@ -9,16 +9,15 @@ import com.dailyon.snsservice.entity.*;
 import com.dailyon.snsservice.exception.MemberEntityNotFoundException;
 import com.dailyon.snsservice.repository.member.MemberRepository;
 import com.dailyon.snsservice.repository.post.PostRepository;
+import java.util.List;
+import java.util.Set;
+import java.util.UUID;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.List;
-import java.util.Set;
-import java.util.UUID;
-import java.util.stream.Collectors;
 
 @Service
 @Transactional(readOnly = true)
@@ -88,7 +87,7 @@ public class PostService {
   @Transactional
   public UpdatePostResponse updatePost(Long id, UpdatePostRequest updatePostRequest) {
     Post post = postRepository.findByIdForUpdate(id);
-    post.updatePost(updatePostRequest);
+    post.updatePostAndPostImageProductDetail(updatePostRequest);
 
     String thumbnailImgPreSignedUrl =
         s3Service.getPreSignedUrl(STATIC_IMG_BUCKET, post.getPostImage().getThumbnailImgUrl());

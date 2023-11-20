@@ -52,7 +52,6 @@ public class PostImage extends BaseEntity {
     return postImage;
   }
 
-
   public void setPost(Post post) {
     this.post = post;
   }

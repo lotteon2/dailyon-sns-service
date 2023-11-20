@@ -43,6 +43,14 @@ public class PostImageProductDetail extends BaseEntity {
         .build();
   }
 
+  public void updatePostImageProductDetail(
+      Long productId, String productSize, Double leftGapPercent, Double topGapPercent) {
+    this.productId = productId;
+    this.productSize = productSize;
+    this.leftGapPercent = leftGapPercent;
+    this.topGapPercent = topGapPercent;
+  }
+
   public void setPostImage(PostImage postImage) {
     this.postImage = postImage;
   }

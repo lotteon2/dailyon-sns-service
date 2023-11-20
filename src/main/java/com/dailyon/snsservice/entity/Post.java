@@ -2,12 +2,11 @@ package com.dailyon.snsservice.entity;
 
 import com.dailyon.snsservice.dto.request.post.UpdatePostRequest;
 import com.dailyon.snsservice.entity.common.BaseEntity;
-import lombok.*;
-
-import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
+import javax.persistence.*;
+import lombok.*;
 
 @Getter
 @Entity
@@ -21,7 +20,7 @@ public class Post extends BaseEntity {
   @Column(name = "id")
   private Long id;
 
-  @OneToOne
+  @OneToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "member_id")
   private Member member;
 
@@ -91,16 +90,30 @@ public class Post extends BaseEntity {
     return post;
   }
 
-//  public Post updatePost(UpdatePostRequest updatePostRequest) {
-//    this.title = updatePostRequest.getTitle();
-//    this.description = updatePostRequest.getDescription();
-//    this.hashTags.clear();
-//    this.hashTags =
-//        updatePostRequest.getHashTagNames().stream()
-//            .map(HashTag::createHashTag)
-//            .collect(Collectors.toList());
-//
-//  }
+  public void updatePostAndPostImageProductDetail(UpdatePostRequest updatePostRequest) {
+    this.title = updatePostRequest.getTitle();
+    this.description = updatePostRequest.getDescription();
+    for (int i = 0; i < updatePostRequest.getHashTagNames().size(); i++) {
+      this.hashTags.get(i).setName(updatePostRequest.getHashTagNames().get(i));
+    }
+    this.postImage
+        .getPostImageProductDetails()
+        .forEach(
+            existingDetail -> {
+              updatePostRequest
+                  .getPostImageProductDetails()
+                  .forEach(
+                      updatedDetail -> {
+                        if (existingDetail.getId().equals(updatedDetail.getId())) {
+                          existingDetail.updatePostImageProductDetail(
+                              updatedDetail.getProductId(),
+                              updatedDetail.getProductSize(),
+                              updatedDetail.getLeftGapPercent(),
+                              updatedDetail.getTopGapPercent());
+                        }
+                      });
+            });
+  }
 
   public void addViewCount(Integer count) {
     this.viewCount += count;
