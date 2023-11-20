@@ -4,6 +4,7 @@ import com.dailyon.snsservice.entity.common.BaseEntity;
 import lombok.*;
 
 import javax.persistence.*;
+import javax.validation.constraints.Size;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -42,6 +43,7 @@ public class Post extends BaseEntity {
   @Column(name = "title", nullable = false)
   private String title;
 
+  @Size(max = 300)
   @Column(name = "description")
   private String description;
 
