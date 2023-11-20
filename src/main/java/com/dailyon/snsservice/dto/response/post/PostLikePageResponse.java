@@ -4,12 +4,13 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import com.dailyon.snsservice.entity.Post;
-import lombok.Builder;
-import lombok.Getter;
+import lombok.*;
 import org.springframework.data.domain.Page;
 
 @Getter
 @Builder
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor(access = AccessLevel.PROTECTED)
 public class PostLikePageResponse {
 
   private Boolean hasNext;

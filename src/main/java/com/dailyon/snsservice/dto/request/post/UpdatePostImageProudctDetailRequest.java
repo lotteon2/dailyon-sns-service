@@ -1,13 +1,14 @@
 package com.dailyon.snsservice.dto.request.post;
 
-import lombok.Builder;
-import lombok.Getter;
+import lombok.*;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 
 @Getter
 @Builder
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor(access = AccessLevel.PROTECTED)
 public class UpdatePostImageProudctDetailRequest {
 
     @NotNull(message = "태그된 상품 id를 등록해주세요.")

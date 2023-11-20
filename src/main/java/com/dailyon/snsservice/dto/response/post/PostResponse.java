@@ -1,12 +1,12 @@
 package com.dailyon.snsservice.dto.response.post;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-import lombok.AccessLevel;
-import lombok.Builder;
-import lombok.Getter;
+import lombok.*;
 
 @Getter
 @Builder
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor(access = AccessLevel.PROTECTED)
 public class PostResponse {
 
   private Long id;
