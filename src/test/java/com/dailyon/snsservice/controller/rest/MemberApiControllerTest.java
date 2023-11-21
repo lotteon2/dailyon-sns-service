@@ -47,4 +47,26 @@ class MemberApiControllerTest {
         .andExpect(MockMvcResultMatchers.jsonPath("member.followerCount").isNumber())
         .andExpect(MockMvcResultMatchers.jsonPath("member.isFollowing").isBoolean());
   }
+
+  @Test
+  @DisplayName("OOTD 사용자 게시글 조회")
+  void getOOTDPosts() throws Exception {
+    // given
+    Long memberId = 2L;
+    Long targetId = 1L;
+
+    // when
+    ResultActions resultActions =
+        mockMvc
+            .perform(get("/members/{memberId}/posts", targetId).header("memberId", memberId))
+            .andExpect(MockMvcResultMatchers.status().isOk())
+            .andExpect(
+                MockMvcResultMatchers.content().contentType(MediaType.APPLICATION_JSON_VALUE));
+
+    // then
+    resultActions
+        .andExpect(MockMvcResultMatchers.jsonPath("hasNext").isBoolean())
+        .andExpect(MockMvcResultMatchers.jsonPath("$.posts[0].id").isNumber())
+        .andExpect(MockMvcResultMatchers.jsonPath("$.posts[0].thumbnailImgUrl").isString());
+  }
 }
