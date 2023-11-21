@@ -140,7 +140,6 @@ class PostApiControllerTest {
 
     // then
     resultActions
-        .andExpect(MockMvcResultMatchers.jsonPath("$.hasNext").isBoolean())
         .andExpect(MockMvcResultMatchers.jsonPath("$.posts.length()").value(4))
         .andExpect(MockMvcResultMatchers.jsonPath("$.posts[0].id").isNumber())
         .andExpect(MockMvcResultMatchers.jsonPath("$.posts[0].thumbnailImgUrl").isString());

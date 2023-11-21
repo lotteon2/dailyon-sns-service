@@ -38,7 +38,6 @@ public interface PostJpaRepository extends JpaRepository<Post, Long> {
   @Query("select p from Post p " +
           "join fetch p.postImage pi " +
           "join fetch pi.postImageProductDetails pipd " +
-          "where pipd.productId = :productId " +
-          "order by p.likeCount desc ")
+          "where pipd.productId = :productId")
   List<Post> findTop4ByOrderByLikeCountDesc(Long productId, Pageable pageable);
 }
