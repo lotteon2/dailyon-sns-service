@@ -3,22 +3,11 @@ package com.dailyon.snsservice.controller.rest;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 
-import com.dailyon.snsservice.dto.request.post.CreatePostImageProductDetailRequest;
-import com.dailyon.snsservice.dto.request.post.CreatePostRequest;
 import com.dailyon.snsservice.entity.*;
-import java.util.List;
-import java.util.Set;
-import java.util.UUID;
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
-
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
@@ -126,8 +115,32 @@ class PostApiControllerTest {
 
     // then
     resultActions
-        .andExpect(MockMvcResultMatchers.jsonPath("$.hasNext").isBoolean())
         .andExpect(MockMvcResultMatchers.jsonPath("$.posts.length()").value(1))
+        .andExpect(MockMvcResultMatchers.jsonPath("$.posts[0].id").isNumber())
+        .andExpect(MockMvcResultMatchers.jsonPath("$.posts[0].thumbnailImgUrl").isString());
+  }
+
+  @Test
+  @DisplayName("Top 4 게시글 목록 조회")
+  void getTop4OOTDPosts() throws Exception {
+    // given
+    Long productId = 101L;
+    Long memberId = 1L;
+
+    // when
+    ResultActions resultActions =
+        mockMvc
+            .perform(
+                get("/top4-posts")
+                    .header("memberId", memberId)
+                    .queryParam("productId", productId.toString()))
+            .andExpect(MockMvcResultMatchers.status().isOk())
+            .andExpect(
+                MockMvcResultMatchers.content().contentType(MediaType.APPLICATION_JSON_VALUE));
+
+    // then
+    resultActions
+        .andExpect(MockMvcResultMatchers.jsonPath("$.posts.length()").value(4))
         .andExpect(MockMvcResultMatchers.jsonPath("$.posts[0].id").isNumber())
         .andExpect(MockMvcResultMatchers.jsonPath("$.posts[0].thumbnailImgUrl").isString());
   }

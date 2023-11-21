@@ -4,6 +4,8 @@ import com.dailyon.snsservice.entity.Post;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
+import java.util.List;
+
 public interface PostRepository {
 
   Post findByIdForUpdate(Long id);
@@ -17,4 +19,6 @@ public interface PostRepository {
   Page<Post> findAllWithPostLike(Long memberId, Pageable pageable);
 
   Page<Post> findAllByMemberId(Long memberId, Pageable pageable);
+
+  List<Post> findTop4ByOrderByLikeCountDesc(Long productId);
 }

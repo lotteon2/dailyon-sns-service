@@ -5,20 +5,16 @@ import static org.junit.jupiter.api.Assertions.*;
 import com.dailyon.snsservice.entity.*;
 import java.util.List;
 import java.util.Set;
-import java.util.UUID;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.jdbc.Sql;
 import org.springframework.transaction.annotation.Transactional;
 
 @SpringBootTest
@@ -123,5 +119,24 @@ class PostRepositoryTest {
     assertFalse(posts.hasNext());
     assertSame(1, posts.getTotalPages());
     assertSame(6, posts.getContent().size());
+  }
+
+  @Test
+  @DisplayName("OOTD top4 게시글 목록 조회")
+  void findTop4() {
+    // given
+    Long productId = 101L;
+
+    // given, when
+    List<Post> posts = postRepository.findTop4ByOrderByLikeCountDesc(productId);
+
+    // then
+    assertSame(4, posts.size());
+    posts.forEach(
+        post ->
+            post.getPostImage()
+                .getPostImageProductDetails()
+                .forEach(pipd -> assertSame(productId, pipd.getProductId())));
+    assertTrue(posts.get(0).getLikeCount() >= posts.get(1).getLikeCount());
   }
 }

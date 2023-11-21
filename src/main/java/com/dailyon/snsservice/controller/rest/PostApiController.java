@@ -3,6 +3,7 @@ package com.dailyon.snsservice.controller.rest;
 import com.dailyon.snsservice.dto.request.post.CreatePostRequest;
 import com.dailyon.snsservice.dto.request.post.UpdatePostRequest;
 import com.dailyon.snsservice.dto.response.post.CreatePostResponse;
+import com.dailyon.snsservice.dto.response.post.Top4OOTDResponse;
 import com.dailyon.snsservice.dto.response.postlike.PostLikePageResponse;
 import com.dailyon.snsservice.dto.response.post.PostPageResponse;
 import com.dailyon.snsservice.dto.response.post.UpdatePostResponse;
@@ -16,14 +17,16 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-@RequestMapping("/posts")
+import java.util.List;
+import java.util.Map;
+
 @RestController
 @RequiredArgsConstructor
 public class PostApiController {
 
   private final PostService postService;
 
-  @PostMapping
+  @PostMapping("/posts")
   public ResponseEntity<CreatePostResponse> createPost(
       @RequestHeader(name = "memberId") Long memberId,
       @Valid @RequestBody CreatePostRequest createPostRequest) {
@@ -31,7 +34,7 @@ public class PostApiController {
     return ResponseEntity.status(HttpStatus.CREATED).body(createPostResponse);
   }
 
-  @GetMapping
+  @GetMapping("/posts")
   public ResponseEntity<PostPageResponse> getPosts(
       @RequestHeader(name = "memberId", required = false) Long memberId,
       @PageableDefault(
@@ -44,7 +47,7 @@ public class PostApiController {
     return ResponseEntity.ok(postPageResponse);
   }
 
-  @PutMapping("/{postId}")
+  @PutMapping("/posts/{postId}")
   public ResponseEntity<UpdatePostResponse> updatePost(
       @RequestHeader(name = "memberId") Long memberId,
       @PathVariable("postId") Long postId,
@@ -53,14 +56,14 @@ public class PostApiController {
     return ResponseEntity.ok(updatePostResponse);
   }
 
-  @DeleteMapping("/{postId}")
+  @DeleteMapping("/posts/{postId}")
   public ResponseEntity<Void> deletePost(
       @RequestHeader(name = "memberId") Long memberId, @PathVariable("postId") Long postId) {
     postService.softDeletePost(postId);
     return ResponseEntity.ok().build();
   }
 
-  @GetMapping("/likes")
+  @GetMapping("/posts/likes")
   public ResponseEntity<PostLikePageResponse> getPostLikes(
       @RequestHeader(name = "memberId") Long memberId,
       @PageableDefault(
@@ -71,5 +74,13 @@ public class PostApiController {
           Pageable pageable) {
     PostLikePageResponse postLikePageResponse = postService.getPostLikes(memberId, pageable);
     return ResponseEntity.ok(postLikePageResponse);
+  }
+
+  @GetMapping("/top4-posts")
+  public ResponseEntity<Map<String, List<Top4OOTDResponse>>> getTop4OOTDPosts(
+          @RequestHeader(name = "memberId", required = false) Long memberId,
+          @RequestParam(name = "productId") Long productId) {
+    List<Top4OOTDResponse> top4OOTDResponses = postService.getTop4OOTDPosts(productId);
+    return ResponseEntity.ok(Map.of("posts", top4OOTDResponses));
   }
 }

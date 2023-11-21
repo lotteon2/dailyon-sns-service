@@ -2,11 +2,8 @@ package com.dailyon.snsservice.service;
 
 import com.dailyon.snsservice.dto.request.post.CreatePostRequest;
 import com.dailyon.snsservice.dto.request.post.UpdatePostRequest;
-import com.dailyon.snsservice.dto.response.post.CreatePostResponse;
-import com.dailyon.snsservice.dto.response.post.OOTDPostPageResponse;
+import com.dailyon.snsservice.dto.response.post.*;
 import com.dailyon.snsservice.dto.response.postlike.PostLikePageResponse;
-import com.dailyon.snsservice.dto.response.post.PostPageResponse;
-import com.dailyon.snsservice.dto.response.post.UpdatePostResponse;
 import com.dailyon.snsservice.entity.*;
 import com.dailyon.snsservice.exception.MemberEntityNotFoundException;
 import com.dailyon.snsservice.repository.member.MemberJpaRepository;
@@ -114,5 +111,10 @@ public class PostService {
   public OOTDPostPageResponse getOOTDPosts(Long memberId, Pageable pageable) {
     Page<Post> posts = postRepository.findAllByMemberId(memberId, pageable);
     return OOTDPostPageResponse.fromEntity(posts);
+  }
+
+  public List<Top4OOTDResponse> getTop4OOTDPosts(Long productId) {
+    List<Post> posts = postRepository.findTop4ByOrderByLikeCountDesc(productId);
+    return posts.stream().map(Top4OOTDResponse::fromEntity).collect(Collectors.toList());
   }
 }
