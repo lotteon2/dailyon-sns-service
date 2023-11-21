@@ -108,4 +108,20 @@ class PostRepositoryTest {
     assertSame(1, posts.getTotalPages());
     assertSame(1, posts.getContent().size());
   }
+
+  @Test
+  @DisplayName("사용자 게시글 목록 조회")
+  void findAllByMemberId() {
+    // given
+    Long memberId = 1L;
+    PageRequest pageRequest = PageRequest.of(0, 8, Sort.by(Sort.Direction.DESC, "createdAt"));
+
+    // when
+    Page<Post> posts = postRepository.findAllByMemberId(memberId, pageRequest);
+
+    // then
+    assertFalse(posts.hasNext());
+    assertSame(1, posts.getTotalPages());
+    assertSame(6, posts.getContent().size());
+  }
 }

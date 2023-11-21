@@ -71,6 +71,11 @@ public class PostRepositoryImpl implements PostRepository {
     return postJpaRepository.findAllWithPostLikeByMemberId(memberId, pageable);
   }
 
+  @Override
+  public Page<Post> findAllByMemberId(Long memberId, Pageable pageable) {
+    return postJpaRepository.findAllByMemberId(memberId, pageable);
+  }
+
   private Long getTotalPageCount() {
     return jpaQueryFactory.select(post.count()).from(post).fetchOne();
   }
