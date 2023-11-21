@@ -1,5 +1,6 @@
 package com.dailyon.snsservice.service;
 
+import com.dailyon.snsservice.dto.response.post.OOTDPostPageResponse;
 import com.dailyon.snsservice.dto.response.postlike.PostLikePageResponse;
 import com.dailyon.snsservice.dto.response.post.PostPageResponse;
 import org.junit.jupiter.api.DisplayName;
@@ -65,6 +66,21 @@ class PostServiceTest {
     // then
     assertFalse(postLikePageResponse.getHasNext());
     assertSame(1, postLikePageResponse.getPosts().size());
+  }
+
+  @Test
+  @DisplayName("OOTD 게시글 목록 조회")
+  void getOOTDPosts() {
+    // given
+    Long memberId = 1L;
+    PageRequest pageRequest = PageRequest.of(0, 8, Sort.by(Sort.Direction.DESC, "createdAt"));
+
+    // when
+    OOTDPostPageResponse ootdPostPageResponse = postService.getOOTDPosts(memberId, pageRequest);
+
+    // then
+    assertSame(6, ootdPostPageResponse.getPosts().size());
+    assertFalse(ootdPostPageResponse.getHasNext());
   }
 
   //  @Test

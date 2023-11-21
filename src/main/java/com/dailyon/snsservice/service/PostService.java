@@ -3,6 +3,7 @@ package com.dailyon.snsservice.service;
 import com.dailyon.snsservice.dto.request.post.CreatePostRequest;
 import com.dailyon.snsservice.dto.request.post.UpdatePostRequest;
 import com.dailyon.snsservice.dto.response.post.CreatePostResponse;
+import com.dailyon.snsservice.dto.response.post.OOTDPostPageResponse;
 import com.dailyon.snsservice.dto.response.postlike.PostLikePageResponse;
 import com.dailyon.snsservice.dto.response.post.PostPageResponse;
 import com.dailyon.snsservice.dto.response.post.UpdatePostResponse;
@@ -108,5 +109,10 @@ public class PostService {
   public PostLikePageResponse getPostLikes(Long memberId, Pageable pageable) {
     Page<Post> posts = postRepository.findAllWithPostLike(memberId, pageable);
     return PostLikePageResponse.fromEntity(posts);
+  }
+
+  public OOTDPostPageResponse getOOTDPosts(Long memberId, Pageable pageable) {
+    Page<Post> posts = postRepository.findAllByMemberId(memberId, pageable);
+    return OOTDPostPageResponse.fromEntity(posts);
   }
 }
