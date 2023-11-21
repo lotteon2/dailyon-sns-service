@@ -1,6 +1,7 @@
 package com.dailyon.snsservice.repository.member;
 
 import com.dailyon.snsservice.dto.response.follow.FollowerResponse;
+import com.dailyon.snsservice.dto.response.member.OOTDMemberProfileResponse;
 import com.dailyon.snsservice.entity.Member;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -51,5 +52,35 @@ class MemberRepositoryTest {
     // then
     assertSame(1, followerResponses.getTotalPages());
     assertSame(2L, followerResponses.getTotalElements());
+  }
+
+  @Test
+  @DisplayName("OOTD 사용자 프로필 조회 - 팔로잉 O")
+  void findOOTDMemberProfile1() {
+    // given
+    Long memberId = 2L;
+    Long followerId = 1L;
+
+    // when
+
+    OOTDMemberProfileResponse ootdMemberProfile = memberRepository.findOOTDMemberProfile(memberId, followerId);
+
+    // then
+    assertTrue(ootdMemberProfile.getIsFollowing());
+  }
+
+  @Test
+  @DisplayName("OOTD 사용자 프로필 조회 - 팔로잉 X")
+  void findOOTDMemberProfile2() {
+    // given
+    Long memberId = 1L;
+    Long followerId = 3L;
+
+    // when
+
+    OOTDMemberProfileResponse ootdMemberProfile = memberRepository.findOOTDMemberProfile(memberId, followerId);
+
+    // then
+    assertFalse(ootdMemberProfile.getIsFollowing());
   }
 }
