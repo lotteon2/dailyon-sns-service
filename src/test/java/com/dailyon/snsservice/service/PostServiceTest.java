@@ -1,8 +1,12 @@
 package com.dailyon.snsservice.service;
 
+import static org.junit.jupiter.api.Assertions.*;
+
 import com.dailyon.snsservice.dto.response.post.OOTDPostPageResponse;
-import com.dailyon.snsservice.dto.response.postlike.PostLikePageResponse;
 import com.dailyon.snsservice.dto.response.post.PostPageResponse;
+import com.dailyon.snsservice.dto.response.post.Top4OOTDResponse;
+import com.dailyon.snsservice.dto.response.postlike.PostLikePageResponse;
+import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,8 +15,6 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.transaction.annotation.Transactional;
-
-import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
 @Transactional
@@ -81,6 +83,19 @@ class PostServiceTest {
     // then
     assertSame(6, ootdPostPageResponse.getPosts().size());
     assertFalse(ootdPostPageResponse.getHasNext());
+  }
+
+  @Test
+  @DisplayName("OOTD Top4 게시글 목록 조회")
+  void getTop4OOTDPosts() {
+    // given
+    Long productId = 101L;
+
+    // when
+    List<Top4OOTDResponse> top4OOTDResponses = postService.getTop4OOTDPosts(productId);
+
+    // then
+    assertSame(4, top4OOTDResponses.size());
   }
 
   //  @Test
