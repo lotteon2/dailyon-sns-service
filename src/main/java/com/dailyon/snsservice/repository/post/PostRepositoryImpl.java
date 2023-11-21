@@ -13,13 +13,9 @@ import com.querydsl.jpa.impl.JPAQueryFactory;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import java.util.Optional;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.*;
 import org.springframework.stereotype.Repository;
 
 @Repository
@@ -74,6 +70,12 @@ public class PostRepositoryImpl implements PostRepository {
   @Override
   public Page<Post> findAllByMemberId(Long memberId, Pageable pageable) {
     return postJpaRepository.findAllByMemberId(memberId, pageable);
+  }
+
+  @Override
+  public List<Post> findTop4ByOrderByLikeCountDesc(Long productId) {
+    PageRequest pageRequest = PageRequest.of(0, 4, Sort.by(Sort.Direction.DESC, "likeCount"));
+    return postJpaRepository.findTop4ByOrderByLikeCountDesc(productId, pageRequest);
   }
 
   private Long getTotalPageCount() {
