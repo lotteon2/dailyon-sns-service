@@ -1,5 +1,6 @@
 package com.dailyon.snsservice.controller.rest;
 
+import com.dailyon.snsservice.dto.response.follow.FollowerPageResponse;
 import com.dailyon.snsservice.dto.response.follow.FollowingPageResponse;
 import com.dailyon.snsservice.service.FollowService;
 import com.dailyon.snsservice.service.MemberService;
@@ -29,6 +30,19 @@ public class FollowApiController {
           Pageable pageable) {
     FollowingPageResponse followingPageResponse = memberService.getFollowings(memberId, pageable);
     return ResponseEntity.ok(followingPageResponse);
+  }
+
+  @GetMapping("/followers")
+  public ResponseEntity<FollowerPageResponse> getFollowers(
+      @RequestHeader(name = "memberId") Long memberId,
+      @PageableDefault(
+              page = 0,
+              size = 5,
+              sort = {"createdAt"},
+              direction = Sort.Direction.DESC)
+          Pageable pageable) {
+    FollowerPageResponse followerPageResponse = memberService.getFollowers(memberId, pageable);
+    return ResponseEntity.ok(followerPageResponse);
   }
 
   @PutMapping("/{followingId}")
