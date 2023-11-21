@@ -3,6 +3,7 @@ package com.dailyon.snsservice.service;
 import com.dailyon.snsservice.dto.response.follow.FollowerPageResponse;
 import com.dailyon.snsservice.dto.response.follow.FollowerResponse;
 import com.dailyon.snsservice.dto.response.follow.FollowingPageResponse;
+import com.dailyon.snsservice.dto.response.member.OOTDMemberProfileResponse;
 import com.dailyon.snsservice.entity.Member;
 import com.dailyon.snsservice.repository.member.MemberRepository;
 import lombok.RequiredArgsConstructor;
@@ -31,5 +32,9 @@ public class MemberService {
         .totalElements(followerResponses.getTotalElements())
         .followers(followerResponses.getContent())
         .build();
+  }
+
+  public OOTDMemberProfileResponse getOOTDMemberProfile(Long memberId, Long followerId) {
+    return memberRepository.findOOTDMemberProfile(memberId, followerId);
   }
 }
