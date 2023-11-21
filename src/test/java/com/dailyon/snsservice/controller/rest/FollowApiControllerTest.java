@@ -30,7 +30,7 @@ class FollowApiControllerTest {
     // given
     Long memberId = 1L;
     Integer page = 0;
-    Integer size = 8;
+    Integer size = 5;
     String sort = "createdAt";
 
     // when
@@ -54,6 +54,39 @@ class FollowApiControllerTest {
         .andExpect(MockMvcResultMatchers.jsonPath("$.followings[0].id").isNumber())
         .andExpect(MockMvcResultMatchers.jsonPath("$.followings[0].nickname").isString())
         .andExpect(MockMvcResultMatchers.jsonPath("$.followings[0].profileImgUrl").isString());
+  }
+
+  @Test
+  @DisplayName("팔로워 목록 조회")
+  void getFollowers() throws Exception {
+    // given
+    Long memberId = 2L;
+    Integer page = 0;
+    Integer size = 5;
+    String sort = "createdAt";
+
+    // when
+    ResultActions resultActions =
+            mockMvc
+                    .perform(
+                            get("/follows/followers")
+                                    .header("memberId", memberId)
+                                    .queryParam("page", page.toString())
+                                    .queryParam("size", size.toString())
+                                    .queryParam("sort", sort))
+                    .andExpect(MockMvcResultMatchers.status().isOk())
+                    .andExpect(
+                            MockMvcResultMatchers.content().contentType(MediaType.APPLICATION_JSON_VALUE));
+
+    // then
+    resultActions
+            .andExpect(MockMvcResultMatchers.jsonPath("$.totalPages").isNumber())
+            .andExpect(MockMvcResultMatchers.jsonPath("$.totalElements").isNumber())
+            .andExpect(MockMvcResultMatchers.jsonPath("$.followers.length()").value(2))
+            .andExpect(MockMvcResultMatchers.jsonPath("$.followers[0].id").isNumber())
+            .andExpect(MockMvcResultMatchers.jsonPath("$.followers[0].nickname").isString())
+            .andExpect(MockMvcResultMatchers.jsonPath("$.followers[0].profileImgUrl").isString())
+            .andExpect(MockMvcResultMatchers.jsonPath("$.followers[0].isFollowing").isBoolean());
   }
 
   @Test
