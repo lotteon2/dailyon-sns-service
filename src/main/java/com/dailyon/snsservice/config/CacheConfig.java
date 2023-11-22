@@ -31,8 +31,7 @@ public class CacheConfig {
 
   @Bean
   public RedisCacheConfiguration redisCacheConfiguration(ObjectMapper objectMapper) {
-    return RedisCacheConfiguration.defaultCacheConfig(
-            Thread.currentThread().getContextClassLoader())
+    return RedisCacheConfiguration.defaultCacheConfig()
         .entryTtl(Duration.ofSeconds(600))
         .disableCachingNullValues()
         .serializeKeysWith(
@@ -52,8 +51,7 @@ public class CacheConfig {
     return (builder ->
         builder.withCacheConfiguration(
             "postCount",
-            RedisCacheConfiguration.defaultCacheConfig(
-                    Thread.currentThread().getContextClassLoader())
+            RedisCacheConfiguration.defaultCacheConfig()
                 .entryTtl(Duration.ofDays(1))
                 .disableCachingNullValues()
                 .serializeKeysWith(
