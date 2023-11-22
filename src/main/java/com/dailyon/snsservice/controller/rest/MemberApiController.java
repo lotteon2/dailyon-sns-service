@@ -2,10 +2,10 @@ package com.dailyon.snsservice.controller.rest;
 
 import com.dailyon.snsservice.dto.response.member.OOTDMemberProfileResponse;
 import com.dailyon.snsservice.dto.response.post.OOTDPostPageResponse;
-import com.dailyon.snsservice.service.MemberService;
+import com.dailyon.snsservice.service.member.MemberService;
 import java.util.Map;
 
-import com.dailyon.snsservice.service.PostService;
+import com.dailyon.snsservice.service.post.PostService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;

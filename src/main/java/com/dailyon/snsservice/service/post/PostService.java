@@ -1,17 +1,22 @@
-package com.dailyon.snsservice.service;
+package com.dailyon.snsservice.service.post;
 
 import com.dailyon.snsservice.dto.request.post.CreatePostRequest;
 import com.dailyon.snsservice.dto.request.post.UpdatePostRequest;
 import com.dailyon.snsservice.dto.response.post.*;
 import com.dailyon.snsservice.dto.response.postlike.PostLikePageResponse;
 import com.dailyon.snsservice.entity.*;
-import com.dailyon.snsservice.exception.MemberEntityNotFoundException;
-import com.dailyon.snsservice.repository.member.MemberJpaRepository;
+import com.dailyon.snsservice.mapper.hashtag.HashTagMapper;
+import com.dailyon.snsservice.mapper.post.PostMapper;
+import com.dailyon.snsservice.mapper.postimage.PostImageMapper;
+import com.dailyon.snsservice.mapper.postimageproductdetail.PostImageProductDetailMapper;
 import com.dailyon.snsservice.repository.post.PostRepository;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
+
+import com.dailyon.snsservice.service.s3.S3Service;
+import com.dailyon.snsservice.service.member.MemberReader;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -26,8 +31,12 @@ public class PostService {
   private static final String STATIC_IMG_BUCKET = "dailyon-static-dev";
   private static final String POST_STATIC_IMG_BUCKET_PREFIX = "post-img";
 
-  private final MemberJpaRepository memberJpaRepository;
   private final PostRepository postRepository;
+  private final PostImageProductDetailMapper postImageProductDetailMapper;
+  private final PostMapper postMapper;
+  private final PostImageMapper postImageMapper;
+  private final HashTagMapper hashTagMapper;
+  private final MemberReader memberReader;
   private final S3Service s3Service;
 
   public PostPageResponse getPosts(Long memberId, Pageable pageable) {
@@ -37,40 +46,18 @@ public class PostService {
 
   @Transactional
   public CreatePostResponse createPost(Long memberId, CreatePostRequest createPostRequest) {
-    Member member =
-        memberJpaRepository.findById(memberId).orElseThrow(MemberEntityNotFoundException::new);
-
     String thumbnailImgUrl = POST_STATIC_IMG_BUCKET_PREFIX + "/" + UUID.randomUUID();
     String imgUrl = POST_STATIC_IMG_BUCKET_PREFIX + "/" + UUID.randomUUID();
 
+    // 게시글 엔티티 생성
+    Member member = memberReader.read(memberId);
     Set<PostImageProductDetail> postImageProductDetails =
-        createPostRequest.getPostImageProductDetails().stream()
-            .map(
-                pipd ->
-                    PostImageProductDetail.createPostImageProductDetail(
-                        pipd.getProductId(),
-                        pipd.getProductSize(),
-                        pipd.getLeftGapPercent(),
-                        pipd.getTopGapPercent()))
-            .collect(Collectors.toSet());
-
+        postImageProductDetailMapper.createPostImageProductDetails(
+            createPostRequest.getPostImageProductDetails());
     PostImage postImage =
-        PostImage.createPostImage(thumbnailImgUrl, imgUrl, postImageProductDetails);
-
-    List<HashTag> hashTags =
-        createPostRequest.getHashTagNames().stream()
-            .map(HashTag::createHashTag)
-            .collect(Collectors.toList());
-
-    Post post =
-        Post.createPost(
-            member,
-            createPostRequest.getTitle(),
-            createPostRequest.getDescription(),
-            createPostRequest.getStature(),
-            createPostRequest.getWeight(),
-            postImage,
-            hashTags);
+        postImageMapper.createPostImage(thumbnailImgUrl, imgUrl, postImageProductDetails);
+    List<HashTag> hashTags = hashTagMapper.createHashTags(createPostRequest.getHashTagNames());
+    Post post = postMapper.createPost(createPostRequest, member, postImage, hashTags);
 
     postRepository.save(post);
 

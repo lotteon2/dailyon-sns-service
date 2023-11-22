@@ -1,4 +1,4 @@
-package com.dailyon.snsservice.service;
+package com.dailyon.snsservice.service.member;
 
 import com.dailyon.snsservice.dto.response.follow.FollowerPageResponse;
 import com.dailyon.snsservice.dto.response.follow.FollowerResponse;

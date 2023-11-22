@@ -1,12 +1,13 @@
 package com.dailyon.snsservice.repository.post;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 
 import com.dailyon.snsservice.entity.*;
+import com.dailyon.snsservice.exception.MemberEntityNotFoundException;
+import com.dailyon.snsservice.repository.member.MemberJpaRepository;
 import java.util.List;
 import java.util.Set;
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,8 +23,8 @@ import org.springframework.transaction.annotation.Transactional;
 @ActiveProfiles(value = {"test"})
 class PostRepositoryTest {
 
-  @PersistenceContext private EntityManager em;
   @Autowired private PostRepository postRepository;
+  @Autowired private MemberJpaRepository memberJpaRepository;
 
   @Test
   @DisplayName("게시글 목록 조회 - 미인증")
@@ -61,32 +62,32 @@ class PostRepositoryTest {
     // given
     Long memberId = 1L;
     Member member =
-        em.createQuery("select m from Member m where m.id = :memberId", Member.class)
-            .setParameter("memberId", memberId)
-            .getSingleResult();
-    Set<PostImageProductDetail> postImageProductDetails =
-        Set.of(PostImageProductDetail.createPostImageProductDetail(1L, "size", 10.0, 10.0));
+        memberJpaRepository.findById(memberId).orElseThrow(MemberEntityNotFoundException::new);
 
+    PostImageProductDetail postImageProductDetail =
+        PostImageProductDetail.createPostImageProductDetail(1L, "size", 10.0, 10.0);
+    Set<PostImageProductDetail> postImageProductDetails = Set.of(postImageProductDetail);
     PostImage postImage =
         PostImage.createPostImage(
             "/images/thumbnail.png", "/images/img.png", postImageProductDetails);
-
     List<HashTag> hashTags = List.of(HashTag.createHashTag("태그 1"));
-
     Post post = Post.createPost(member, "post 1", "post desc 1", 5.6, 150.0, postImage, hashTags);
 
     // when
     Post savedPost = postRepository.save(post);
 
     // then
-    assertEquals(post.getTitle(), savedPost.getTitle());
-    assertEquals(post.getDescription(), savedPost.getDescription());
-    assertEquals(
-        post.getPostImage().getThumbnailImgUrl(), savedPost.getPostImage().getThumbnailImgUrl());
-    assertEquals(post.getPostImage().getImgUrl(), savedPost.getPostImage().getImgUrl());
-    assertEquals(
-        post.getPostImage().getPostImageProductDetails().size(),
-        savedPost.getPostImage().getPostImageProductDetails().size());
+    assertThat(savedPost.getId()).isNotNull();
+    assertThat(savedPost.getTitle()).isEqualTo(post.getTitle());
+    assertThat(savedPost.getDescription()).isEqualTo(post.getDescription());
+    assertThat(savedPost.getPostImage().getThumbnailImgUrl())
+        .isEqualTo(post.getPostImage().getThumbnailImgUrl());
+    assertThat(savedPost.getPostImage().getImgUrl()).isEqualTo(post.getPostImage().getImgUrl());
+    assertThat(savedPost.getPostImage().getPostImageProductDetails().size())
+        .isSameAs(post.getPostImage().getPostImageProductDetails().size());
+    assertThat(savedPost.getPostImage().getPostImageProductDetails())
+        .isNotEmpty()
+        .containsExactlyInAnyOrder(postImageProductDetail);
   }
 
   @Test
