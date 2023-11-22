@@ -1,12 +1,10 @@
 package com.dailyon.snsservice.controller.rest;
 
-import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 
 import com.dailyon.snsservice.dto.request.post.CreatePostImageProductDetailRequest;
 import com.dailyon.snsservice.dto.request.post.CreatePostRequest;
-import com.dailyon.snsservice.entity.*;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.List;
 import org.junit.jupiter.api.DisplayName;
@@ -198,7 +196,7 @@ class PostApiControllerTest {
   }
 
   @Test
-  @DisplayName("게시글 등록 - 썸네일 이미지 미등록")
+  @DisplayName("게시글 등록 - 검증 에러")
   void createPostWithoutProperty() throws Exception {
     // given
     Long memberId = 1L;
