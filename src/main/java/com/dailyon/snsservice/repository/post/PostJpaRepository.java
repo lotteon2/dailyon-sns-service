@@ -35,9 +35,10 @@ public interface PostJpaRepository extends JpaRepository<Post, Long> {
       countQuery = "select count(p) from Post p where p.member.id = :memberId")
   Page<Post> findAllByMemberId(Long memberId, Pageable pageable);
 
-  @Query("select p from Post p " +
-          "join fetch p.postImage pi " +
-          "join fetch pi.postImageProductDetails pipd " +
-          "where pipd.productId = :productId")
+  @Query(
+      "select p from Post p "
+          + "join fetch p.postImage pi "
+          + "join fetch pi.postImageProductDetails pipd "
+          + "where pipd.productId = :productId")
   List<Post> findTop4ByOrderByLikeCountDesc(Long productId, Pageable pageable);
 }

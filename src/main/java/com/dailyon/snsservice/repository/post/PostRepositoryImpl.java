@@ -45,6 +45,7 @@ public class PostRepositoryImpl implements PostRepository {
                       post.postImage.thumbnailImgUrl,
                       post.likeCount,
                       post.viewCount,
+                      post.commentCount,
                       new CaseBuilder()
                           .when(postLike.member.id.eq(memberId))
                           .then(true)
@@ -60,7 +61,8 @@ public class PostRepositoryImpl implements PostRepository {
                       post.id,
                       post.postImage.thumbnailImgUrl,
                       post.likeCount,
-                      post.viewCount))
+                      post.viewCount,
+                      post.commentCount))
               .from(post);
     }
 

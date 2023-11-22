@@ -2,10 +2,9 @@ package com.dailyon.snsservice.repository.post;
 
 import com.dailyon.snsservice.dto.response.post.PostResponse;
 import com.dailyon.snsservice.entity.Post;
+import java.util.List;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-
-import java.util.List;
 
 public interface PostRepository {
 

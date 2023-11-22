@@ -9,10 +9,14 @@ import com.dailyon.snsservice.mapper.hashtag.HashTagMapper;
 import com.dailyon.snsservice.mapper.post.PostMapper;
 import com.dailyon.snsservice.mapper.postimage.PostImageMapper;
 import com.dailyon.snsservice.mapper.postimageproductdetail.PostImageProductDetailMapper;
+import com.dailyon.snsservice.repository.post.PostRedisRepository;
 import com.dailyon.snsservice.repository.post.PostRepository;
 import com.dailyon.snsservice.service.member.MemberReader;
 import com.dailyon.snsservice.service.s3.S3Service;
+import com.dailyon.snsservice.vo.PostCountVO;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -31,6 +35,7 @@ public class PostService {
   private static final String POST_STATIC_IMG_BUCKET_PREFIX = "post-img";
 
   private final PostRepository postRepository;
+  private final PostRedisRepository postRedisRepository;
   private final PostImageProductDetailMapper postImageProductDetailMapper;
   private final PostMapper postMapper;
   private final PostImageMapper postImageMapper;
@@ -40,6 +45,30 @@ public class PostService {
 
   public PostPageResponse getPosts(Long memberId, Pageable pageable) {
     Page<PostResponse> postResponses = postRepository.findAllWithIsLike(memberId, pageable);
+    postResponses.getContent().forEach(
+        postResponse -> {
+          try {
+            // get count from cache
+            PostCountVO postCountVO =
+                postRedisRepository.findPostCountVO(String.valueOf(postResponse.getId()));
+            // cache hit
+            if (Objects.nonNull(postCountVO)) {
+              postResponse.setViewCount(postCountVO.getViewCount());
+              postResponse.setLikeCount(postCountVO.getLikeCount());
+            }
+            // cache miss
+            else {
+              postRedisRepository.putPostCountVO(
+                  postResponse.getId().toString(),
+                  new PostCountVO(
+                      postResponse.getViewCount(),
+                      postResponse.getLikeCount(),
+                      postResponse.getCommentCount()));
+            }
+          } catch (JsonProcessingException e) {
+            throw new RuntimeException(e);
+          }
+        });
     return PostPageResponse.fromDto(postResponses);
   }
 
