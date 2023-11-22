@@ -94,6 +94,7 @@ class PostApiControllerTest {
         .andExpect(jsonPath("$.posts[0].thumbnailImgUrl").isString())
         .andExpect(jsonPath("$.posts[0].likeCount").isNumber())
         .andExpect(jsonPath("$.posts[0].viewCount").isNumber())
+        .andExpect(jsonPath("$.posts[0].isLike").exists())
         .andExpect(jsonPath("$.posts[0].isLike").isBoolean());
   }
 
@@ -151,95 +152,95 @@ class PostApiControllerTest {
         .andExpect(jsonPath("$.posts[0].thumbnailImgUrl").isString());
   }
 
-//  @Test
-//  @DisplayName("게시글 등록")
-//  void createPost() throws Exception {
-//    // given
-//    Long memberId = 1L;
-//    CreatePostRequest createPostRequest =
-//        CreatePostRequest.builder()
-//            .title("post title")
-//            .description("post description")
-//            .stature(180.0)
-//            .weight(80.0)
-//            .hashTagNames(List.of("태그 1", "태그 2", "태그 3"))
-//            .isPostThumbnailImgExists(true)
-//            .isPostImgExists(true)
-//            .postImageProductDetails(
-//                List.of(
-//                    CreatePostImageProductDetailRequest.builder()
-//                        .productId(1L)
-//                        .productSize("XL")
-//                        .leftGapPercent(40.0)
-//                        .topGapPercent(30.0)
-//                        .build()))
-//            .build();
-//
-//    String requestBody = objectMapper.writeValueAsString(createPostRequest);
-//
-//    // when
-//    ResultActions resultActions =
-//        mockMvc
-//            .perform(
-//                post("/posts")
-//                    .header("memberId", memberId)
-//                    .contentType(MediaType.APPLICATION_JSON_VALUE)
-//                    .content(requestBody))
-//            .andExpect(MockMvcResultMatchers.status().isCreated())
-//            .andExpect(
-//                MockMvcResultMatchers.content().contentType(MediaType.APPLICATION_JSON_VALUE));
-//
-//    // then
-//    resultActions
-//        .andExpect(jsonPath("$.thumbnailImgPreSignedUrl").isString())
-//        .andExpect(jsonPath("$.imgPreSignedUrl").isString());
-//  }
-//
-//  @Test
-//  @DisplayName("게시글 등록 - 검증 에러")
-//  void createPostWithoutProperty() throws Exception {
-//    // given
-//    Long memberId = 1L;
-//    CreatePostRequest createPostRequest =
-//        CreatePostRequest.builder()
-//            .title("제목")
-//            .description("post description")
-//            .stature(180.0)
-//            .weight(80.0)
-//            .hashTagNames(List.of())
-//            .isPostImgExists(false)
-//            .postImageProductDetails(
-//                List.of(
-//                    CreatePostImageProductDetailRequest.builder()
-//                        .productId(1L)
-//                        .productSize("XL")
-//                        .topGapPercent(30.0)
-//                        .build()))
-//            .build();
-//
-//    String requestBody = objectMapper.writeValueAsString(createPostRequest);
-//
-//    // when
-//    ResultActions resultActions =
-//        mockMvc
-//            .perform(
-//                post("/posts")
-//                    .header("memberId", memberId)
-//                    .contentType(MediaType.APPLICATION_JSON_VALUE)
-//                    .content(requestBody))
-//            .andExpect(MockMvcResultMatchers.status().isBadRequest())
-//            .andExpect(
-//                MockMvcResultMatchers.content().contentType(MediaType.APPLICATION_JSON_VALUE));
-//
-//    // then
-//    resultActions
-//        .andExpect(jsonPath("$.message").value("잘못된 요청입니다."))
-//        .andExpect(jsonPath("$.validation.title").value("제목은 최소 5글자 이상 최대 50글자 이하로 입력 가능합니다."))
-//        .andExpect(jsonPath("$.validation.isPostThumbnailImgExists").value("썸네일 이미지를 등록해주세요."))
-//        .andExpect(jsonPath("$.validation.isPostImgExists").value("이미지를 등록해주세요."))
-//        .andExpect(jsonPath("$.validation.hashTagNames").value("해시태그는 최소 1개 이상 입력해야 합니다."))
-//        .andExpect(
-//            jsonPath("$..['postImageProductDetails[0].leftGapPercent']")
-//                .value("태그된 상품의 위치를 등록해주세요."));
-//  }
+  //  @Test
+  //  @DisplayName("게시글 등록")
+  //  void createPost() throws Exception {
+  //    // given
+  //    Long memberId = 1L;
+  //    CreatePostRequest createPostRequest =
+  //        CreatePostRequest.builder()
+  //            .title("post title")
+  //            .description("post description")
+  //            .stature(180.0)
+  //            .weight(80.0)
+  //            .hashTagNames(List.of("태그 1", "태그 2", "태그 3"))
+  //            .isPostThumbnailImgExists(true)
+  //            .isPostImgExists(true)
+  //            .postImageProductDetails(
+  //                List.of(
+  //                    CreatePostImageProductDetailRequest.builder()
+  //                        .productId(1L)
+  //                        .productSize("XL")
+  //                        .leftGapPercent(40.0)
+  //                        .topGapPercent(30.0)
+  //                        .build()))
+  //            .build();
+  //
+  //    String requestBody = objectMapper.writeValueAsString(createPostRequest);
+  //
+  //    // when
+  //    ResultActions resultActions =
+  //        mockMvc
+  //            .perform(
+  //                post("/posts")
+  //                    .header("memberId", memberId)
+  //                    .contentType(MediaType.APPLICATION_JSON_VALUE)
+  //                    .content(requestBody))
+  //            .andExpect(MockMvcResultMatchers.status().isCreated())
+  //            .andExpect(
+  //                MockMvcResultMatchers.content().contentType(MediaType.APPLICATION_JSON_VALUE));
+  //
+  //    // then
+  //    resultActions
+  //        .andExpect(jsonPath("$.thumbnailImgPreSignedUrl").isString())
+  //        .andExpect(jsonPath("$.imgPreSignedUrl").isString());
+  //  }
+  //
+  //  @Test
+  //  @DisplayName("게시글 등록 - 검증 에러")
+  //  void createPostWithoutProperty() throws Exception {
+  //    // given
+  //    Long memberId = 1L;
+  //    CreatePostRequest createPostRequest =
+  //        CreatePostRequest.builder()
+  //            .title("제목")
+  //            .description("post description")
+  //            .stature(180.0)
+  //            .weight(80.0)
+  //            .hashTagNames(List.of())
+  //            .isPostImgExists(false)
+  //            .postImageProductDetails(
+  //                List.of(
+  //                    CreatePostImageProductDetailRequest.builder()
+  //                        .productId(1L)
+  //                        .productSize("XL")
+  //                        .topGapPercent(30.0)
+  //                        .build()))
+  //            .build();
+  //
+  //    String requestBody = objectMapper.writeValueAsString(createPostRequest);
+  //
+  //    // when
+  //    ResultActions resultActions =
+  //        mockMvc
+  //            .perform(
+  //                post("/posts")
+  //                    .header("memberId", memberId)
+  //                    .contentType(MediaType.APPLICATION_JSON_VALUE)
+  //                    .content(requestBody))
+  //            .andExpect(MockMvcResultMatchers.status().isBadRequest())
+  //            .andExpect(
+  //                MockMvcResultMatchers.content().contentType(MediaType.APPLICATION_JSON_VALUE));
+  //
+  //    // then
+  //    resultActions
+  //        .andExpect(jsonPath("$.message").value("잘못된 요청입니다."))
+  //        .andExpect(jsonPath("$.validation.title").value("제목은 최소 5글자 이상 최대 50글자 이하로 입력 가능합니다."))
+  //        .andExpect(jsonPath("$.validation.isPostThumbnailImgExists").value("썸네일 이미지를 등록해주세요."))
+  //        .andExpect(jsonPath("$.validation.isPostImgExists").value("이미지를 등록해주세요."))
+  //        .andExpect(jsonPath("$.validation.hashTagNames").value("해시태그는 최소 1개 이상 입력해야 합니다."))
+  //        .andExpect(
+  //            jsonPath("$..['postImageProductDetails[0].leftGapPercent']")
+  //                .value("태그된 상품의 위치를 등록해주세요."));
+  //  }
 }
