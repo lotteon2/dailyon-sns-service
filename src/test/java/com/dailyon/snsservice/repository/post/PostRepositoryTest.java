@@ -3,11 +3,14 @@ package com.dailyon.snsservice.repository.post;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 
+import com.dailyon.snsservice.dto.response.post.PostResponse;
 import com.dailyon.snsservice.entity.*;
 import com.dailyon.snsservice.exception.MemberEntityNotFoundException;
 import com.dailyon.snsservice.repository.member.MemberJpaRepository;
 import java.util.List;
 import java.util.Set;
+
+import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,11 +37,12 @@ class PostRepositoryTest {
     PageRequest pageRequest = PageRequest.of(0, 8, Sort.by(Sort.Direction.DESC, "viewCount"));
 
     // when
-    Page<Post> posts = postRepository.findAllWithIsLike(memberId, pageRequest);
+    Page<PostResponse> posts = postRepository.findAllWithIsLike(memberId, pageRequest);
 
     // then
-    assertSame(16L, posts.getTotalElements());
-    assertSame(2, posts.getTotalPages());
+    assertThat(posts.getTotalElements()).isSameAs(16L);
+    assertThat(posts.getTotalPages()).isSameAs(2);
+    posts.getContent().forEach(p -> assertThat(p.getIsLike()).isNull());
   }
 
   @Test
@@ -49,11 +53,12 @@ class PostRepositoryTest {
     PageRequest pageRequest = PageRequest.of(0, 8, Sort.by(Sort.Direction.DESC, "viewCount"));
 
     // when
-    Page<Post> posts = postRepository.findAllWithIsLike(memberId, pageRequest);
+    Page<PostResponse> posts = postRepository.findAllWithIsLike(memberId, pageRequest);
 
     // then
     assertSame(16L, posts.getTotalElements());
     assertSame(2, posts.getTotalPages());
+    posts.getContent().forEach(p -> assertThat(p.getIsLike()).isNotNull());
   }
 
   @Test

@@ -1,5 +1,6 @@
 package com.dailyon.snsservice.repository.post;
 
+import com.dailyon.snsservice.dto.response.post.PostResponse;
 import com.dailyon.snsservice.entity.Post;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -10,7 +11,7 @@ public interface PostRepository {
 
   Post findByIdForUpdate(Long id);
 
-  Page<Post> findAllWithIsLike(Long memberId, Pageable pageable);
+  Page<PostResponse> findAllWithIsLike(Long memberId, Pageable pageable);
 
   Post save(Post post);
 
