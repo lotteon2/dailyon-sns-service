@@ -10,13 +10,12 @@ import com.dailyon.snsservice.mapper.post.PostMapper;
 import com.dailyon.snsservice.mapper.postimage.PostImageMapper;
 import com.dailyon.snsservice.mapper.postimageproductdetail.PostImageProductDetailMapper;
 import com.dailyon.snsservice.repository.post.PostRepository;
+import com.dailyon.snsservice.service.member.MemberReader;
+import com.dailyon.snsservice.service.s3.S3Service;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
-
-import com.dailyon.snsservice.service.s3.S3Service;
-import com.dailyon.snsservice.service.member.MemberReader;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -40,8 +39,8 @@ public class PostService {
   private final S3Service s3Service;
 
   public PostPageResponse getPosts(Long memberId, Pageable pageable) {
-    Page<Post> posts = postRepository.findAllWithIsLike(memberId, pageable);
-    return PostPageResponse.fromEntity(memberId, posts);
+    Page<PostResponse> postResponses = postRepository.findAllWithIsLike(memberId, pageable);
+    return PostPageResponse.fromDto(postResponses);
   }
 
   @Transactional
