@@ -7,7 +7,7 @@ import com.dailyon.snsservice.dto.response.post.Top4OOTDResponse;
 import com.dailyon.snsservice.dto.response.postlike.PostLikePageResponse;
 import com.dailyon.snsservice.dto.response.post.PostPageResponse;
 import com.dailyon.snsservice.dto.response.post.UpdatePostResponse;
-import com.dailyon.snsservice.service.PostService;
+import com.dailyon.snsservice.service.post.PostService;
 import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;

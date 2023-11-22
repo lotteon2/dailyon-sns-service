@@ -3,7 +3,7 @@ package com.dailyon.snsservice.controller.rest;
 import com.dailyon.snsservice.dto.response.follow.FollowerPageResponse;
 import com.dailyon.snsservice.dto.response.follow.FollowingPageResponse;
 import com.dailyon.snsservice.service.FollowService;
-import com.dailyon.snsservice.service.MemberService;
+import com.dailyon.snsservice.service.member.MemberService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
