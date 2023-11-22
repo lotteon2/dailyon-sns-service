@@ -1,16 +1,13 @@
-package com.dailyon.snsservice.service;
+package com.dailyon.snsservice.service.s3;
 
 import com.amazonaws.HttpMethod;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.Headers;
 import com.amazonaws.services.s3.model.CannedAccessControlList;
 import com.amazonaws.services.s3.model.GeneratePresignedUrlRequest;
-import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Service;
-
 import java.util.Date;
-import java.util.UUID;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
@@ -21,7 +18,6 @@ public class S3Service {
   public String getPreSignedUrl(String bucket, String filePath) {
     GeneratePresignedUrlRequest generatePresignedUrlRequest =
         getGeneratePreSignedUrlRequest(bucket, filePath);
-
     return amazonS3.generatePresignedUrl(generatePresignedUrlRequest).toString();
   }
 
