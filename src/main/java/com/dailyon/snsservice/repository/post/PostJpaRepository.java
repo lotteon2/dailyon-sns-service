@@ -29,8 +29,9 @@ public interface PostJpaRepository extends JpaRepository<Post, Long> {
           "select p from Post p "
               + "join fetch p.postImage pi "
               + "join fetch p.postLikes pl "
-              + "where p.member.id = :memberId",
-      countQuery = "select count(p) from Post p where p.member.id = :memberId")
+              + "where p.member.id = :memberId and p.isDeleted = false",
+      countQuery =
+          "select count(p) from Post p where p.member.id = :memberId and p.isDeleted = false")
   Page<Post> findAllWithPostLikeByMemberId(Long memberId, Pageable pageable);
 
   @Query(
