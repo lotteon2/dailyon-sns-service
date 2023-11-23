@@ -3,10 +3,14 @@ package com.dailyon.snsservice.repository.post;
 import com.dailyon.snsservice.entity.Post;
 import java.util.List;
 import java.util.Optional;
+
+import com.dailyon.snsservice.vo.PostCountVO;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 @Repository
@@ -35,9 +39,20 @@ public interface PostJpaRepository extends JpaRepository<Post, Long> {
       countQuery = "select count(p) from Post p where p.member.id = :memberId")
   Page<Post> findAllByMemberId(Long memberId, Pageable pageable);
 
-  @Query("select p from Post p " +
-          "join fetch p.postImage pi " +
-          "join fetch pi.postImageProductDetails pipd " +
-          "where pipd.productId = :productId")
+  @Query(
+      "select p from Post p "
+          + "join fetch p.postImage pi "
+          + "join fetch pi.postImageProductDetails pipd "
+          + "where pipd.productId = :productId")
   List<Post> findTop4ByOrderByLikeCountDesc(Long productId, Pageable pageable);
+
+  // 트랜잭션이 COMMIT 될 때 영속성 컨텍스트를 flush
+  // JPQL 연산이 끝난 후 영속성 컨텍스트를 비워줌
+  @Modifying(clearAutomatically = true, flushAutomatically = true)
+  @Query("update Post p set p.viewCount = :viewCount, p.likeCount = :likeCount, p.commentCount = :commentCount where p.id = :id")
+  int updateCountsById(
+      @Param("id") Long id,
+      @Param("viewCount") Integer viewCount,
+      @Param("likeCount") Integer likeCount,
+      @Param("commentCount") Integer commentCount);
 }
