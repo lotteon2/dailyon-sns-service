@@ -1,4 +1,4 @@
-package com.dailyon.snsservice.service;
+package com.dailyon.snsservice.service.postlike;
 
 import com.dailyon.snsservice.repository.postlike.PostLikeRepository;
 import lombok.RequiredArgsConstructor;

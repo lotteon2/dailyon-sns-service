@@ -3,6 +3,7 @@ package com.dailyon.snsservice.service;
 import com.dailyon.snsservice.entity.PostLike;
 import com.dailyon.snsservice.entity.ids.PostLikeId;
 import com.dailyon.snsservice.repository.postlike.PostLikeJpaRepository;
+import com.dailyon.snsservice.service.postlike.PostLikeService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;

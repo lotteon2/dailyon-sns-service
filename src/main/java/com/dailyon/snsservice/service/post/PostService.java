@@ -73,8 +73,18 @@ public class PostService {
 
   @Transactional
   public CreatePostResponse createPost(Long memberId, CreatePostRequest createPostRequest) {
-    String thumbnailImgUrl = POST_STATIC_IMG_BUCKET_PREFIX + "/" + UUID.randomUUID();
-    String imgUrl = POST_STATIC_IMG_BUCKET_PREFIX + "/" + UUID.randomUUID();
+    String thumbnailImgUrl =
+        String.format(
+            "/%s/%s.%s",
+            POST_STATIC_IMG_BUCKET_PREFIX,
+            UUID.randomUUID(),
+            createPostRequest.getPostThumbnailImgName().split("\\.")[1]);
+    String imgUrl =
+        String.format(
+            "/%s/%s.%s",
+            POST_STATIC_IMG_BUCKET_PREFIX,
+            UUID.randomUUID(),
+            createPostRequest.getPostImgName().split("\\.")[1]);
 
     // 게시글 엔티티 생성
     Member member = memberReader.read(memberId);
