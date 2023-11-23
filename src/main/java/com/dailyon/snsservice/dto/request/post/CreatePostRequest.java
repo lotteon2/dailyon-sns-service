@@ -3,7 +3,6 @@ package com.dailyon.snsservice.dto.request.post;
 import java.util.List;
 import javax.validation.Valid;
 import javax.validation.constraints.*;
-
 import lombok.*;
 
 @Getter
@@ -25,14 +24,13 @@ public class CreatePostRequest {
   @NotEmpty(message = "해시태그는 최소 1개 이상 입력해야 합니다.")
   private List<String> hashTagNames;
 
-  @NotNull(message = "썸네일 이미지를 등록해주세요.")
-  @AssertTrue(message = "썸네일 이미지를 등록해주세요.")
-  private Boolean isPostThumbnailImgExists;
+  @NotBlank(message = "썸네일 이미지를 등록해주세요.")
+  private String postThumbnailImgName;
 
-  @NotNull(message = "이미지를 등록해주세요.")
-  @AssertTrue(message = "이미지를 등록해주세요.")
-  private Boolean isPostImgExists;
+  @NotBlank(message = "이미지를 등록해주세요.")
+  private String postImgName;
 
   @Valid
+  @Size(max = 5, message = "상품 상세는 최대 5개까지 태그 가능합니다.")
   private List<CreatePostImageProductDetailRequest> postImageProductDetails;
 }

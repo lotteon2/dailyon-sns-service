@@ -1,6 +1,6 @@
 package com.dailyon.snsservice.controller.rest;
 
-import com.dailyon.snsservice.service.PostLikeService;
+import com.dailyon.snsservice.service.postlike.PostLikeService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;

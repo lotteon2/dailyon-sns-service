@@ -246,8 +246,8 @@ class PostApiControllerTest {
   //    resultActions
   //        .andExpect(jsonPath("$.message").value("잘못된 요청입니다."))
   //        .andExpect(jsonPath("$.validation.title").value("제목은 최소 5글자 이상 최대 50글자 이하로 입력 가능합니다."))
-  //        .andExpect(jsonPath("$.validation.isPostThumbnailImgExists").value("썸네일 이미지를 등록해주세요."))
-  //        .andExpect(jsonPath("$.validation.isPostImgExists").value("이미지를 등록해주세요."))
+  //        .andExpect(jsonPath("$.validation.postThumbnailImgName").value("썸네일 이미지를 등록해주세요."))
+  //        .andExpect(jsonPath("$.validation.postImgName").value("이미지를 등록해주세요."))
   //        .andExpect(jsonPath("$.validation.hashTagNames").value("해시태그는 최소 1개 이상 입력해야 합니다."))
   //        .andExpect(
   //            jsonPath("$..['postImageProductDetails[0].leftGapPercent']")
