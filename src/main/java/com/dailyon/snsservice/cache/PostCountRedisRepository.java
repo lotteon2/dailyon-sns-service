@@ -1,4 +1,4 @@
-package com.dailyon.snsservice.repository.post;
+package com.dailyon.snsservice.cache;
 
 import com.dailyon.snsservice.vo.PostCountVO;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -16,7 +16,7 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 @RequiredArgsConstructor
-public class PostRedisRepository {
+public class PostCountRedisRepository {
 
   private final RedisTemplate<String, String> redisTemplate;
   private final ObjectMapper objectMapper;

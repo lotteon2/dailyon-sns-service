@@ -9,7 +9,7 @@ import com.dailyon.snsservice.mapper.hashtag.HashTagMapper;
 import com.dailyon.snsservice.mapper.post.PostMapper;
 import com.dailyon.snsservice.mapper.postimage.PostImageMapper;
 import com.dailyon.snsservice.mapper.postimageproductdetail.PostImageProductDetailMapper;
-import com.dailyon.snsservice.repository.post.PostRedisRepository;
+import com.dailyon.snsservice.cache.PostCountRedisRepository;
 import com.dailyon.snsservice.repository.post.PostRepository;
 import com.dailyon.snsservice.service.member.MemberReader;
 import com.dailyon.snsservice.service.s3.S3Service;
@@ -35,7 +35,7 @@ public class PostService {
   private static final String POST_STATIC_IMG_BUCKET_PREFIX = "post-img";
 
   private final PostRepository postRepository;
-  private final PostRedisRepository postRedisRepository;
+  private final PostCountRedisRepository postCountRedisRepository;
   private final PostImageProductDetailMapper postImageProductDetailMapper;
   private final PostMapper postMapper;
   private final PostImageMapper postImageMapper;
@@ -57,7 +57,7 @@ public class PostService {
                         postResponse.getLikeCount(),
                         postResponse.getCommentCount());
                 PostCountVO cachedPostCountVO =
-                    postRedisRepository.findOrPutPostCountVO(
+                    postCountRedisRepository.findOrPutPostCountVO(
                         String.valueOf(postResponse.getId()), DBPostCountVO);
 
                 if (Objects.nonNull(cachedPostCountVO)) {
@@ -126,11 +126,11 @@ public class PostService {
   @Transactional
   public void softDeletePost(Long id, Long memberId) {
     postRepository.softDeleteById(id, memberId);
-    postRedisRepository.deletePostCountVO(String.valueOf(id));
+    postCountRedisRepository.deletePostCountVO(String.valueOf(id));
   }
 
   public PostLikePageResponse getPostLikes(Long memberId, Pageable pageable) {
-    Page<Post> posts = postRepository.findAllWithPostLike(memberId, pageable);
+    Page<Post> posts = postRepository.findAllWithPostLikeByMemberIdIn(memberId, pageable);
     return PostLikePageResponse.fromEntity(posts);
   }
 

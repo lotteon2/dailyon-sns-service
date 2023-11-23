@@ -1,8 +1,8 @@
 package com.dailyon.snsservice.repository.post;
 
 import static org.assertj.core.api.Assertions.*;
-import static org.junit.jupiter.api.Assertions.*;
 
+import com.dailyon.snsservice.cache.PostCountRedisRepository;
 import com.dailyon.snsservice.dto.response.post.PostResponse;
 import com.dailyon.snsservice.vo.PostCountVO;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -23,9 +23,9 @@ import org.springframework.transaction.annotation.Transactional;
 @SpringBootTest
 @Transactional
 @ActiveProfiles(value = {"test"})
-class PostRedisRepositoryTest {
+class PostCountRedisRepositoryTest {
 
-  @Autowired private PostRedisRepository postRedisRepository;
+  @Autowired private PostCountRedisRepository postCountRedisRepository;
   @Autowired private PostRepository postRepository;
   @Autowired private RedisTemplate<String, String> redisTemplate;
 
@@ -51,7 +51,7 @@ class PostRedisRepositoryTest {
                         postResponse.getLikeCount(),
                         postResponse.getCommentCount());
                 PostCountVO cachedPostCountVO =
-                    postRedisRepository.findOrPutPostCountVO(
+                    postCountRedisRepository.findOrPutPostCountVO(
                         String.valueOf(postResponse.getId()), DBPostCountVO);
                 assertThat(cachedPostCountVO.getViewCount()).isNotNull();
                 assertThat(cachedPostCountVO.getLikeCount()).isNotNull();
@@ -80,7 +80,7 @@ class PostRedisRepositoryTest {
                         postResponse.getViewCount(),
                         postResponse.getLikeCount(),
                         postResponse.getCommentCount());
-                postRedisRepository.findOrPutPostCountVO(
+                postCountRedisRepository.findOrPutPostCountVO(
                     String.valueOf(postResponse.getId()), DBPostCountVO);
 
               } catch (JsonProcessingException e) {
@@ -90,7 +90,7 @@ class PostRedisRepositoryTest {
 
     // when
     List<Map<String, PostCountVO>> postCountVOStore =
-        postRedisRepository.findPostCountVOs(cacheName);
+        postCountRedisRepository.findPostCountVOs(cacheName);
 
     // then
     assertThat(postCountVOStore.size()).isNotSameAs(0);
@@ -114,7 +114,7 @@ class PostRedisRepositoryTest {
     redisTemplate.opsForValue().set(String.format("postCount::%s", postId), stringValue);
 
     // when
-    postRedisRepository.deletePostCountVO(String.valueOf(postId));
+    postCountRedisRepository.deletePostCountVO(String.valueOf(postId));
 
     // then
     assertThat(redisTemplate.opsForValue().get(String.format("postCount::%s", postId))).isNull();
