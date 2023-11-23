@@ -1,6 +1,7 @@
 package com.dailyon.snsservice.controller.rest;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 
 import com.dailyon.snsservice.dto.request.comment.CreateCommentRequest;
 import com.dailyon.snsservice.dto.request.comment.CreateReplyCommentRequest;
@@ -52,28 +53,21 @@ class CommentApiControllerTest {
 
     // then
     resultActions
-        .andExpect(MockMvcResultMatchers.jsonPath("$.totalPages").isNumber())
-        .andExpect(MockMvcResultMatchers.jsonPath("$.totalPages").isNumber())
-        .andExpect(MockMvcResultMatchers.jsonPath("$.comments.length()").value(5))
-        .andExpect(MockMvcResultMatchers.jsonPath("$.comments[0].id").isNumber())
-        .andExpect(MockMvcResultMatchers.jsonPath("$.comments[0].description").isString())
-        .andExpect(MockMvcResultMatchers.jsonPath("$.comments[0].createdAt").isString())
-        .andExpect(MockMvcResultMatchers.jsonPath("$.comments[0].member.id").isNumber())
-        .andExpect(MockMvcResultMatchers.jsonPath("$.comments[0].member.nickname").isString())
-        .andExpect(MockMvcResultMatchers.jsonPath("$.comments[0].member.profileImgUrl").isString())
-        .andExpect(MockMvcResultMatchers.jsonPath("$.comments[0].replyComments[0].id").isNumber())
-        .andExpect(
-            MockMvcResultMatchers.jsonPath("$.comments[0].replyComments[0].description").isString())
-        .andExpect(
-            MockMvcResultMatchers.jsonPath("$.comments[0].replyComments[0].createdAt").isString())
-        .andExpect(
-            MockMvcResultMatchers.jsonPath("$.comments[0].replyComments[0].member.id").isNumber())
-        .andExpect(
-            MockMvcResultMatchers.jsonPath("$.comments[0].replyComments[0].member.nickname")
-                .isString())
-        .andExpect(
-            MockMvcResultMatchers.jsonPath("$.comments[0].replyComments[0].member.profileImgUrl")
-                .isString());
+        .andExpect(jsonPath("$.totalPages").isNumber())
+        .andExpect(jsonPath("$.totalPages").isNumber())
+        .andExpect(jsonPath("$.comments.length()").value(5))
+        .andExpect(jsonPath("$.comments[0].id").isNumber())
+        .andExpect(jsonPath("$.comments[0].description").isString())
+        .andExpect(jsonPath("$.comments[0].createdAt").isString())
+        .andExpect(jsonPath("$.comments[0].member.id").isNumber())
+        .andExpect(jsonPath("$.comments[0].member.nickname").isString())
+        .andExpect(jsonPath("$.comments[0].member.profileImgUrl").isString())
+        .andExpect(jsonPath("$.comments[0].replyComments[0].id").isNumber())
+        .andExpect(jsonPath("$.comments[0].replyComments[0].description").isString())
+        .andExpect(jsonPath("$.comments[0].replyComments[0].createdAt").isString())
+        .andExpect(jsonPath("$.comments[0].replyComments[0].member.id").isNumber())
+        .andExpect(jsonPath("$.comments[0].replyComments[0].member.nickname").isString())
+        .andExpect(jsonPath("$.comments[0].replyComments[0].member.profileImgUrl").isString());
   }
 
   @Test
@@ -82,19 +76,77 @@ class CommentApiControllerTest {
     // given
     Long memberId = 1L;
     Long postId = 1L;
+    String commentDescription = "댓글 123";
     CreateCommentRequest createCommentRequest =
-        CreateCommentRequest.builder().description("댓글 123").build();
+        CreateCommentRequest.builder().description(commentDescription).build();
 
     String requestBody = objectMapper.writeValueAsString(createCommentRequest);
 
-    // when, then
-    mockMvc
-        .perform(
+    // when
+    ResultActions resultActions =
+        mockMvc.perform(
             post("/posts/{postId}/comments", postId)
                 .header("memberId", memberId)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .content(requestBody))
-        .andExpect(MockMvcResultMatchers.status().isCreated());
+                .content(requestBody));
+
+    // then
+    resultActions.andExpect(MockMvcResultMatchers.status().isCreated());
+  }
+
+  @Test
+  @DisplayName("댓글 등록 - 범위를 벗어난 글자수")
+  void createCommentInValidRange() throws Exception {
+    // given
+    Long memberId = 1L;
+    Long postId = 1L;
+    String commentDescription = "댓글";
+    CreateCommentRequest createCommentRequest =
+        CreateCommentRequest.builder().description(commentDescription).build();
+
+    String requestBody = objectMapper.writeValueAsString(createCommentRequest);
+
+    // when
+    ResultActions resultActions =
+        mockMvc.perform(
+            post("/posts/{postId}/comments", postId)
+                .header("memberId", memberId)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .content(requestBody));
+
+    // then
+    resultActions
+        .andExpect(MockMvcResultMatchers.status().isBadRequest())
+        .andExpect(jsonPath("$.message").value("잘못된 요청입니다."))
+        .andExpect(
+            jsonPath("$.validation.description").value("댓글은 최소 5글자 이상 최대 140글자 이하로 입력 가능합니다."));
+  }
+
+  @Test
+  @DisplayName("댓글 등록 - 댓글 미입력")
+  void createCommentWithoutComment() throws Exception {
+    // given
+    Long memberId = 1L;
+    Long postId = 1L;
+    String commentDescription = "";
+    CreateCommentRequest createCommentRequest =
+        CreateCommentRequest.builder().description(commentDescription).build();
+
+    String requestBody = objectMapper.writeValueAsString(createCommentRequest);
+
+    // when
+    ResultActions resultActions =
+        mockMvc.perform(
+            post("/posts/{postId}/comments", postId)
+                .header("memberId", memberId)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .content(requestBody));
+
+    // then
+    resultActions
+        .andExpect(MockMvcResultMatchers.status().isBadRequest())
+        .andExpect(jsonPath("$.message").value("잘못된 요청입니다."))
+        .andExpect(jsonPath("$.validation.description").value("댓글을 입력해주세요."));
   }
 
   @Test

@@ -17,4 +17,8 @@ public class PostCountVO implements Serializable {
   public void updateLikeCount(Integer count) {
     this.likeCount += count;
   }
+
+  public void addCommentCount() {
+    this.commentCount += 1;
+  }
 }

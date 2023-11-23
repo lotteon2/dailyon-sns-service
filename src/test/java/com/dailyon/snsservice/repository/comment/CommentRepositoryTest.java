@@ -1,15 +1,14 @@
 package com.dailyon.snsservice.repository.comment;
 
+import static org.assertj.core.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.*;
 
 import com.dailyon.snsservice.entity.Comment;
 import com.dailyon.snsservice.entity.Member;
 import com.dailyon.snsservice.entity.Post;
 import com.dailyon.snsservice.exception.CommentEntityNotFoundException;
-import com.dailyon.snsservice.repository.member.MemberJpaRepository;
-import com.dailyon.snsservice.repository.post.PostJpaRepository;
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
+import com.dailyon.snsservice.service.member.MemberReader;
+import com.dailyon.snsservice.service.post.PostReader;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,17 +19,13 @@ import org.springframework.data.domain.Sort;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
-
 @SpringBootTest
 @Transactional
 @ActiveProfiles(value = {"test"})
 class CommentRepositoryTest {
 
-  @PersistenceContext private EntityManager em;
-
-  @Autowired private PostJpaRepository postJpaRepository;
-  @Autowired private MemberJpaRepository memberJpaRepository;
+  @Autowired private MemberReader memberReader;
+  @Autowired private PostReader postReader;
   @Autowired private CommentRepository commentRepository;
 
   @Test
@@ -39,15 +34,18 @@ class CommentRepositoryTest {
     // given
     Long memberId = 1L;
     Long postId = 1L;
-    Member member = memberJpaRepository.findById(memberId).get();
-    Post post = postJpaRepository.findById(postId).get();
+    String commentDescription = "댓글 123";
+    Member member = memberReader.read(memberId);
+    Post post = postReader.read(postId);
 
     // when
-    Comment comment = Comment.createComment(member, post, "댓글 123");
+    Comment comment = Comment.createComment(member, post, commentDescription);
     Comment savedComment = commentRepository.save(comment);
 
     // then
-    assertSame(comment.getDescription(), savedComment.getDescription());
+    assertThat(savedComment.getDescription()).isEqualTo(commentDescription);
+    assertThat(savedComment.getPost().getId()).isEqualTo(postId);
+    assertThat(savedComment.getMember().getId()).isEqualTo(memberId);
   }
 
   @Test

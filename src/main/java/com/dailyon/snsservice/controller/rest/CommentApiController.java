@@ -3,7 +3,7 @@ package com.dailyon.snsservice.controller.rest;
 import com.dailyon.snsservice.dto.request.comment.CreateCommentRequest;
 import com.dailyon.snsservice.dto.request.comment.CreateReplyCommentRequest;
 import com.dailyon.snsservice.dto.response.comment.CommentPageResponse;
-import com.dailyon.snsservice.service.CommentService;
+import com.dailyon.snsservice.service.comment.CommentService;
 import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
