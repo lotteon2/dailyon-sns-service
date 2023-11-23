@@ -114,8 +114,9 @@ public class PostService {
   }
 
   @Transactional
-  public void softDeletePost(Long id) {
-    postRepository.softDeleteById(id);
+  public void softDeletePost(Long id, Long memberId) {
+    postRepository.softDeleteById(id, memberId);
+    postRedisRepository.deletePostCountVO(String.valueOf(id));
   }
 
   public PostLikePageResponse getPostLikes(Long memberId, Pageable pageable) {
