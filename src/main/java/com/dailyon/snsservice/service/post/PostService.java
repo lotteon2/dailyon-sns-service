@@ -45,30 +45,29 @@ public class PostService {
 
   public PostPageResponse getPosts(Long memberId, Pageable pageable) {
     Page<PostResponse> postResponses = postRepository.findAllWithIsLike(memberId, pageable);
-    postResponses.getContent().forEach(
-        postResponse -> {
-          try {
-            // get count from cache
-            PostCountVO postCountVO =
-                postRedisRepository.findPostCountVO(String.valueOf(postResponse.getId()));
-            // cache hit
-            if (Objects.nonNull(postCountVO)) {
-              postResponse.setViewCount(postCountVO.getViewCount());
-              postResponse.setLikeCount(postCountVO.getLikeCount());
-            }
-            // cache miss
-            else {
-              postRedisRepository.putPostCountVO(
-                  postResponse.getId().toString(),
-                  new PostCountVO(
-                      postResponse.getViewCount(),
-                      postResponse.getLikeCount(),
-                      postResponse.getCommentCount()));
-            }
-          } catch (JsonProcessingException e) {
-            throw new RuntimeException(e);
-          }
-        });
+    postResponses
+        .getContent()
+        .forEach(
+            postResponse -> {
+              try {
+                // get count from cache
+                PostCountVO DBPostCountVO =
+                    new PostCountVO(
+                        postResponse.getViewCount(),
+                        postResponse.getLikeCount(),
+                        postResponse.getCommentCount());
+                PostCountVO cachedPostCountVO =
+                    postRedisRepository.findOrPutPostCountVO(
+                        String.valueOf(postResponse.getId()), DBPostCountVO);
+
+                if (Objects.nonNull(cachedPostCountVO)) {
+                  postResponse.setViewCount(cachedPostCountVO.getViewCount());
+                  postResponse.setLikeCount(cachedPostCountVO.getLikeCount());
+                }
+              } catch (JsonProcessingException e) {
+                throw new RuntimeException(e);
+              }
+            });
     return PostPageResponse.fromDto(postResponses);
   }
 
