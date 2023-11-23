@@ -103,6 +103,11 @@ public class PostRepositoryImpl implements PostRepository {
     return postJpaRepository.findTop4ByOrderByLikeCountDesc(productId, pageRequest);
   }
 
+  @Override
+  public int updateCountsById(Long id, Integer viewCount, Integer likeCount, Integer commentCount) {
+    return postJpaRepository.updateCountsById(id, viewCount, likeCount, commentCount);
+  }
+
   private Long getTotalPageCount() {
     return jpaQueryFactory.select(post.count()).from(post).fetchOne();
   }
