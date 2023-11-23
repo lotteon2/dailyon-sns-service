@@ -4,7 +4,6 @@ import com.dailyon.snsservice.entity.Post;
 import java.util.List;
 import java.util.Optional;
 
-import com.dailyon.snsservice.vo.PostCountVO;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -21,8 +20,8 @@ public interface PostJpaRepository extends JpaRepository<Post, Long> {
           + "join fetch p.postImage pi "
           + "join fetch p.hashTags ht "
           + "join fetch pi.postImageProductDetails pipd "
-          + "where p.id = :id")
-  Optional<Post> findByIdForUpdate(Long id);
+          + "where p.id = :id and p.member.id = :memberId")
+  Optional<Post> findByIdAndMemberIdForUpdate(Long id, Long memberId);
 
   @Query(
       value =

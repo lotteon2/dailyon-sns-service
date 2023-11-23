@@ -98,8 +98,9 @@ public class PostService {
   }
 
   @Transactional
-  public UpdatePostResponse updatePost(Long id, UpdatePostRequest updatePostRequest) {
-    Post post = postRepository.findByIdForUpdate(id);
+  public UpdatePostResponse updatePost(
+      Long id, Long memberId, UpdatePostRequest updatePostRequest) {
+    Post post = postRepository.findByIdAndMemberIdForUpdate(id, memberId);
     post.updatePostAndPostImageProductDetail(updatePostRequest);
 
     String thumbnailImgPreSignedUrl =
