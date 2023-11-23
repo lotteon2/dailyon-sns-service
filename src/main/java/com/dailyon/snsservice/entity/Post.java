@@ -2,12 +2,11 @@ package com.dailyon.snsservice.entity;
 
 import com.dailyon.snsservice.dto.request.post.UpdatePostRequest;
 import com.dailyon.snsservice.entity.common.BaseEntity;
-import lombok.*;
-
-import javax.persistence.*;
-import javax.validation.constraints.Size;
 import java.util.ArrayList;
 import java.util.List;
+import javax.persistence.*;
+import javax.validation.constraints.Size;
+import lombok.*;
 
 @Getter
 @Entity
@@ -95,9 +94,18 @@ public class Post extends BaseEntity {
   public void updatePostAndPostImageProductDetail(UpdatePostRequest updatePostRequest) {
     this.title = updatePostRequest.getTitle();
     this.description = updatePostRequest.getDescription();
-    for (int i = 0; i < updatePostRequest.getHashTagNames().size(); i++) {
-      this.hashTags.get(i).setName(updatePostRequest.getHashTagNames().get(i));
-    }
+    updatePostRequest
+        .getHashTags()
+        .forEach(
+            updateHashTagRequest ->
+                this.hashTags.forEach(
+                    hashTag -> {
+                      if (updateHashTagRequest.getId().equals(hashTag.getId())) {
+                        if (!updateHashTagRequest.getName().equals(hashTag.getName())) {
+                          hashTag.setName(updateHashTagRequest.getName());
+                        }
+                      }
+                    }));
     this.postImage
         .getPostImageProductDetails()
         .forEach(

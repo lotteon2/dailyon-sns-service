@@ -19,7 +19,7 @@ public class PostScheduler {
   private final PostRedisRepository postRedisRepository;
 
   @Transactional
-  @Scheduled(cron = "* 30 * * * *", zone = "Asia/Seoul")
+  @Scheduled(cron = "0 30 * * * *", zone = "Asia/Seoul")
   public void postCountCacheSyncToDB() {
     List<Map<String, PostCountVO>> postCountVOStore =
         postRedisRepository.findPostCountVOs("postCount");

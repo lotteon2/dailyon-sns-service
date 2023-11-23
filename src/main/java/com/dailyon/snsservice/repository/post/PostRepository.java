@@ -8,7 +8,7 @@ import org.springframework.data.domain.Pageable;
 
 public interface PostRepository {
 
-  Post findByIdForUpdate(Long id);
+  Post findByIdAndMemberIdForUpdate(Long id, Long memberId);
 
   Page<PostResponse> findAllWithIsLike(Long memberId, Pageable pageable);
 
