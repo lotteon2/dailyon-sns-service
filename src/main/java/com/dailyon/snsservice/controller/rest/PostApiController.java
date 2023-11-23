@@ -3,22 +3,23 @@ package com.dailyon.snsservice.controller.rest;
 import com.dailyon.snsservice.dto.request.post.CreatePostRequest;
 import com.dailyon.snsservice.dto.request.post.UpdatePostRequest;
 import com.dailyon.snsservice.dto.response.post.CreatePostResponse;
-import com.dailyon.snsservice.dto.response.post.Top4OOTDResponse;
-import com.dailyon.snsservice.dto.response.postlike.PostLikePageResponse;
 import com.dailyon.snsservice.dto.response.post.PostPageResponse;
+import com.dailyon.snsservice.dto.response.post.Top4OOTDResponse;
 import com.dailyon.snsservice.dto.response.post.UpdatePostResponse;
+import com.dailyon.snsservice.dto.response.postlike.PostLikePageResponse;
+import com.dailyon.snsservice.exception.HashTagDuplicatedException;
 import com.dailyon.snsservice.service.post.PostService;
+import java.util.List;
+import java.util.Map;
 import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
-import java.util.Map;
 
 @RestController
 @RequiredArgsConstructor
@@ -52,7 +53,12 @@ public class PostApiController {
       @RequestHeader(name = "memberId") Long memberId,
       @PathVariable("postId") Long postId,
       @Valid @RequestBody UpdatePostRequest updatePostRequest) {
-    UpdatePostResponse updatePostResponse = postService.updatePost(postId, updatePostRequest);
+    UpdatePostResponse updatePostResponse;
+    try {
+      updatePostResponse = postService.updatePost(postId, memberId, updatePostRequest);
+    } catch (DataIntegrityViolationException e) {
+      throw new HashTagDuplicatedException();
+    }
     return ResponseEntity.ok(updatePostResponse);
   }
 
@@ -78,8 +84,8 @@ public class PostApiController {
 
   @GetMapping("/top4-posts")
   public ResponseEntity<Map<String, List<Top4OOTDResponse>>> getTop4OOTDPosts(
-          @RequestHeader(name = "memberId", required = false) Long memberId,
-          @RequestParam(name = "productId") Long productId) {
+      @RequestHeader(name = "memberId", required = false) Long memberId,
+      @RequestParam(name = "productId") Long productId) {
     List<Top4OOTDResponse> top4OOTDResponses = postService.getTop4OOTDPosts(productId);
     return ResponseEntity.ok(Map.of("posts", top4OOTDResponses));
   }
