@@ -71,17 +71,19 @@ class CommentServiceTest {
     Long memberId = 1L;
     Long postId = 3L;
     Long commentId = 2L;
+    String replyCommentDescription = "댓글 123";
+    CreateReplyCommentRequest createReplyCommentRequest =
+            CreateReplyCommentRequest.builder().description(replyCommentDescription).build();
 
     // when
-    CreateReplyCommentRequest createReplyCommentRequest =
-        CreateReplyCommentRequest.builder().description("답글 123").build();
     Comment savedReplyComment =
         commentService.createReplyComment(memberId, postId, commentId, createReplyCommentRequest);
 
     // then
-    assertSame(createReplyCommentRequest.getDescription(), savedReplyComment.getDescription());
-    assertNotNull(savedReplyComment.getParent());
-    assertSame(commentId, savedReplyComment.getParent().getId());
+    assertThat(savedReplyComment.getDescription()).isEqualTo(replyCommentDescription);
+    assertThat(savedReplyComment.getPost().getId()).isEqualTo(postId);
+    assertThat(savedReplyComment.getMember().getId()).isEqualTo(memberId);
+    assertThat(savedReplyComment.getParent()).isNotNull();
   }
 
   @Test

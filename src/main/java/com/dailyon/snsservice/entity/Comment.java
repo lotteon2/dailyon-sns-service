@@ -43,6 +43,10 @@ public class Comment extends BaseEntity {
   @Column(name = "description", nullable = false)
   private String description;
 
+  @Column(name = "is_deleted", nullable = false, columnDefinition = "boolean default false")
+  @Builder.Default
+  private Boolean isDeleted = false;
+
   public static Comment createComment(Member member, Post post, String description) {
     return Comment.builder()
         .member(member)

@@ -7,11 +7,7 @@ import com.dailyon.snsservice.dto.response.comment.CommentPageResponse;
 import com.dailyon.snsservice.entity.Comment;
 import com.dailyon.snsservice.entity.Member;
 import com.dailyon.snsservice.entity.Post;
-import com.dailyon.snsservice.exception.MemberEntityNotFoundException;
-import com.dailyon.snsservice.exception.PostEntityNotFoundException;
 import com.dailyon.snsservice.repository.comment.CommentRepository;
-import com.dailyon.snsservice.repository.member.MemberJpaRepository;
-import com.dailyon.snsservice.repository.post.PostJpaRepository;
 import com.dailyon.snsservice.service.member.MemberReader;
 import com.dailyon.snsservice.service.post.PostReader;
 import com.dailyon.snsservice.vo.PostCountVO;
@@ -27,10 +23,9 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class CommentService {
 
-  private final MemberJpaRepository memberJpaRepository;
   private final MemberReader memberReader;
   private final PostReader postReader;
-  private final PostJpaRepository postJpaRepository;
+  private final CommentReader commentReader;
   private final CommentRepository commentRepository;
   private final PostCountRedisRepository postCountRedisRepository;
 
@@ -68,10 +63,9 @@ public class CommentService {
       Long postId,
       Long commentId,
       CreateReplyCommentRequest createReplyCommentRequest) {
-    Member member =
-        memberJpaRepository.findById(memberId).orElseThrow(MemberEntityNotFoundException::new);
-    Post post = postJpaRepository.findById(postId).orElseThrow(PostEntityNotFoundException::new);
-    Comment comment = commentRepository.findById(commentId);
+    Member member = memberReader.read(memberId);
+    Post post = postReader.read(postId);
+    Comment comment = commentReader.read(commentId);
 
     Comment replyComment =
         Comment.createReplyComment(
