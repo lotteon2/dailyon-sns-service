@@ -3,10 +3,7 @@ package com.dailyon.snsservice.controller.rest;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 
-import com.dailyon.snsservice.dto.request.post.CreatePostImageProductDetailRequest;
-import com.dailyon.snsservice.dto.request.post.CreatePostRequest;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -96,6 +93,19 @@ class PostApiControllerTest {
         .andExpect(jsonPath("$.posts[0].viewCount").isNumber())
         .andExpect(jsonPath("$.posts[0].isLike").exists())
         .andExpect(jsonPath("$.posts[0].isLike").isBoolean());
+  }
+
+  @Test
+  @DisplayName("게시글 삭제")
+  void deletePost() throws Exception {
+    // given
+    Long postId = 1L;
+    Long memberId = 1L;
+
+    // when, then
+    mockMvc
+        .perform(delete("/posts/{postId}", postId).header("memberId", memberId))
+        .andExpect(MockMvcResultMatchers.status().isOk());
   }
 
   @Test

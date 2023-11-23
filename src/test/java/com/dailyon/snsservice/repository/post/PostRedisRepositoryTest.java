@@ -6,6 +6,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import com.dailyon.snsservice.dto.response.post.PostResponse;
 import com.dailyon.snsservice.vo.PostCountVO;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.List;
 import java.util.Map;
 import org.junit.jupiter.api.DisplayName;
@@ -15,6 +16,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -25,6 +27,7 @@ class PostRedisRepositoryTest {
 
   @Autowired private PostRedisRepository postRedisRepository;
   @Autowired private PostRepository postRepository;
+  @Autowired private RedisTemplate<String, String> redisTemplate;
 
   @Test
   @DisplayName("캐시 miss시 DB에서 캐시로 동기화 후 반환, 캐시 hit시 조회수, 좋아요수, 댓글수를 조회")
@@ -99,5 +102,21 @@ class PostRedisRepositoryTest {
                   assertThat(postCountVO.getLikeCount()).isNotNull();
                   assertThat(postCountVO.getCommentCount()).isNotNull();
                 }));
+  }
+
+  @Test
+  @DisplayName("캐시에서 게시글에 대한 조회수, 좋아요수, 댓글수 삭제")
+  void deletePostCountVO() throws JsonProcessingException {
+    // given
+    Long postId = 1L;
+    ObjectMapper objectMapper = new ObjectMapper();
+    String stringValue = objectMapper.writeValueAsString(new PostCountVO(1, 2, 3));
+    redisTemplate.opsForValue().set(String.format("postCount::%s", postId), stringValue);
+
+    // when
+    postRedisRepository.deletePostCountVO(String.valueOf(postId));
+
+    // then
+    assertThat(redisTemplate.opsForValue().get(String.format("postCount::%s", postId))).isNull();
   }
 }

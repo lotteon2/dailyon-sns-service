@@ -29,7 +29,9 @@ public class PostRepositoryImpl implements PostRepository {
 
   @Override
   public Post findByIdAndMemberIdForUpdate(Long id, Long memberId) {
-    return postJpaRepository.findByIdAndMemberIdForUpdate(id, memberId).orElseThrow(PostEntityNotFoundException::new);
+    return postJpaRepository
+        .findByIdAndMemberIdForUpdate(id, memberId)
+        .orElseThrow(PostEntityNotFoundException::new);
   }
 
   @Override
@@ -82,8 +84,11 @@ public class PostRepositoryImpl implements PostRepository {
   }
 
   @Override
-  public void softDeleteById(Long id) {
-    Post post = postJpaRepository.findById(id).orElseThrow(PostEntityNotFoundException::new);
+  public void softDeleteById(Long id, Long memberId) {
+    Post post =
+        postJpaRepository
+            .findByIdAndMemberId(id, memberId)
+            .orElseThrow(PostEntityNotFoundException::new);
     post.setDeleted(true);
   }
 

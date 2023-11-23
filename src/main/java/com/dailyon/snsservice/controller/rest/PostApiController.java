@@ -65,7 +65,7 @@ public class PostApiController {
   @DeleteMapping("/posts/{postId}")
   public ResponseEntity<Void> deletePost(
       @RequestHeader(name = "memberId") Long memberId, @PathVariable("postId") Long postId) {
-    postService.softDeletePost(postId);
+    postService.softDeletePost(postId, memberId);
     return ResponseEntity.ok().build();
   }
 

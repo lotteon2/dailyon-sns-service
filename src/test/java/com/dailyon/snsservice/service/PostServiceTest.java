@@ -7,6 +7,7 @@ import com.dailyon.snsservice.dto.response.post.OOTDPostPageResponse;
 import com.dailyon.snsservice.dto.response.post.PostPageResponse;
 import com.dailyon.snsservice.dto.response.post.Top4OOTDResponse;
 import com.dailyon.snsservice.dto.response.postlike.PostLikePageResponse;
+import com.dailyon.snsservice.entity.Post;
 import com.dailyon.snsservice.service.post.PostService;
 import java.util.List;
 
@@ -17,8 +18,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.transaction.annotation.Transactional;
+
+import javax.persistence.EntityManager;
+import javax.persistence.NoResultException;
+import javax.persistence.PersistenceContext;
 
 @SpringBootTest
 @Transactional
@@ -30,6 +36,8 @@ class PostServiceTest {
   }
 
   @Autowired private PostService postService;
+  @PersistenceContext private EntityManager em;
+  @Autowired private RedisTemplate<String, String> redisTemplate;
 
   @Test
   @DisplayName("게시글 목록 조회 - 미인증")
@@ -104,6 +112,30 @@ class PostServiceTest {
 
     // then
     assertSame(4, top4OOTDResponses.size());
+  }
+
+  @Test
+  @DisplayName("")
+  void softDeletePost() {
+    // given
+    Long postId = 1L;
+    Long memberId = 1L;
+
+    // when
+    postService.softDeletePost(postId, memberId);
+
+    // then
+    String postCountVOStringValue =
+        redisTemplate.opsForValue().get(String.format("postCount::%s", postId));
+
+    assertThat(postCountVOStringValue).isNull();
+    assertThrowsExactly(
+        NoResultException.class,
+        () ->
+            em.createQuery(
+                    "select p from Post p where p.id = :postId and p.isDeleted = false", Post.class)
+                .setParameter("postId", postId)
+                .getSingleResult());
   }
 
   //  @Test
