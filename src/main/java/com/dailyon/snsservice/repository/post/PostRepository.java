@@ -16,7 +16,7 @@ public interface PostRepository {
 
   void softDeleteById(Long id, Long memberId);
 
-  Page<Post> findAllWithPostLike(Long memberId, Pageable pageable);
+  Page<Post> findAllWithPostLikeByMemberIdIn(Long memberId, Pageable pageable);
 
   Page<Post> findAllByMemberId(Long memberId, Pageable pageable);
 

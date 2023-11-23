@@ -93,8 +93,8 @@ public class PostRepositoryImpl implements PostRepository {
   }
 
   @Override
-  public Page<Post> findAllWithPostLike(Long memberId, Pageable pageable) {
-    return postJpaRepository.findAllWithPostLikeByMemberId(memberId, pageable);
+  public Page<Post> findAllWithPostLikeByMemberIdIn(Long memberId, Pageable pageable) {
+    return postJpaRepository.findAllWithPostLikeByMemberIdIn(memberId, pageable);
   }
 
   @Override

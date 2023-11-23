@@ -106,12 +106,12 @@ class PostRepositoryTest {
     PageRequest pageRequest = PageRequest.of(0, 8, Sort.by(Sort.Direction.DESC, "createdAt"));
 
     // when
-    Page<Post> posts = postRepository.findAllWithPostLike(memberId, pageRequest);
+    Page<Post> posts = postRepository.findAllWithPostLikeByMemberIdIn(memberId, pageRequest);
 
     // then
-    assertFalse(posts.hasNext());
-    assertSame(1, posts.getTotalPages());
-    assertSame(1, posts.getContent().size());
+    assertThat(posts.hasNext()).isFalse();
+    assertThat(posts.getTotalPages()).isSameAs(1);
+    assertThat(posts.getContent().size()).isSameAs(3);
   }
 
   @Test

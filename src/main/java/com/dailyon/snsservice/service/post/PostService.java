@@ -130,7 +130,7 @@ public class PostService {
   }
 
   public PostLikePageResponse getPostLikes(Long memberId, Pageable pageable) {
-    Page<Post> posts = postRepository.findAllWithPostLike(memberId, pageable);
+    Page<Post> posts = postRepository.findAllWithPostLikeByMemberIdIn(memberId, pageable);
     return PostLikePageResponse.fromEntity(posts);
   }
 
