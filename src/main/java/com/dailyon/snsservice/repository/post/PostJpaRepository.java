@@ -3,7 +3,6 @@ package com.dailyon.snsservice.repository.post;
 import com.dailyon.snsservice.entity.Post;
 import java.util.List;
 import java.util.Optional;
-
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -14,6 +13,8 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface PostJpaRepository extends JpaRepository<Post, Long> {
+
+  Optional<Post> findByIdAndIsDeletedFalse(Long id);
 
   @Query(
       "select p from Post p "
@@ -48,7 +49,8 @@ public interface PostJpaRepository extends JpaRepository<Post, Long> {
   // 트랜잭션이 COMMIT 될 때 영속성 컨텍스트를 flush
   // JPQL 연산이 끝난 후 영속성 컨텍스트를 비워줌
   @Modifying(clearAutomatically = true, flushAutomatically = true)
-  @Query("update Post p set p.viewCount = :viewCount, p.likeCount = :likeCount, p.commentCount = :commentCount where p.id = :id")
+  @Query(
+      "update Post p set p.viewCount = :viewCount, p.likeCount = :likeCount, p.commentCount = :commentCount where p.id = :id")
   int updateCountsById(
       @Param("id") Long id,
       @Param("viewCount") Integer viewCount,

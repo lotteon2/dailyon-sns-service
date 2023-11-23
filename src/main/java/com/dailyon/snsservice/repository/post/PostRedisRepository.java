@@ -9,6 +9,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Repository;
@@ -28,6 +29,11 @@ public class PostRedisRepository {
       return postCountVO;
     }
     return objectMapper.readValue(stringValue, PostCountVO.class);
+  }
+
+  @CachePut(value = "postCount", key = "#key")
+  public PostCountVO putPostCountVO(String key, PostCountVO postCountVO) {
+    return postCountVO;
   }
 
   @CacheEvict(value = "postCount", key = "#key")

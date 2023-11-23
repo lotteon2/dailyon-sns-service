@@ -1,6 +1,9 @@
 package com.dailyon.snsservice.repository.postlike;
 
+import com.dailyon.snsservice.entity.Member;
+import com.dailyon.snsservice.entity.Post;
+
 public interface PostLikeRepository {
 
-  void togglePostLike(Long memberId, Long postId);
+  int togglePostLike(Member member, Post post);
 }
