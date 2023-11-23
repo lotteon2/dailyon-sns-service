@@ -7,6 +7,8 @@ import com.dailyon.snsservice.repository.postlike.PostLikeRepository;
 import com.dailyon.snsservice.service.member.MemberReader;
 import com.dailyon.snsservice.service.post.PostReader;
 import com.dailyon.snsservice.vo.PostCountVO;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import java.util.Objects;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -26,8 +28,22 @@ public class PostLikeService {
     Member member = memberReader.read(memberId);
     Post post = postReader.read(postId);
     int todoCalcLikeCount = postLikeRepository.togglePostLike(member, post);
-    postRedisRepository.putPostCountVO(
-        String.valueOf(postId),
-        new PostCountVO(post.getViewCount(), post.getLikeCount() + todoCalcLikeCount, post.getCommentCount()));
+    try {
+      PostCountVO postCountVO =
+          postRedisRepository.findOrPutPostCountVO(
+              String.valueOf(postId),
+              new PostCountVO(
+                  post.getViewCount(),
+                  post.getLikeCount() + todoCalcLikeCount,
+                  post.getCommentCount()));
+      // 이미 캐시에 존재하는 값이라면 업데이트
+      if (!postCountVO.getLikeCount().equals(post.getLikeCount() + todoCalcLikeCount)) {
+        postCountVO.updateLikeCount(todoCalcLikeCount);
+        postRedisRepository.modifyPostCountVOAboutLikeCount(String.valueOf(postId), postCountVO);
+      }
+
+    } catch (JsonProcessingException e) {
+      throw new RuntimeException(e);
+    }
   }
 }

@@ -24,8 +24,9 @@ public class PostLikeRepositoryImpl implements PostLikeRepository {
             .where(postLike.member.id.eq(member.getId()).and(postLike.post.id.eq(post.getId())))
             .fetchOne();
 
-    if (!Objects.nonNull(findPostLike)) {
-      postLikeJpaRepository.save(PostLike.createPostLike(member, post));
+    if (Objects.isNull(findPostLike)) {
+      PostLike newPostLike = PostLike.createPostLike(member, post);
+      postLikeJpaRepository.save(newPostLike);
       return 1;
     } else {
       postLikeJpaRepository.delete(findPostLike);

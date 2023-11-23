@@ -32,7 +32,8 @@ public class PostRedisRepository {
   }
 
   @CachePut(value = "postCount", key = "#key")
-  public PostCountVO putPostCountVO(String key, PostCountVO postCountVO) {
+  public PostCountVO modifyPostCountVOAboutLikeCount(String key, PostCountVO postCountVO)
+      throws JsonProcessingException {
     return postCountVO;
   }
 

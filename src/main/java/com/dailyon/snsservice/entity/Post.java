@@ -27,7 +27,7 @@ public class Post extends BaseEntity {
   @OneToMany(
       mappedBy = "post",
       fetch = FetchType.LAZY,
-      cascade = {CascadeType.PERSIST, CascadeType.REMOVE})
+      cascade = {CascadeType.REMOVE})
   @Builder.Default
   private List<PostLike> postLikes = new ArrayList<>();
 
