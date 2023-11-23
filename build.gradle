@@ -49,7 +49,7 @@ dependencies {
     implementation "com.querydsl:querydsl-jpa:${queryDslVersion}"
     implementation "com.querydsl:querydsl-apt:${queryDslVersion}"
 
-    implementation ('it.ozimov:embedded-redis:0.7.3') { exclude group: "org.slf4j", module: "slf4j-simple" }
+    implementation ('it.ozimov:embedded-redis:0.7.2')
 
     // aws
     implementation 'org.springframework.cloud:spring-cloud-starter-aws:2.2.4.RELEASE'
