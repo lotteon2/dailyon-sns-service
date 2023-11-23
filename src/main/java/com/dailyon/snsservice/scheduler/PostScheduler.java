@@ -1,6 +1,6 @@
 package com.dailyon.snsservice.scheduler;
 
-import com.dailyon.snsservice.repository.post.PostRedisRepository;
+import com.dailyon.snsservice.cache.PostCountRedisRepository;
 import com.dailyon.snsservice.repository.post.PostRepository;
 import com.dailyon.snsservice.vo.PostCountVO;
 import lombok.RequiredArgsConstructor;
@@ -16,13 +16,13 @@ import java.util.Map;
 public class PostScheduler {
 
   private final PostRepository postRepository;
-  private final PostRedisRepository postRedisRepository;
+  private final PostCountRedisRepository postCountRedisRepository;
 
   @Transactional
   @Scheduled(cron = "0 30 * * * *", zone = "Asia/Seoul")
   public void postCountCacheSyncToDB() {
     List<Map<String, PostCountVO>> postCountVOStore =
-        postRedisRepository.findPostCountVOs("postCount");
+        postCountRedisRepository.findPostCountVOs("postCount");
     if (postCountVOStore != null) {
       postCountVOStore.forEach(
           store ->

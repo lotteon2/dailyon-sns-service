@@ -111,7 +111,7 @@ class PostRepositoryTest {
     // then
     assertThat(posts.hasNext()).isFalse();
     assertThat(posts.getTotalPages()).isSameAs(1);
-    assertThat(posts.getContent().size()).isSameAs(3);
+    assertThat(posts.getContent().size()).isSameAs(1);
   }
 
   @Test

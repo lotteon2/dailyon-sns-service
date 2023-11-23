@@ -78,8 +78,6 @@ VALUES
 INSERT INTO post_like (member_id, post_id)
 VALUES
     (1, 2),
-    (1, 4),
-    (1, 5),
     (2, 3),
     (3, 1);
 
