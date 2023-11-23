@@ -75,7 +75,7 @@ public class CommentService {
 
   @Transactional
   public void deleteCommentById(Long commentId) {
-    commentRepository.deleteById(commentId);
+    commentRepository.softDeleteById(commentId);
   }
 
   public CommentPageResponse getComments(Long postId, Pageable pageable) {

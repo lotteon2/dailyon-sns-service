@@ -64,4 +64,11 @@ public class Comment extends BaseEntity {
             .description(description)
             .build();
   }
+
+  public void setDeleted(Boolean deleted) {
+    isDeleted = deleted;
+    for (Comment replyComment : children) {
+      replyComment.setDeleted(true);
+    }
+  }
 }

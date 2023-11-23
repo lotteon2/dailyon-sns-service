@@ -7,6 +7,7 @@ import com.dailyon.snsservice.entity.Comment;
 import com.dailyon.snsservice.entity.Member;
 import com.dailyon.snsservice.entity.Post;
 import com.dailyon.snsservice.exception.CommentEntityNotFoundException;
+import com.dailyon.snsservice.service.comment.CommentReader;
 import com.dailyon.snsservice.service.member.MemberReader;
 import com.dailyon.snsservice.service.post.PostReader;
 import org.junit.jupiter.api.DisplayName;
@@ -26,6 +27,7 @@ class CommentRepositoryTest {
 
   @Autowired private MemberReader memberReader;
   @Autowired private PostReader postReader;
+  @Autowired private CommentReader commentReader;
   @Autowired private CommentRepository commentRepository;
 
   @Test
@@ -50,19 +52,19 @@ class CommentRepositoryTest {
 
   @Test
   @DisplayName("댓글 삭제")
-  void deleteById() {
+  void softDeleteById() {
     // given
     Long parentCommentId = 2L;
     Long childCommentId = 8L;
 
     // when
-    commentRepository.deleteById(parentCommentId);
+    commentRepository.softDeleteById(parentCommentId);
 
     // then
     assertThrowsExactly(
-        CommentEntityNotFoundException.class, () -> commentRepository.findById(parentCommentId));
+        CommentEntityNotFoundException.class, () -> commentReader.read(parentCommentId));
     assertThrowsExactly(
-        CommentEntityNotFoundException.class, () -> commentRepository.findById(childCommentId));
+        CommentEntityNotFoundException.class, () -> commentReader.read(childCommentId));
   }
 
   @Test

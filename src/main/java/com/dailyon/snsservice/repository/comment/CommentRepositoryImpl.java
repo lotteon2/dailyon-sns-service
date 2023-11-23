@@ -29,7 +29,9 @@ public class CommentRepositoryImpl implements CommentRepository {
   }
 
   @Override
-  public void deleteById(Long commentId) {
-    commentJpaRepository.deleteById(commentId);
+  public void softDeleteById(Long commentId) {
+    Comment comment =
+        commentJpaRepository.findById(commentId).orElseThrow(CommentEntityNotFoundException::new);
+    comment.setDeleted(true);
   }
 }

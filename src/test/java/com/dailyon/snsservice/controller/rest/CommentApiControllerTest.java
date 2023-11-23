@@ -183,23 +183,25 @@ class CommentApiControllerTest {
     Long commentId = 2L;
     String replyCommentDescription = "답글";
     CreateReplyCommentRequest createReplyCommentRequest =
-            CreateReplyCommentRequest.builder().description(replyCommentDescription).build();
+        CreateReplyCommentRequest.builder().description(replyCommentDescription).build();
 
     String requestBody = objectMapper.writeValueAsString(createReplyCommentRequest);
 
     // when
     ResultActions resultActions =
-            mockMvc.perform(
-                    post("/posts/{postId}/comments/{commentId}", postId, commentId)
-                            .header("memberId", memberId)
-                            .contentType(MediaType.APPLICATION_JSON_VALUE)
-                            .content(requestBody));
+        mockMvc.perform(
+            post("/posts/{postId}/comments/{commentId}", postId, commentId)
+                .header("memberId", memberId)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .content(requestBody));
 
     // then
-    resultActions.andExpect(MockMvcResultMatchers.status().isBadRequest())
-            .andExpect(jsonPath("$.message").value("잘못된 요청입니다."))
-            .andExpect(
-                    jsonPath("$.validation.description").value("답글은 최소 5글자 이상 최대 140글자 이하로 입력 가능합니다."));;
+    resultActions
+        .andExpect(MockMvcResultMatchers.status().isBadRequest())
+        .andExpect(jsonPath("$.message").value("잘못된 요청입니다."))
+        .andExpect(
+            jsonPath("$.validation.description").value("답글은 최소 5글자 이상 최대 140글자 이하로 입력 가능합니다."));
+    ;
   }
 
   @Test
@@ -211,23 +213,24 @@ class CommentApiControllerTest {
     Long commentId = 2L;
     String replyCommentDescription = "";
     CreateReplyCommentRequest createReplyCommentRequest =
-            CreateReplyCommentRequest.builder().description(replyCommentDescription).build();
+        CreateReplyCommentRequest.builder().description(replyCommentDescription).build();
 
     String requestBody = objectMapper.writeValueAsString(createReplyCommentRequest);
 
     // when
     ResultActions resultActions =
-            mockMvc.perform(
-                    post("/posts/{postId}/comments/{commentId}", postId, commentId)
-                            .header("memberId", memberId)
-                            .contentType(MediaType.APPLICATION_JSON_VALUE)
-                            .content(requestBody));
+        mockMvc.perform(
+            post("/posts/{postId}/comments/{commentId}", postId, commentId)
+                .header("memberId", memberId)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .content(requestBody));
 
     // then
-    resultActions.andExpect(MockMvcResultMatchers.status().isBadRequest())
-            .andExpect(jsonPath("$.message").value("잘못된 요청입니다."))
-            .andExpect(
-                    jsonPath("$.validation.description").value("답글을 입력해주세요."));;
+    resultActions
+        .andExpect(MockMvcResultMatchers.status().isBadRequest())
+        .andExpect(jsonPath("$.message").value("잘못된 요청입니다."))
+        .andExpect(jsonPath("$.validation.description").value("답글을 입력해주세요."));
+    ;
   }
 
   @Test
@@ -238,11 +241,13 @@ class CommentApiControllerTest {
     Long postId = 2L;
     Long commentId = 1L;
 
-    // when, then
-    mockMvc
-        .perform(
+    // when
+    ResultActions resultActions =
+        mockMvc.perform(
             delete("/posts/{postId}/comments/{commentId}", postId, commentId)
-                .header("memberId", memberId))
-        .andExpect(MockMvcResultMatchers.status().isOk());
+                .header("memberId", memberId));
+
+    // then
+    resultActions.andExpect(MockMvcResultMatchers.status().isOk());
   }
 }

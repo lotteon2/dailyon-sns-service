@@ -8,7 +8,7 @@ import com.dailyon.snsservice.dto.request.comment.CreateReplyCommentRequest;
 import com.dailyon.snsservice.dto.response.comment.CommentPageResponse;
 import com.dailyon.snsservice.entity.Comment;
 import com.dailyon.snsservice.exception.CommentEntityNotFoundException;
-import com.dailyon.snsservice.repository.comment.CommentRepository;
+import com.dailyon.snsservice.service.comment.CommentReader;
 import com.dailyon.snsservice.service.comment.CommentService;
 import com.dailyon.snsservice.vo.PostCountVO;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -30,7 +30,7 @@ class CommentServiceTest {
 
   @Autowired private CommentService commentService;
 
-  @Autowired private CommentRepository commentRepository;
+  @Autowired private CommentReader commentReader;
   @Autowired private RedisTemplate<String, String> redisTemplate;
   @Autowired private ObjectMapper objectMapper;
 
@@ -73,7 +73,7 @@ class CommentServiceTest {
     Long commentId = 2L;
     String replyCommentDescription = "댓글 123";
     CreateReplyCommentRequest createReplyCommentRequest =
-            CreateReplyCommentRequest.builder().description(replyCommentDescription).build();
+        CreateReplyCommentRequest.builder().description(replyCommentDescription).build();
 
     // when
     Comment savedReplyComment =
@@ -98,9 +98,9 @@ class CommentServiceTest {
 
     // then
     assertThrowsExactly(
-        CommentEntityNotFoundException.class, () -> commentRepository.findById(parentCommentId));
+        CommentEntityNotFoundException.class, () -> commentReader.read(parentCommentId));
     assertThrowsExactly(
-        CommentEntityNotFoundException.class, () -> commentRepository.findById(childCommentId));
+        CommentEntityNotFoundException.class, () -> commentReader.read(childCommentId));
   }
 
   @Test
