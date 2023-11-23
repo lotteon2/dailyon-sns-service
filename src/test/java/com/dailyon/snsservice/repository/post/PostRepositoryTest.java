@@ -9,8 +9,9 @@ import com.dailyon.snsservice.exception.MemberEntityNotFoundException;
 import com.dailyon.snsservice.repository.member.MemberJpaRepository;
 import java.util.List;
 import java.util.Set;
-
-import org.assertj.core.api.Assertions;
+import javax.persistence.EntityManager;
+import javax.persistence.NoResultException;
+import javax.persistence.PersistenceContext;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,6 +29,8 @@ class PostRepositoryTest {
 
   @Autowired private PostRepository postRepository;
   @Autowired private MemberJpaRepository memberJpaRepository;
+  @Autowired private PostJpaRepository postJpaRepository;
+  @PersistenceContext private EntityManager em;
 
   @Test
   @DisplayName("게시글 목록 조회 - 미인증")
@@ -144,5 +147,27 @@ class PostRepositoryTest {
                 .getPostImageProductDetails()
                 .forEach(pipd -> assertSame(productId, pipd.getProductId())));
     assertTrue(posts.get(0).getLikeCount() >= posts.get(1).getLikeCount());
+  }
+
+  @Test
+  @DisplayName("게시글 삭제")
+  void softDeleteById() {
+    // given
+    Long postId = 12L;
+    Long memberId = 1L;
+
+    // when
+    postRepository.softDeleteById(postId, memberId);
+
+    // then
+    assertThrowsExactly(
+        NoResultException.class,
+        () ->
+            em.createQuery(
+                    "select p from Post p where p.id = :postId and p.member.id = :memberId and p.isDeleted = false",
+                    Post.class)
+                .setParameter("postId", postId)
+                .setParameter("memberId", memberId)
+                .getSingleResult());
   }
 }

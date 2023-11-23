@@ -54,4 +54,7 @@ public interface PostJpaRepository extends JpaRepository<Post, Long> {
       @Param("viewCount") Integer viewCount,
       @Param("likeCount") Integer likeCount,
       @Param("commentCount") Integer commentCount);
+
+  @Query("select p from Post p where p.id = :id and p.member.id = :memberId")
+  Optional<Post> findByIdAndMemberId(Long id, Long memberId);
 }
