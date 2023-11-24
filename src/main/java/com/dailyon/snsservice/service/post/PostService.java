@@ -16,7 +16,6 @@ import com.dailyon.snsservice.service.s3.S3Service;
 import com.dailyon.snsservice.vo.PostCountVO;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import java.util.List;
-import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -50,17 +49,19 @@ public class PostService {
         .forEach(
             postResponse -> {
               try {
-                // get count from cache
-                PostCountVO DBPostCountVO =
+                PostCountVO dbPostCountVO =
                     new PostCountVO(
                         postResponse.getViewCount(),
                         postResponse.getLikeCount(),
                         postResponse.getCommentCount());
+
+                // get count from cache or add all counts to cache
                 PostCountVO cachedPostCountVO =
                     postCountRedisRepository.findOrPutPostCountVO(
-                        String.valueOf(postResponse.getId()), DBPostCountVO);
+                        String.valueOf(postResponse.getId()), dbPostCountVO);
 
-                if (Objects.nonNull(cachedPostCountVO)) {
+                // cache hit 로 인해서 db와 cache의 내용이 서로 다르다면 response를 업데이트
+                if (!dbPostCountVO.equals(cachedPostCountVO)) {
                   postResponse.setViewCount(cachedPostCountVO.getViewCount());
                   postResponse.setLikeCount(cachedPostCountVO.getLikeCount());
                 }
@@ -142,5 +143,18 @@ public class PostService {
   public List<Top4OOTDResponse> getTop4OOTDPosts(Long productId) {
     List<Post> posts = postRepository.findTop4ByOrderByLikeCountDesc(productId);
     return posts.stream().map(Top4OOTDResponse::fromEntity).collect(Collectors.toList());
+  }
+
+  @Transactional
+  public void addViewCount(Long id, Integer count) {
+    Post post = postRepository.findByIdAndIsDeletedFalse(id);
+    try {
+      PostCountVO postCountVO =
+          new PostCountVO(post.getViewCount() + count, post.getLikeCount(), post.getCommentCount());
+      // update view count to cache
+      postCountRedisRepository.modifyPostCountVOAboutLikeCount(String.valueOf(id), postCountVO);
+    } catch (JsonProcessingException e) {
+      throw new RuntimeException(e);
+    }
   }
 }

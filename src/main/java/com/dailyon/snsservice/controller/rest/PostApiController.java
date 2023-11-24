@@ -98,4 +98,11 @@ public class PostApiController {
     List<Top4OOTDResponse> top4OOTDResponses = postService.getTop4OOTDPosts(productId);
     return ResponseEntity.ok(Map.of("posts", top4OOTDResponses));
   }
+
+  @PutMapping("/posts/{postId}/view-count")
+  public ResponseEntity<Void> addViewCount(
+      @PathVariable("postId") Long postId, @RequestParam(name = "count") Integer count) {
+    postService.addViewCount(postId, count);
+    return ResponseEntity.ok().build();
+  }
 }

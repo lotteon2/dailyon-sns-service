@@ -8,6 +8,8 @@ import org.springframework.data.domain.Pageable;
 
 public interface PostRepository {
 
+  Post findByIdAndIsDeletedFalse(Long id);
+
   Post findByIdAndMemberIdForUpdate(Long id, Long memberId);
 
   Page<PostResponse> findAllWithIsLike(Long memberId, Pageable pageable);
