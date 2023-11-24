@@ -94,7 +94,6 @@ public class PostApiController {
 
   @GetMapping("/top4-posts")
   public ResponseEntity<Map<String, List<Top4OOTDResponse>>> getTop4OOTDPosts(
-      @RequestHeader(name = "memberId", required = false) Long memberId,
       @RequestParam(name = "productId") Long productId) {
     List<Top4OOTDResponse> top4OOTDResponses = postService.getTop4OOTDPosts(productId);
     return ResponseEntity.ok(Map.of("posts", top4OOTDResponses));

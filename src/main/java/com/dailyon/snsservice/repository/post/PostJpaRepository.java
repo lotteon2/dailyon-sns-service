@@ -21,7 +21,7 @@ public interface PostJpaRepository extends JpaRepository<Post, Long> {
           + "join fetch p.postImage pi "
           + "join fetch p.hashTags ht "
           + "join fetch pi.postImageProductDetails pipd "
-          + "where p.id = :id and p.member.id = :memberId")
+          + "where p.id = :id and p.member.id = :memberId and p.isDeleted = false")
   Optional<Post> findByIdAndMemberIdForUpdate(Long id, Long memberId);
 
   @Query(
@@ -46,14 +46,16 @@ public interface PostJpaRepository extends JpaRepository<Post, Long> {
       "select p from Post p "
           + "join fetch p.postImage pi "
           + "join fetch pi.postImageProductDetails pipd "
-          + "where pipd.productId = :productId")
+          + "where pipd.productId = :productId and p.isDeleted = false")
   List<Post> findTop4ByOrderByLikeCountDesc(Long productId, Pageable pageable);
 
   // 트랜잭션이 COMMIT 될 때 영속성 컨텍스트를 flush
   // JPQL 연산이 끝난 후 영속성 컨텍스트를 비워줌
   @Modifying(clearAutomatically = true, flushAutomatically = true)
   @Query(
-      "update Post p set p.viewCount = :viewCount, p.likeCount = :likeCount, p.commentCount = :commentCount where p.id = :id")
+      "update Post p " +
+              "set p.viewCount = :viewCount, p.likeCount = :likeCount, p.commentCount = :commentCount " +
+              "where p.id = :id and p.isDeleted = false")
   int updateCountsById(
       @Param("id") Long id,
       @Param("viewCount") Integer viewCount,

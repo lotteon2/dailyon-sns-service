@@ -163,14 +163,12 @@ class PostApiControllerTest {
   void getTop4OOTDPosts() throws Exception {
     // given
     Long productId = 101L;
-    Long memberId = 1L;
 
     // when
     ResultActions resultActions =
         mockMvc
             .perform(
                 get("/top4-posts")
-                    .header("memberId", memberId)
                     .queryParam("productId", productId.toString()))
             .andExpect(MockMvcResultMatchers.status().isOk())
             .andExpect(
