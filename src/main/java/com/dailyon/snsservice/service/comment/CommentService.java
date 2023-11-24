@@ -45,7 +45,7 @@ public class CommentService {
               new PostCountVO(
                   post.getViewCount(), post.getLikeCount(), post.getCommentCount() + 1));
       // 이미 캐시에 존재하는 값이라면 업데이트
-      if (postCountVO.getCommentCount().equals(post.getCommentCount() + 1)) {
+      if (!postCountVO.getCommentCount().equals(post.getCommentCount() + 1)) {
         postCountVO.addCommentCount();
         postCountRedisRepository.modifyPostCountVOAboutLikeCount(
             String.valueOf(postId), postCountVO);
@@ -74,8 +74,8 @@ public class CommentService {
   }
 
   @Transactional
-  public void deleteCommentById(Long commentId) {
-    commentRepository.softDeleteById(commentId);
+  public void softDeleteComment(Long commentId, Long postId, Long memberId) {
+    commentRepository.softDeleteById(commentId, postId, memberId);
   }
 
   public CommentPageResponse getComments(Long postId, Pageable pageable) {

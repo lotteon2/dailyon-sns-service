@@ -29,7 +29,7 @@ public class PostLikeService {
     int todoCalcLikeCount = postLikeRepository.togglePostLike(member, post);
     try {
       // cache hit: 기존의 캐시에 들어있는 count 반환
-      // cache miss: count + 1 해서 캐시에 넣은 후 반환
+      // cache miss: count 계산해서 캐시에 넣은 후 반환
       PostCountVO postCountVO =
           postCountRedisRepository.findOrPutPostCountVO(
               String.valueOf(postId),
@@ -38,7 +38,7 @@ public class PostLikeService {
                   post.getLikeCount() + todoCalcLikeCount,
                   post.getCommentCount()));
       // 이미 캐시에 존재하는 값이라면 업데이트
-      if (postCountVO.getLikeCount().equals(post.getLikeCount() + todoCalcLikeCount)) {
+      if (!postCountVO.getLikeCount().equals(post.getLikeCount() + todoCalcLikeCount)) {
         postCountVO.updateLikeCount(todoCalcLikeCount);
         postCountRedisRepository.modifyPostCountVOAboutLikeCount(String.valueOf(postId), postCountVO);
       }

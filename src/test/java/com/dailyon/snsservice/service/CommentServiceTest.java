@@ -3,6 +3,7 @@ package com.dailyon.snsservice.service;
 import static org.assertj.core.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.*;
 
+import com.dailyon.snsservice.cache.PostCountRedisRepository;
 import com.dailyon.snsservice.dto.request.comment.CreateCommentRequest;
 import com.dailyon.snsservice.dto.request.comment.CreateReplyCommentRequest;
 import com.dailyon.snsservice.dto.response.comment.CommentPageResponse;
@@ -43,10 +44,6 @@ class CommentServiceTest {
     String commentDescription = "댓글 123";
     CreateCommentRequest createCommentRequest =
         CreateCommentRequest.builder().description(commentDescription).build();
-    PostCountVO beforePostCountVO =
-        objectMapper.readValue(
-            redisTemplate.opsForValue().get(String.format("postCount::%s", postId)),
-            PostCountVO.class);
 
     // when
     Comment savedComment = commentService.createComment(memberId, postId, createCommentRequest);
@@ -61,7 +58,7 @@ class CommentServiceTest {
     assertThat(savedComment.getPost().getId()).isEqualTo(postId);
     assertThat(savedComment.getMember().getId()).isEqualTo(memberId);
     assertThat(afterPostCountVO.getCommentCount())
-        .isSameAs(beforePostCountVO.getCommentCount() + 1);
+        .isSameAs(13);
   }
 
   @Test
@@ -90,11 +87,13 @@ class CommentServiceTest {
   @DisplayName("댓글 삭제")
   void deleteComment() {
     // given
+    Long postId = 3L;
+    Long memberId = 2L;
     Long parentCommentId = 2L;
     Long childCommentId = 8L;
 
     // when
-    commentService.deleteCommentById(parentCommentId);
+    commentService.softDeleteComment(parentCommentId, postId, memberId);
 
     // then
     assertThrowsExactly(

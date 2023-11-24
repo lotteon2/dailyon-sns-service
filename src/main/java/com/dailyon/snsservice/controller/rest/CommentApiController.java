@@ -44,7 +44,7 @@ public class CommentApiController {
   }
 
   @PostMapping("/{postId}/comments/{commentId}")
-  public ResponseEntity<Void> createComment(
+  public ResponseEntity<Void> createReplyComment(
       @RequestHeader(name = "memberId") Long memberId,
       @PathVariable(name = "postId") Long postId,
       @PathVariable(name = "commentId") Long commentId,
@@ -58,7 +58,7 @@ public class CommentApiController {
       @RequestHeader(name = "memberId") Long memberId,
       @PathVariable(name = "postId") Long postId,
       @PathVariable(name = "commentId") Long commentId) {
-    commentService.deleteCommentById(commentId);
+    commentService.softDeleteComment(commentId, postId, memberId);
     return ResponseEntity.ok().build();
   }
 }

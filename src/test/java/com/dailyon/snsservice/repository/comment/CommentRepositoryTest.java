@@ -54,11 +54,13 @@ class CommentRepositoryTest {
   @DisplayName("댓글 삭제")
   void softDeleteById() {
     // given
+    Long postId = 3L;
+    Long memberId = 2L;
     Long parentCommentId = 2L;
     Long childCommentId = 8L;
 
     // when
-    commentRepository.softDeleteById(parentCommentId);
+    commentRepository.softDeleteById(parentCommentId, postId, memberId);
 
     // then
     assertThrowsExactly(
