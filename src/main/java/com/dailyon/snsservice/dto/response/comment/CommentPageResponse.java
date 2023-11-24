@@ -2,11 +2,10 @@ package com.dailyon.snsservice.dto.response.comment;
 
 import com.dailyon.snsservice.dto.response.member.MemberResponse;
 import com.dailyon.snsservice.entity.Comment;
-import lombok.*;
-import org.springframework.data.domain.Page;
-
 import java.util.List;
 import java.util.stream.Collectors;
+import lombok.*;
+import org.springframework.data.domain.Page;
 
 @Getter
 @Builder
@@ -29,6 +28,7 @@ public class CommentPageResponse {
                         CommentResponse.builder()
                             .id(comment.getId())
                             .description(comment.getDescription())
+                            .isDeleted(comment.getIsDeleted())
                             .createdAt(comment.getCreatedAt())
                             .member(
                                 MemberResponse.builder()
@@ -43,6 +43,7 @@ public class CommentPageResponse {
                                             CommentResponse.builder()
                                                 .id(replyComment.getId())
                                                 .description(replyComment.getDescription())
+                                                .isDeleted(replyComment.getIsDeleted())
                                                 .createdAt(replyComment.getCreatedAt())
                                                 .member(
                                                     MemberResponse.builder()

@@ -14,7 +14,7 @@ public class CommentReader {
 
   public Comment read(Long commentId) {
     return commentJpaRepository
-        .findByIdAndIsDeletedFalse(commentId)
+        .findById(commentId)
         .orElseThrow(CommentEntityNotFoundException::new);
   }
 }

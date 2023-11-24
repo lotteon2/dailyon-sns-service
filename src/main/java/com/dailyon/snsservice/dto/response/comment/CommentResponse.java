@@ -15,6 +15,7 @@ public class CommentResponse {
 
   private Long id;
   private String description;
+  private Boolean isDeleted;
   private LocalDateTime createdAt;
   private MemberResponse member;
 

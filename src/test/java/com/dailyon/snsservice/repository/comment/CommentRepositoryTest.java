@@ -56,17 +56,13 @@ class CommentRepositoryTest {
     // given
     Long postId = 3L;
     Long memberId = 2L;
-    Long parentCommentId = 2L;
-    Long childCommentId = 8L;
+    Long commentId = 2L;
 
     // when
-    commentRepository.softDeleteById(parentCommentId, postId, memberId);
+    commentRepository.softDeleteById(commentId, postId, memberId);
 
     // then
-    assertThrowsExactly(
-        CommentEntityNotFoundException.class, () -> commentReader.read(parentCommentId));
-    assertThrowsExactly(
-        CommentEntityNotFoundException.class, () -> commentReader.read(childCommentId));
+    assertThat(commentReader.read(commentId).getIsDeleted()).isTrue();
   }
 
   @Test

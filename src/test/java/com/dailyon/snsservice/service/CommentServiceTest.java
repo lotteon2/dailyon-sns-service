@@ -3,12 +3,10 @@ package com.dailyon.snsservice.service;
 import static org.assertj.core.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.*;
 
-import com.dailyon.snsservice.cache.PostCountRedisRepository;
 import com.dailyon.snsservice.dto.request.comment.CreateCommentRequest;
 import com.dailyon.snsservice.dto.request.comment.CreateReplyCommentRequest;
 import com.dailyon.snsservice.dto.response.comment.CommentPageResponse;
 import com.dailyon.snsservice.entity.Comment;
-import com.dailyon.snsservice.exception.CommentEntityNotFoundException;
 import com.dailyon.snsservice.service.comment.CommentReader;
 import com.dailyon.snsservice.service.comment.CommentService;
 import com.dailyon.snsservice.vo.PostCountVO;
@@ -57,8 +55,7 @@ class CommentServiceTest {
     assertThat(savedComment.getDescription()).isEqualTo(commentDescription);
     assertThat(savedComment.getPost().getId()).isEqualTo(postId);
     assertThat(savedComment.getMember().getId()).isEqualTo(memberId);
-    assertThat(afterPostCountVO.getCommentCount())
-        .isSameAs(13);
+    assertThat(afterPostCountVO.getCommentCount()).isSameAs(13);
   }
 
   @Test
@@ -89,17 +86,13 @@ class CommentServiceTest {
     // given
     Long postId = 3L;
     Long memberId = 2L;
-    Long parentCommentId = 2L;
-    Long childCommentId = 8L;
+    Long commentId = 2L;
 
     // when
-    commentService.softDeleteComment(parentCommentId, postId, memberId);
+    commentService.softDeleteComment(commentId, postId, memberId);
 
     // then
-    assertThrowsExactly(
-        CommentEntityNotFoundException.class, () -> commentReader.read(parentCommentId));
-    assertThrowsExactly(
-        CommentEntityNotFoundException.class, () -> commentReader.read(childCommentId));
+    assertThat(commentReader.read(commentId).getIsDeleted()).isTrue();
   }
 
   @Test

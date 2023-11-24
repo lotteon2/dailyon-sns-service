@@ -69,8 +69,5 @@ public class Comment extends BaseEntity {
 
   public void setDeleted(Boolean deleted) {
     isDeleted = deleted;
-    for (Comment replyComment : children) {
-      replyComment.setDeleted(true);
-    }
   }
 }

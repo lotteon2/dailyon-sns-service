@@ -15,10 +15,10 @@ public interface CommentJpaRepository extends JpaRepository<Comment, Long> {
               + "left join fetch c.children cd "
               + "join fetch c.member m "
               + "join fetch c.post p "
-              + "where p.id = :postId and c.parent is null and c.isDeleted = false",
+              + "where p.id = :postId and c.parent is null",
       countQuery =
           "select count(c) from Comment c "
-              + "where c.post.id = :postId and c.parent is null and c.isDeleted = false")
+              + "where c.post.id = :postId and c.parent is null")
   Page<Comment> findAllByPostId(Long postId, Pageable pageable);
 
   @Query(
@@ -26,8 +26,6 @@ public interface CommentJpaRepository extends JpaRepository<Comment, Long> {
           + "left join fetch c.children cd "
           + "join fetch c.member m "
           + "join fetch c.post p "
-          + "where c.id = :id and c.post.id = :postId and c.member.id = :memberId and c.isDeleted = false")
+          + "where c.id = :id and c.post.id = :postId and c.member.id = :memberId")
   Optional<Comment> findByIdAndPostIdAndMemberId(Long id, Long postId, Long memberId);
-
-  Optional<Comment> findByIdAndIsDeletedFalse(Long id);
 }
