@@ -1,5 +1,6 @@
 package com.dailyon.snsservice.service.post;
 
+import com.dailyon.snsservice.cache.PostCountRedisRepository;
 import com.dailyon.snsservice.dto.request.post.CreatePostRequest;
 import com.dailyon.snsservice.dto.request.post.UpdatePostRequest;
 import com.dailyon.snsservice.dto.response.post.*;
@@ -9,7 +10,6 @@ import com.dailyon.snsservice.mapper.hashtag.HashTagMapper;
 import com.dailyon.snsservice.mapper.post.PostMapper;
 import com.dailyon.snsservice.mapper.postimage.PostImageMapper;
 import com.dailyon.snsservice.mapper.postimageproductdetail.PostImageProductDetailMapper;
-import com.dailyon.snsservice.cache.PostCountRedisRepository;
 import com.dailyon.snsservice.repository.post.PostRepository;
 import com.dailyon.snsservice.service.member.MemberReader;
 import com.dailyon.snsservice.service.s3.S3Service;

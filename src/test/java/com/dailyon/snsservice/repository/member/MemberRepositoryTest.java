@@ -1,16 +1,13 @@
 package com.dailyon.snsservice.repository.member;
 
+import static org.assertj.core.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.*;
 
-import com.dailyon.snsservice.dto.response.follow.FollowerResponse;
 import com.dailyon.snsservice.dto.response.member.OOTDMemberProfileResponse;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Sort;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -30,11 +27,16 @@ class MemberRepositoryTest {
 
     // when
 
-    OOTDMemberProfileResponse ootdMemberProfile =
+    OOTDMemberProfileResponse ootdMemberProfileResponse =
         memberRepository.findOOTDMemberProfile(memberId, followerId);
 
     // then
-    assertTrue(ootdMemberProfile.getIsFollowing());
+    assertThat(ootdMemberProfileResponse.getId()).isSameAs(memberId);
+    assertThat(ootdMemberProfileResponse.getNickname()).isNotNull();
+    assertThat(ootdMemberProfileResponse.getProfileImgUrl()).isNotNull();
+    assertThat(ootdMemberProfileResponse.getFollowingCount()).isNotNull();
+    assertThat(ootdMemberProfileResponse.getFollowerCount()).isNotNull();
+    assertThat(ootdMemberProfileResponse.getIsFollowing()).isTrue();
   }
 
   @Test
@@ -46,10 +48,15 @@ class MemberRepositoryTest {
 
     // when
 
-    OOTDMemberProfileResponse ootdMemberProfile =
+    OOTDMemberProfileResponse ootdMemberProfileResponse =
         memberRepository.findOOTDMemberProfile(memberId, followerId);
 
     // then
-    assertFalse(ootdMemberProfile.getIsFollowing());
+    assertThat(ootdMemberProfileResponse.getId()).isSameAs(memberId);
+    assertThat(ootdMemberProfileResponse.getNickname()).isNotNull();
+    assertThat(ootdMemberProfileResponse.getProfileImgUrl()).isNotNull();
+    assertThat(ootdMemberProfileResponse.getFollowingCount()).isNotNull();
+    assertThat(ootdMemberProfileResponse.getFollowerCount()).isNotNull();
+    assertThat(ootdMemberProfileResponse.getIsFollowing()).isFalse();
   }
 }

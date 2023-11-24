@@ -115,7 +115,7 @@ class PostRepositoryTest {
   }
 
   @Test
-  @DisplayName("사용자 게시글 목록 조회")
+  @DisplayName("사용자 OOTD 게시글 목록 조회")
   void findAllByMemberId() {
     // given
     Long memberId = 1L;
@@ -125,9 +125,15 @@ class PostRepositoryTest {
     Page<Post> posts = postRepository.findAllByMemberId(memberId, pageRequest);
 
     // then
-    assertFalse(posts.hasNext());
-    assertSame(1, posts.getTotalPages());
-    assertSame(6, posts.getContent().size());
+    assertThat(posts.hasNext()).isFalse();
+    assertThat(posts.getContent().size()).isSameAs(6);
+    posts
+        .getContent()
+        .forEach(
+            post -> {
+              assertThat(post.getId()).isNotNull();
+              assertThat(post.getPostImage().getThumbnailImgUrl()).isNotNull();
+            });
   }
 
   @Test

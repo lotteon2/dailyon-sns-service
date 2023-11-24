@@ -138,6 +138,27 @@ class PostApiControllerTest {
   }
 
   @Test
+  @DisplayName("OOTD 사용자 게시글 조회")
+  void getOOTDPosts() throws Exception {
+    // given
+    Long memberId = 2L;
+
+    // when
+    ResultActions resultActions =
+            mockMvc
+                    .perform(get("/my-posts").header("memberId", memberId))
+                    .andExpect(MockMvcResultMatchers.status().isOk())
+                    .andExpect(
+                            MockMvcResultMatchers.content().contentType(MediaType.APPLICATION_JSON_VALUE));
+
+    // then
+    resultActions
+            .andExpect(MockMvcResultMatchers.jsonPath("hasNext").isBoolean())
+            .andExpect(MockMvcResultMatchers.jsonPath("$.posts[0].id").isNumber())
+            .andExpect(MockMvcResultMatchers.jsonPath("$.posts[0].thumbnailImgUrl").isString());
+  }
+
+  @Test
   @DisplayName("Top 4 게시글 목록 조회")
   void getTop4OOTDPosts() throws Exception {
     // given

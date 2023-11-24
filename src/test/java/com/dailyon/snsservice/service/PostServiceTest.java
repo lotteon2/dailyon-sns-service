@@ -3,9 +3,6 @@ package com.dailyon.snsservice.service;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 
-import com.dailyon.snsservice.dto.request.post.CreatePostImageProductDetailRequest;
-import com.dailyon.snsservice.dto.request.post.CreatePostRequest;
-import com.dailyon.snsservice.dto.response.post.CreatePostResponse;
 import com.dailyon.snsservice.dto.response.post.OOTDPostPageResponse;
 import com.dailyon.snsservice.dto.response.post.PostPageResponse;
 import com.dailyon.snsservice.dto.response.post.Top4OOTDResponse;
@@ -13,8 +10,9 @@ import com.dailyon.snsservice.dto.response.postlike.PostLikePageResponse;
 import com.dailyon.snsservice.entity.Post;
 import com.dailyon.snsservice.service.post.PostService;
 import java.util.List;
-
-import org.assertj.core.api.Assertions;
+import javax.persistence.EntityManager;
+import javax.persistence.NoResultException;
+import javax.persistence.PersistenceContext;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,10 +22,6 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.transaction.annotation.Transactional;
-
-import javax.persistence.EntityManager;
-import javax.persistence.NoResultException;
-import javax.persistence.PersistenceContext;
 
 @SpringBootTest
 @Transactional
@@ -55,7 +49,7 @@ class PostServiceTest {
     // then
     assertThat(postPageResponse.getHasNext()).isTrue();
     assertThat(postPageResponse.getPosts().size()).isSameAs(8);
-    postPageResponse.getPosts().forEach(p -> assertNull(p.getIsLike()));
+    postPageResponse.getPosts().forEach(p -> assertThat(p.getIsLike()).isNull());
   }
 
   @Test
@@ -71,7 +65,7 @@ class PostServiceTest {
     // then
     assertThat(postPageResponse.getHasNext()).isTrue();
     assertThat(postPageResponse.getPosts().size()).isSameAs(8);
-    postPageResponse.getPosts().forEach(p -> assertNotNull(p.getIsLike()));
+    postPageResponse.getPosts().forEach(p -> assertThat(p.getIsLike()).isNotNull());
   }
 
   @Test
@@ -85,8 +79,8 @@ class PostServiceTest {
     PostLikePageResponse postLikePageResponse = postService.getPostLikes(memberId, pageRequest);
 
     // then
-    assertFalse(postLikePageResponse.getHasNext());
-    assertSame(1, postLikePageResponse.getPosts().size());
+    assertThat(postLikePageResponse.getHasNext()).isFalse();
+    assertThat(postLikePageResponse.getPosts().size()).isSameAs(1);
   }
 
   @Test
@@ -100,8 +94,15 @@ class PostServiceTest {
     OOTDPostPageResponse ootdPostPageResponse = postService.getOOTDPosts(memberId, pageRequest);
 
     // then
-    assertSame(6, ootdPostPageResponse.getPosts().size());
-    assertFalse(ootdPostPageResponse.getHasNext());
+    assertThat(ootdPostPageResponse.getHasNext()).isFalse();
+    assertThat(ootdPostPageResponse.getPosts().size()).isSameAs(6);
+    ootdPostPageResponse
+        .getPosts()
+        .forEach(
+            post -> {
+              assertThat(post.getId()).isNotNull();
+              assertThat(post.getThumbnailImgUrl()).isNotNull();
+            });
   }
 
   @Test
@@ -141,35 +142,36 @@ class PostServiceTest {
                 .getSingleResult());
   }
 
-//    @Test
-//    @DisplayName("게시글 등록")
-//    void createPost() {
-//      // given
-//      Long memberId = 1L;
-//      CreatePostRequest createPostRequest =
-//          CreatePostRequest.builder()
-//              .title("post title")
-//              .description("post description")
-//              .stature(180.0)
-//              .weight(80.0)
-//              .hashTagNames(List.of("태그 1", "태그 2", "태그 3"))
-//              .postThumbnailImgName("example.png")
-//              .postImgName("example.png")
-//              .postImageProductDetails(
-//                  List.of(
-//                      CreatePostImageProductDetailRequest.builder()
-//                          .productId(1L)
-//                          .productSize("XL")
-//                          .leftGapPercent(40.0)
-//                          .topGapPercent(30.0)
-//                          .build()))
-//              .build();
-//
-//      // when
-//      CreatePostResponse createPostResponse = postService.createPost(memberId, createPostRequest);
-//
-//      // then
-//      assertThat(createPostResponse.getThumbnailImgPreSignedUrl()).isNotEmpty();
-//      assertThat(createPostResponse.getImgPreSignedUrl()).isNotEmpty();
-//    }
+  //    @Test
+  //    @DisplayName("게시글 등록")
+  //    void createPost() {
+  //      // given
+  //      Long memberId = 1L;
+  //      CreatePostRequest createPostRequest =
+  //          CreatePostRequest.builder()
+  //              .title("post title")
+  //              .description("post description")
+  //              .stature(180.0)
+  //              .weight(80.0)
+  //              .hashTagNames(List.of("태그 1", "태그 2", "태그 3"))
+  //              .postThumbnailImgName("example.png")
+  //              .postImgName("example.png")
+  //              .postImageProductDetails(
+  //                  List.of(
+  //                      CreatePostImageProductDetailRequest.builder()
+  //                          .productId(1L)
+  //                          .productSize("XL")
+  //                          .leftGapPercent(40.0)
+  //                          .topGapPercent(30.0)
+  //                          .build()))
+  //              .build();
+  //
+  //      // when
+  //      CreatePostResponse createPostResponse = postService.createPost(memberId,
+  // createPostRequest);
+  //
+  //      // then
+  //      assertThat(createPostResponse.getThumbnailImgPreSignedUrl()).isNotEmpty();
+  //      assertThat(createPostResponse.getImgPreSignedUrl()).isNotEmpty();
+  //    }
 }
