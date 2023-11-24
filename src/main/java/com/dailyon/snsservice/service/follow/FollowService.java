@@ -1,5 +1,7 @@
 package com.dailyon.snsservice.service.follow;
 
+import com.dailyon.snsservice.dto.response.follow.FollowerPageResponse;
+import com.dailyon.snsservice.dto.response.follow.FollowerResponse;
 import com.dailyon.snsservice.dto.response.follow.FollowingPageResponse;
 import com.dailyon.snsservice.entity.Follow;
 import com.dailyon.snsservice.entity.Member;
@@ -25,5 +27,15 @@ public class FollowService {
   public FollowingPageResponse getFollowings(Long memberId, Pageable pageable) {
     Page<Follow> follows = followRepository.findFollowingsByMemberId(memberId, pageable);
     return FollowingPageResponse.fromEntity(follows);
+  }
+
+  public FollowerPageResponse getFollowers(Long memberId, Pageable pageable) {
+    Page<FollowerResponse> followerResponses =
+            followRepository.findFollowersByMemberId(memberId, pageable);
+    return FollowerPageResponse.builder()
+            .totalPages(followerResponses.getTotalPages())
+            .totalElements(followerResponses.getTotalElements())
+            .followers(followerResponses.getContent())
+            .build();
   }
 }

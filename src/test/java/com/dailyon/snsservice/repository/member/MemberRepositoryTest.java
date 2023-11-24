@@ -22,23 +22,6 @@ class MemberRepositoryTest {
   @Autowired private MemberRepository memberRepository;
 
   @Test
-  @DisplayName("팔로워 목록 조회")
-  void findFollowersByFollowingId() {
-    // given
-    Long followingId = 2L;
-    PageRequest pageRequest = PageRequest.of(0, 5, Sort.by(Sort.Direction.DESC, "createdAt"));
-
-    // when
-
-    Page<FollowerResponse> followerResponses =
-        memberRepository.findFollowersByFollowingId(followingId, pageRequest);
-
-    // then
-    assertSame(1, followerResponses.getTotalPages());
-    assertSame(2L, followerResponses.getTotalElements());
-  }
-
-  @Test
   @DisplayName("OOTD 사용자 프로필 조회 - 팔로잉 O")
   void findOOTDMemberProfile1() {
     // given

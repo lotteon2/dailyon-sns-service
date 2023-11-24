@@ -2,6 +2,7 @@ package com.dailyon.snsservice.repository.follow;
 
 import static com.dailyon.snsservice.entity.QFollow.follow;
 
+import com.dailyon.snsservice.dto.response.follow.FollowerResponse;
 import com.dailyon.snsservice.entity.*;
 import com.dailyon.snsservice.exception.MemberEntityNotFoundException;
 import com.dailyon.snsservice.repository.member.MemberJpaRepository;
@@ -41,5 +42,10 @@ public class FollowRepositoryImpl implements FollowRepository {
   @Override
   public Page<Follow> findFollowingsByMemberId(Long memberId, Pageable pageable) {
     return followJpaRepository.findFollowingsByMemberId(memberId, pageable);
+  }
+
+  @Override
+  public Page<FollowerResponse> findFollowersByMemberId(Long memberId, Pageable pageable) {
+    return followJpaRepository.findFollowersByMemberId(memberId, pageable);
   }
 }
