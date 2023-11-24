@@ -4,7 +4,6 @@ import com.dailyon.snsservice.dto.response.follow.FollowerPageResponse;
 import com.dailyon.snsservice.dto.response.follow.FollowerResponse;
 import com.dailyon.snsservice.dto.response.follow.FollowingPageResponse;
 import com.dailyon.snsservice.entity.Follow;
-import com.dailyon.snsservice.entity.Member;
 import com.dailyon.snsservice.repository.follow.FollowRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
