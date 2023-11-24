@@ -145,17 +145,17 @@ class PostApiControllerTest {
 
     // when
     ResultActions resultActions =
-            mockMvc
-                    .perform(get("/my-posts").header("memberId", memberId))
-                    .andExpect(MockMvcResultMatchers.status().isOk())
-                    .andExpect(
-                            MockMvcResultMatchers.content().contentType(MediaType.APPLICATION_JSON_VALUE));
+        mockMvc
+            .perform(get("/my-posts").header("memberId", memberId))
+            .andExpect(MockMvcResultMatchers.status().isOk())
+            .andExpect(
+                MockMvcResultMatchers.content().contentType(MediaType.APPLICATION_JSON_VALUE));
 
     // then
     resultActions
-            .andExpect(MockMvcResultMatchers.jsonPath("hasNext").isBoolean())
-            .andExpect(MockMvcResultMatchers.jsonPath("$.posts[0].id").isNumber())
-            .andExpect(MockMvcResultMatchers.jsonPath("$.posts[0].thumbnailImgUrl").isString());
+        .andExpect(MockMvcResultMatchers.jsonPath("hasNext").isBoolean())
+        .andExpect(MockMvcResultMatchers.jsonPath("$.posts[0].id").isNumber())
+        .andExpect(MockMvcResultMatchers.jsonPath("$.posts[0].thumbnailImgUrl").isString());
   }
 
   @Test
@@ -167,9 +167,7 @@ class PostApiControllerTest {
     // when
     ResultActions resultActions =
         mockMvc
-            .perform(
-                get("/top4-posts")
-                    .queryParam("productId", productId.toString()))
+            .perform(get("/top4-posts").queryParam("productId", productId.toString()))
             .andExpect(MockMvcResultMatchers.status().isOk())
             .andExpect(
                 MockMvcResultMatchers.content().contentType(MediaType.APPLICATION_JSON_VALUE));
@@ -179,6 +177,22 @@ class PostApiControllerTest {
         .andExpect(jsonPath("$.posts.length()").value(4))
         .andExpect(jsonPath("$.posts[0].id").isNumber())
         .andExpect(jsonPath("$.posts[0].thumbnailImgUrl").isString());
+  }
+
+  @Test
+  @DisplayName("게시글 조회수 증가")
+  void addViewCount() throws Exception {
+    // given
+    Long postId = 1L;
+    Integer count = 5;
+
+    // when,
+    ResultActions resultActions =
+        mockMvc.perform(
+            put("/posts/{postId}/view-count", postId).param("count", String.valueOf(count)));
+
+    // then
+    resultActions.andExpect(MockMvcResultMatchers.status().isOk());
   }
 
   //  @Test

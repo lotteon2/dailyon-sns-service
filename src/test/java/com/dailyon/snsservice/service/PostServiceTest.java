@@ -13,6 +13,10 @@ import java.util.List;
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
+
+import com.dailyon.snsservice.vo.PostCountVO;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,6 +39,7 @@ class PostServiceTest {
   @Autowired private PostService postService;
   @PersistenceContext private EntityManager em;
   @Autowired private RedisTemplate<String, String> redisTemplate;
+  @Autowired private ObjectMapper objectMapper;
 
   @Test
   @DisplayName("게시글 목록 조회 - 미인증")
@@ -144,7 +149,7 @@ class PostServiceTest {
 
   @Test
   @DisplayName("게시글 조회수 증가")
-  void addViewCount() {
+  void addViewCount() throws JsonProcessingException {
     // given
     Long postId = 1L;
     Integer count = 5;
@@ -153,7 +158,9 @@ class PostServiceTest {
     postService.addViewCount(postId, count);
 
     // then
-
+    PostCountVO postCountVO =
+            objectMapper.readValue(redisTemplate.opsForValue().get(String.format("postCount::%s", postId)), PostCountVO.class);
+    assertThat(postCountVO.getViewCount()).isSameAs(105);
   }
 
   //    @Test
