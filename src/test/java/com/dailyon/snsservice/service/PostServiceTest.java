@@ -115,11 +115,11 @@ class PostServiceTest {
     List<Top4OOTDResponse> top4OOTDResponses = postService.getTop4OOTDPosts(productId);
 
     // then
-    assertSame(4, top4OOTDResponses.size());
+    assertThat(top4OOTDResponses.size()).isSameAs(4);
   }
 
   @Test
-  @DisplayName("")
+  @DisplayName("게시글 삭제")
   void softDeletePost() {
     // given
     Long postId = 1L;
@@ -140,6 +140,20 @@ class PostServiceTest {
                     "select p from Post p where p.id = :postId and p.isDeleted = false", Post.class)
                 .setParameter("postId", postId)
                 .getSingleResult());
+  }
+
+  @Test
+  @DisplayName("게시글 조회수 증가")
+  void addViewCount() {
+    // given
+    Long postId = 1L;
+    Integer count = 5;
+
+    // when
+    postService.addViewCount(postId, count);
+
+    // then
+
   }
 
   //    @Test

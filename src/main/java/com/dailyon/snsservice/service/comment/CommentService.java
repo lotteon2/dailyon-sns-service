@@ -37,19 +37,10 @@ public class CommentService {
 
     Comment comment = Comment.createComment(member, post, createCommentRequest.getDescription());
     try {
-      // cache hit: 기존의 캐시에 들어있는 count 반환
-      // cache miss: count + 1 해서 캐시에 넣은 후 반환
       PostCountVO postCountVO =
-          postCountRedisRepository.findOrPutPostCountVO(
-              String.valueOf(postId),
-              new PostCountVO(
-                  post.getViewCount(), post.getLikeCount(), post.getCommentCount() + 1));
-      // 이미 캐시에 존재하는 값이라면 업데이트
-      if (!postCountVO.getCommentCount().equals(post.getCommentCount() + 1)) {
-        postCountVO.addCommentCount();
-        postCountRedisRepository.modifyPostCountVOAboutLikeCount(
-            String.valueOf(postId), postCountVO);
-      }
+          new PostCountVO(post.getViewCount(), post.getLikeCount(), post.getCommentCount() + 1);
+      // update comment count to cache
+      postCountRedisRepository.modifyPostCountVOAboutLikeCount(String.valueOf(postId), postCountVO);
     } catch (JsonProcessingException e) {
       throw new RuntimeException(e);
     }

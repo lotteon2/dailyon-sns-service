@@ -28,6 +28,13 @@ public class PostRepositoryImpl implements PostRepository {
   private final JPAQueryFactory jpaQueryFactory;
 
   @Override
+  public Post findByIdAndIsDeletedFalse(Long id) {
+    return postJpaRepository
+        .findByIdAndIsDeletedFalse(id)
+        .orElseThrow(PostEntityNotFoundException::new);
+  }
+
+  @Override
   public Post findByIdAndMemberIdForUpdate(Long id, Long memberId) {
     return postJpaRepository
         .findByIdAndMemberIdForUpdate(id, memberId)
