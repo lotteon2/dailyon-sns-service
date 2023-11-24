@@ -1,5 +1,6 @@
 package com.dailyon.snsservice.dto.response.follow;
 
+import com.dailyon.snsservice.entity.Follow;
 import com.dailyon.snsservice.entity.Member;
 import lombok.*;
 import org.springframework.data.domain.Page;
@@ -17,18 +18,18 @@ public class FollowingPageResponse {
   private long totalElements;
   private List<FollowingResponse> followings;
 
-  public static FollowingPageResponse fromEntity(Page<Member> followings) {
+  public static FollowingPageResponse fromEntity(Page<Follow> follows) {
     return FollowingPageResponse.builder()
-        .totalPages(followings.getTotalPages())
-        .totalElements(followings.getTotalElements())
+        .totalPages(follows.getTotalPages())
+        .totalElements(follows.getTotalElements())
         .followings(
-            followings.getContent().stream()
+            follows.getContent().stream()
                 .map(
-                    following ->
+                    follow ->
                         FollowingResponse.builder()
-                            .id(following.getId())
-                            .nickname(following.getNickname())
-                            .profileImgUrl(following.getProfileImgUrl())
+                            .id(follow.getFollowing().getId())
+                            .nickname(follow.getFollowing().getNickname())
+                            .profileImgUrl(follow.getFollowing().getProfileImgUrl())
                             .build())
                 .collect(Collectors.toList()))
         .build();

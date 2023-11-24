@@ -1,6 +1,5 @@
 package com.dailyon.snsservice.entity;
 
-import com.dailyon.snsservice.entity.common.BaseEntity;
 import java.util.List;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -13,7 +12,7 @@ import lombok.*;
 @Builder(access = AccessLevel.PRIVATE)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Member extends BaseEntity {
+public class Member {
 
   @Id
   @Column(name = "id")
@@ -45,7 +44,19 @@ public class Member extends BaseEntity {
   @Builder.Default
   private Integer followerCount = 0;
 
-  public static Member createMember(Long id, String nickname, String code) {
-    return Member.builder().id(id).nickname(nickname).code(code).build();
+  public void increaseFollowingCount() {
+    this.followingCount += 1;
+  }
+
+  public void increaseFollowerCount() {
+    this.followerCount += 1;
+  }
+
+  public void decreaseFollowingCount() {
+    this.followingCount -= 1;
+  }
+
+  public void decreaseFollowerCount() {
+    this.followerCount -= 1;
   }
 }

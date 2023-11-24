@@ -1,5 +1,6 @@
 package com.dailyon.snsservice.entity;
 
+import com.dailyon.snsservice.entity.common.BaseEntity;
 import com.dailyon.snsservice.entity.ids.FollowId;
 import javax.persistence.*;
 import lombok.*;
@@ -10,7 +11,7 @@ import lombok.*;
 @Builder(access = AccessLevel.PRIVATE)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Follow {
+public class Follow extends BaseEntity {
 
   @Id
   @ManyToOne
