@@ -14,11 +14,6 @@ public class CommentRepositoryImpl implements CommentRepository {
   private final CommentJpaRepository commentJpaRepository;
 
   @Override
-  public Comment findById(Long id) {
-    return commentJpaRepository.findById(id).orElseThrow(CommentEntityNotFoundException::new);
-  }
-
-  @Override
   public Page<Comment> findAllByPostId(Long postId, Pageable pageable) {
     return commentJpaRepository.findAllByPostId(postId, pageable);
   }
@@ -29,7 +24,11 @@ public class CommentRepositoryImpl implements CommentRepository {
   }
 
   @Override
-  public void deleteById(Long commentId) {
-    commentJpaRepository.deleteById(commentId);
+  public void softDeleteById(Long commentId, Long postId, Long memberId) {
+    Comment comment =
+        commentJpaRepository
+            .findByIdAndPostIdAndMemberId(commentId, postId, memberId)
+            .orElseThrow(CommentEntityNotFoundException::new);
+    comment.setDeleted(true);
   }
 }

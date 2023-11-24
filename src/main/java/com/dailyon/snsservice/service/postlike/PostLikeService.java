@@ -28,6 +28,8 @@ public class PostLikeService {
     Post post = postReader.read(postId);
     int todoCalcLikeCount = postLikeRepository.togglePostLike(member, post);
     try {
+      // cache hit: 기존의 캐시에 들어있는 count 반환
+      // cache miss: count 계산해서 캐시에 넣은 후 반환
       PostCountVO postCountVO =
           postCountRedisRepository.findOrPutPostCountVO(
               String.valueOf(postId),

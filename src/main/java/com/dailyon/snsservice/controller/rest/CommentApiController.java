@@ -3,7 +3,7 @@ package com.dailyon.snsservice.controller.rest;
 import com.dailyon.snsservice.dto.request.comment.CreateCommentRequest;
 import com.dailyon.snsservice.dto.request.comment.CreateReplyCommentRequest;
 import com.dailyon.snsservice.dto.response.comment.CommentPageResponse;
-import com.dailyon.snsservice.service.CommentService;
+import com.dailyon.snsservice.service.comment.CommentService;
 import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
@@ -44,7 +44,7 @@ public class CommentApiController {
   }
 
   @PostMapping("/{postId}/comments/{commentId}")
-  public ResponseEntity<Void> createComment(
+  public ResponseEntity<Void> createReplyComment(
       @RequestHeader(name = "memberId") Long memberId,
       @PathVariable(name = "postId") Long postId,
       @PathVariable(name = "commentId") Long commentId,
@@ -58,7 +58,7 @@ public class CommentApiController {
       @RequestHeader(name = "memberId") Long memberId,
       @PathVariable(name = "postId") Long postId,
       @PathVariable(name = "commentId") Long commentId) {
-    commentService.deleteCommentById(commentId);
+    commentService.softDeleteComment(commentId, postId, memberId);
     return ResponseEntity.ok().build();
   }
 }

@@ -2,6 +2,7 @@ package com.dailyon.snsservice.entity;
 
 import com.dailyon.snsservice.entity.common.BaseEntity;
 import lombok.*;
+import org.hibernate.annotations.BatchSize;
 
 import javax.persistence.*;
 import javax.validation.constraints.Size;
@@ -29,6 +30,7 @@ public class Comment extends BaseEntity {
       fetch = FetchType.LAZY,
       cascade = {CascadeType.REMOVE})
   @Builder.Default
+  @BatchSize(size = 100)
   private List<Comment> children = new ArrayList<>();
 
   @ManyToOne(fetch = FetchType.LAZY)
@@ -42,6 +44,10 @@ public class Comment extends BaseEntity {
   @Size(min = 5, max = 140)
   @Column(name = "description", nullable = false)
   private String description;
+
+  @Column(name = "is_deleted", nullable = false, columnDefinition = "boolean default false")
+  @Builder.Default
+  private Boolean isDeleted = false;
 
   public static Comment createComment(Member member, Post post, String description) {
     return Comment.builder()
@@ -59,5 +65,9 @@ public class Comment extends BaseEntity {
             .post(post)
             .description(description)
             .build();
+  }
+
+  public void setDeleted(Boolean deleted) {
+    isDeleted = deleted;
   }
 }

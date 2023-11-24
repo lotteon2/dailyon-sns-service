@@ -4,13 +4,13 @@ import com.dailyon.snsservice.entity.Comment;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
-public interface CommentRepository {
+import java.util.Optional;
 
-  Comment findById(Long id);
+public interface CommentRepository {
 
   Page<Comment> findAllByPostId(Long postId, Pageable pageable);
 
   Comment save(Comment comment);
 
-  void deleteById(Long commentId);
+  void softDeleteById(Long commentId, Long postId, Long memberId);
 }
