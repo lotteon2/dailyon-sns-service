@@ -2,10 +2,7 @@ package com.dailyon.snsservice.controller.rest;
 
 import com.dailyon.snsservice.dto.request.post.CreatePostRequest;
 import com.dailyon.snsservice.dto.request.post.UpdatePostRequest;
-import com.dailyon.snsservice.dto.response.post.CreatePostResponse;
-import com.dailyon.snsservice.dto.response.post.PostPageResponse;
-import com.dailyon.snsservice.dto.response.post.Top4OOTDResponse;
-import com.dailyon.snsservice.dto.response.post.UpdatePostResponse;
+import com.dailyon.snsservice.dto.response.post.*;
 import com.dailyon.snsservice.dto.response.postlike.PostLikePageResponse;
 import com.dailyon.snsservice.exception.HashTagDuplicatedException;
 import com.dailyon.snsservice.service.post.PostService;
@@ -82,9 +79,21 @@ public class PostApiController {
     return ResponseEntity.ok(postLikePageResponse);
   }
 
+  @GetMapping("/my-posts")
+  public ResponseEntity<OOTDPostPageResponse> getOOTDPosts(
+      @RequestHeader(name = "memberId") Long memberId,
+      @PageableDefault(
+              page = 0,
+              size = 8,
+              sort = {"createdAt"},
+              direction = Sort.Direction.DESC)
+          Pageable pageable) {
+    OOTDPostPageResponse ootdPostPageResponse = postService.getOOTDPosts(memberId, pageable);
+    return ResponseEntity.ok(ootdPostPageResponse);
+  }
+
   @GetMapping("/top4-posts")
   public ResponseEntity<Map<String, List<Top4OOTDResponse>>> getTop4OOTDPosts(
-      @RequestHeader(name = "memberId", required = false) Long memberId,
       @RequestParam(name = "productId") Long productId) {
     List<Top4OOTDResponse> top4OOTDResponses = postService.getTop4OOTDPosts(productId);
     return ResponseEntity.ok(Map.of("posts", top4OOTDResponses));

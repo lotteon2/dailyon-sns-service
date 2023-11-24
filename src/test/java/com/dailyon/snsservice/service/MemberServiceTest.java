@@ -1,5 +1,6 @@
 package com.dailyon.snsservice.service;
 
+import static org.assertj.core.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.*;
 
 import com.dailyon.snsservice.dto.response.member.OOTDMemberProfileResponse;
@@ -26,15 +27,15 @@ class MemberServiceTest {
     Long followerId = 1L;
 
     // when
-    OOTDMemberProfileResponse ootdMemberProfile =
+    OOTDMemberProfileResponse ootdMemberProfileResponse =
         memberService.getOOTDMemberProfile(memberId, followerId);
 
     // then
-    assertNotNull(ootdMemberProfile.getId());
-    assertNotNull(ootdMemberProfile.getNickname());
-    assertNotNull(ootdMemberProfile.getProfileImgUrl());
-    assertNotNull(ootdMemberProfile.getFollowingCount());
-    assertNotNull(ootdMemberProfile.getFollowerCount());
-    assertTrue(ootdMemberProfile.getIsFollowing());
+    assertThat(ootdMemberProfileResponse.getId()).isSameAs(memberId);
+    assertThat(ootdMemberProfileResponse.getNickname()).isNotNull();
+    assertThat(ootdMemberProfileResponse.getProfileImgUrl()).isNotNull();
+    assertThat(ootdMemberProfileResponse.getFollowingCount()).isNotNull();
+    assertThat(ootdMemberProfileResponse.getFollowerCount()).isNotNull();
+    assertThat(ootdMemberProfileResponse.getIsFollowing()).isTrue();
   }
 }
