@@ -2,6 +2,7 @@ package com.dailyon.snsservice.entity;
 
 import com.dailyon.snsservice.entity.common.BaseEntity;
 import lombok.*;
+import org.hibernate.annotations.BatchSize;
 
 import javax.persistence.*;
 import javax.validation.constraints.Size;
@@ -29,6 +30,7 @@ public class Comment extends BaseEntity {
       fetch = FetchType.LAZY,
       cascade = {CascadeType.REMOVE})
   @Builder.Default
+  @BatchSize(size = 100)
   private List<Comment> children = new ArrayList<>();
 
   @ManyToOne(fetch = FetchType.LAZY)
