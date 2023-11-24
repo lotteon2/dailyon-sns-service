@@ -1,7 +1,6 @@
 package com.dailyon.snsservice.entity;
 
 import com.dailyon.snsservice.entity.common.BaseEntity;
-import com.dailyon.snsservice.entity.ids.HashTagId;
 import javax.persistence.*;
 import lombok.*;
 
