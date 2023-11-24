@@ -3,6 +3,9 @@ package com.dailyon.snsservice.service;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 
+import com.dailyon.snsservice.dto.request.post.CreatePostImageProductDetailRequest;
+import com.dailyon.snsservice.dto.request.post.CreatePostRequest;
+import com.dailyon.snsservice.dto.response.post.CreatePostResponse;
 import com.dailyon.snsservice.dto.response.post.OOTDPostPageResponse;
 import com.dailyon.snsservice.dto.response.post.PostPageResponse;
 import com.dailyon.snsservice.dto.response.post.Top4OOTDResponse;
@@ -138,35 +141,35 @@ class PostServiceTest {
                 .getSingleResult());
   }
 
-  //  @Test
-  //  @DisplayName("게시글 등록")
-  //  void createPost() {
-  //    // given
-  //    Long memberId = 1L;
-  //    CreatePostRequest createPostRequest =
-  //        CreatePostRequest.builder()
-  //            .title("post title")
-  //            .description("post description")
-  //            .stature(180.0)
-  //            .weight(80.0)
-  //            .hashTagNames(List.of("태그 1", "태그 2", "태그 3"))
-  //            .isPostThumbnailImgExists(true)
-  //            .isPostImgExists(true)
-  //            .postImageProductDetails(
-  //                List.of(
-  //                    CreatePostImageProductDetailRequest.builder()
-  //                        .productId(1L)
-  //                        .productSize("XL")
-  //                        .leftGapPercent(40.0)
-  //                        .topGapPercent(30.0)
-  //                        .build()))
-  //            .build();
-  //
-  //    // when
-  //    CreatePostResponse createPostResponse = postService.createPost(memberId, createPostRequest);
-  //
-  //    // then
-  //    assertThat(createPostResponse.getThumbnailImgPreSignedUrl()).isNotEmpty();
-  //    assertThat(createPostResponse.getImgPreSignedUrl()).isNotEmpty();
-  //  }
+//    @Test
+//    @DisplayName("게시글 등록")
+//    void createPost() {
+//      // given
+//      Long memberId = 1L;
+//      CreatePostRequest createPostRequest =
+//          CreatePostRequest.builder()
+//              .title("post title")
+//              .description("post description")
+//              .stature(180.0)
+//              .weight(80.0)
+//              .hashTagNames(List.of("태그 1", "태그 2", "태그 3"))
+//              .postThumbnailImgName("example.png")
+//              .postImgName("example.png")
+//              .postImageProductDetails(
+//                  List.of(
+//                      CreatePostImageProductDetailRequest.builder()
+//                          .productId(1L)
+//                          .productSize("XL")
+//                          .leftGapPercent(40.0)
+//                          .topGapPercent(30.0)
+//                          .build()))
+//              .build();
+//
+//      // when
+//      CreatePostResponse createPostResponse = postService.createPost(memberId, createPostRequest);
+//
+//      // then
+//      assertThat(createPostResponse.getThumbnailImgPreSignedUrl()).isNotEmpty();
+//      assertThat(createPostResponse.getImgPreSignedUrl()).isNotEmpty();
+//    }
 }

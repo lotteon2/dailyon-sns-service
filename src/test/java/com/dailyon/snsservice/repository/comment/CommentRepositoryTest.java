@@ -80,9 +80,9 @@ class CommentRepositoryTest {
     Page<Comment> comments = commentRepository.findAllByPostId(postId, pageRequest);
 
     // then
-    assertSame(2, comments.getTotalPages());
-    assertSame(5, comments.getContent().size());
-    assertSame(6L, comments.getTotalElements());
-    comments.getContent().stream().forEach(comment -> assertNull(comment.getParent()));
+    assertThat(comments.getTotalPages()).isSameAs(2);
+    assertThat(comments.getTotalElements()).isSameAs(6L);
+    assertThat(comments.getContent().size()).isSameAs(5);
+    comments.getContent().forEach(comment -> assertThat(comment.getParent()).isNull());
   }
 }

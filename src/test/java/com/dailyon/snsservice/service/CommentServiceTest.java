@@ -113,8 +113,8 @@ class CommentServiceTest {
     CommentPageResponse commentPageResponse = commentService.getComments(postId, pageRequest);
 
     // then
-    assertSame(2, commentPageResponse.getTotalPages());
-    assertSame(5, commentPageResponse.getComments().size());
-    assertSame(6L, commentPageResponse.getTotalElements());
+    assertThat(commentPageResponse.getTotalPages()).isSameAs(2);
+    assertThat(commentPageResponse.getTotalElements()).isSameAs(6L);
+    assertThat(commentPageResponse.getComments().size()).isSameAs(5);
   }
 }
