@@ -28,12 +28,18 @@ public class FollowRepositoryImpl implements FollowRepository {
             .where(follow.follower.id.eq(followerId).and(follow.following.id.eq(followingId)))
             .fetchOne();
 
+    Member findFollower = memberReader.read(followerId);
+    Member findFollowing = memberReader.read(followingId);
     if (Objects.isNull(findFollow)) {
-      Member findFollower = memberReader.read(followerId);
-      Member findFollowing = memberReader.read(followingId);
       followJpaRepository.save(Follow.createFollow(findFollower, findFollowing));
+
+      findFollowing.increaseFollowerCount();
+      findFollower.increaseFollowingCount();
     } else {
       followJpaRepository.delete(findFollow);
+
+      findFollowing.decreaseFollowerCount();
+      findFollower.decreaseFollowingCount();
     }
   }
 

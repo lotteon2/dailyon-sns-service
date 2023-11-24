@@ -10,6 +10,8 @@ import com.dailyon.snsservice.entity.ids.FollowId;
 import com.dailyon.snsservice.repository.follow.FollowJpaRepository;
 import com.dailyon.snsservice.service.follow.FollowService;
 import java.util.Optional;
+
+import com.dailyon.snsservice.service.member.MemberReader;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,19 +30,28 @@ class FollowServiceTest {
 
   @Autowired private FollowJpaRepository followJpaRepository;
 
+  @Autowired private MemberReader memberReader;
+
   @Test
   @DisplayName("팔로우 추가")
   void createFollow() {
     // given
     Long followerId = 1L;
     Long followingId = 4L;
+    Integer beforeFollowingCount = memberReader.read(followerId).getFollowingCount();
+    Integer beforeFollowerCount = memberReader.read(followingId).getFollowerCount();
 
     // when
     followService.toggleFollow(followerId, followingId);
 
     // then
     Optional<Follow> follow = followJpaRepository.findById(new FollowId(followerId, followingId));
-    assertNotNull(follow.orElse(null));
+    Integer afterFollowingCount = memberReader.read(followerId).getFollowingCount();
+    Integer afterFollowerCount = memberReader.read(followingId).getFollowerCount();
+
+    assertThat(follow.orElse(null)).isNotNull();
+    assertThat(afterFollowingCount).isSameAs( beforeFollowingCount + 1);
+    assertThat(afterFollowerCount).isSameAs(beforeFollowerCount + 1);
   }
 
   @Test
@@ -49,13 +60,20 @@ class FollowServiceTest {
     // given
     Long followerId = 1L;
     Long followingId = 2L;
+    Integer beforeFollowingCount = memberReader.read(followerId).getFollowingCount();
+    Integer beforeFollowerCount = memberReader.read(followingId).getFollowerCount();
 
     // when
     followService.toggleFollow(followerId, followingId);
 
     // then
     Optional<Follow> follow = followJpaRepository.findById(new FollowId(followerId, followingId));
-    assertNull(follow.orElse(null));
+    Integer afterFollowingCount = memberReader.read(followerId).getFollowingCount();
+    Integer afterFollowerCount = memberReader.read(followingId).getFollowerCount();
+
+    assertThat(follow.orElse(null)).isNull();
+    assertThat(afterFollowingCount).isSameAs( beforeFollowingCount - 1);
+    assertThat(afterFollowerCount).isSameAs(beforeFollowerCount - 1);
   }
 
   @Test

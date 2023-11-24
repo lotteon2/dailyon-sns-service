@@ -45,7 +45,19 @@ public class Member extends BaseEntity {
   @Builder.Default
   private Integer followerCount = 0;
 
-  public static Member createMember(Long id, String nickname, String code) {
-    return Member.builder().id(id).nickname(nickname).code(code).build();
+  public void increaseFollowingCount() {
+    this.followingCount += 1;
+  }
+
+  public void increaseFollowerCount() {
+    this.followerCount += 1;
+  }
+
+  public void decreaseFollowingCount() {
+    this.followingCount -= 1;
+  }
+
+  public void decreaseFollowerCount() {
+    this.followerCount -= 1;
   }
 }
