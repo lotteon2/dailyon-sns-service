@@ -23,23 +23,6 @@ class MemberServiceTest {
   @Autowired private MemberService memberService;
 
   @Test
-  @DisplayName("팔로잉 목록 조회")
-  void getFollowings() {
-    // given
-    Long followerId = 1L;
-    PageRequest pageRequest = PageRequest.of(0, 5, Sort.by(Sort.Direction.DESC, "createdAt"));
-
-    // when
-    FollowingPageResponse followingPageResponse =
-        memberService.getFollowings(followerId, pageRequest);
-
-    // then
-    assertSame(1, followingPageResponse.getTotalPages());
-    assertSame(2L, followingPageResponse.getTotalElements());
-    assertSame(2, followingPageResponse.getFollowings().size());
-  }
-
-  @Test
   @DisplayName("팔로워 목록 조회")
   void getFollowers() {
     // given

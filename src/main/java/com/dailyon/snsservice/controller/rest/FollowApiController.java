@@ -2,7 +2,7 @@ package com.dailyon.snsservice.controller.rest;
 
 import com.dailyon.snsservice.dto.response.follow.FollowerPageResponse;
 import com.dailyon.snsservice.dto.response.follow.FollowingPageResponse;
-import com.dailyon.snsservice.service.FollowService;
+import com.dailyon.snsservice.service.follow.FollowService;
 import com.dailyon.snsservice.service.member.MemberService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
@@ -28,7 +28,7 @@ public class FollowApiController {
               sort = {"createdAt"},
               direction = Sort.Direction.DESC)
           Pageable pageable) {
-    FollowingPageResponse followingPageResponse = memberService.getFollowings(memberId, pageable);
+    FollowingPageResponse followingPageResponse = followService.getFollowings(memberId, pageable);
     return ResponseEntity.ok(followingPageResponse);
   }
 

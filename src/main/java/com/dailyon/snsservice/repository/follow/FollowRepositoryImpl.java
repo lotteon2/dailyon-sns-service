@@ -7,6 +7,8 @@ import com.dailyon.snsservice.exception.MemberEntityNotFoundException;
 import com.dailyon.snsservice.repository.member.MemberJpaRepository;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 
 @Repository
@@ -34,5 +36,10 @@ public class FollowRepositoryImpl implements FollowRepository {
     } else {
       followJpaRepository.delete(findFollow);
     }
+  }
+
+  @Override
+  public Page<Follow> findFollowingsByMemberId(Long memberId, Pageable pageable) {
+    return followJpaRepository.findFollowingsByMemberId(memberId, pageable);
   }
 }

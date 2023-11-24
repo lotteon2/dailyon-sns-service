@@ -19,11 +19,6 @@ public class MemberService {
 
   private final MemberRepository memberRepository;
 
-  public FollowingPageResponse getFollowings(Long followerId, Pageable pageable) {
-    Page<Member> followings = memberRepository.findFollowingsByFollowerId(followerId, pageable);
-    return FollowingPageResponse.fromEntity(followings);
-  }
-
   public FollowerPageResponse getFollowers(Long followerId, Pageable pageable) {
     Page<FollowerResponse> followerResponses =
         memberRepository.findFollowersByFollowingId(followerId, pageable);
