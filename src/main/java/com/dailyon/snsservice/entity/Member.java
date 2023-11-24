@@ -1,6 +1,5 @@
 package com.dailyon.snsservice.entity;
 
-import com.dailyon.snsservice.entity.common.BaseEntity;
 import java.util.List;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -13,7 +12,7 @@ import lombok.*;
 @Builder(access = AccessLevel.PRIVATE)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Member extends BaseEntity {
+public class Member {
 
   @Id
   @Column(name = "id")
