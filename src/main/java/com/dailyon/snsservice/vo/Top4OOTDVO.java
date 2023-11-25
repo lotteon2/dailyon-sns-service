@@ -1,18 +1,18 @@
 package com.dailyon.snsservice.vo;
 
-import java.io.Serializable;
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.io.Serializable;
+
 @Getter
 @EqualsAndHashCode
 @NoArgsConstructor
 @AllArgsConstructor
-public class PostCountVO implements Serializable {
+public class Top4OOTDVO implements Serializable {
 
-  private Integer viewCount;
-  private Integer likeCount;
-  private Integer commentCount;
+  private Long id;
+  private String thumbnailImgUrl;
 }

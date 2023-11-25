@@ -1,6 +1,7 @@
 package com.dailyon.snsservice.service.post;
 
 import com.dailyon.snsservice.cache.PostCountRedisRepository;
+import com.dailyon.snsservice.cache.Top4OOTDRedisRepository;
 import com.dailyon.snsservice.dto.request.post.CreatePostRequest;
 import com.dailyon.snsservice.dto.request.post.UpdatePostRequest;
 import com.dailyon.snsservice.dto.response.post.*;
@@ -14,6 +15,7 @@ import com.dailyon.snsservice.repository.post.PostRepository;
 import com.dailyon.snsservice.service.member.MemberReader;
 import com.dailyon.snsservice.service.s3.S3Service;
 import com.dailyon.snsservice.vo.PostCountVO;
+import com.dailyon.snsservice.vo.Top4OOTDVO;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import java.util.List;
 import java.util.Set;
@@ -35,6 +37,7 @@ public class PostService {
 
   private final PostRepository postRepository;
   private final PostCountRedisRepository postCountRedisRepository;
+  private final Top4OOTDRedisRepository top4OOTDRedisRepository;
   private final PostImageProductDetailMapper postImageProductDetailMapper;
   private final PostMapper postMapper;
   private final PostImageMapper postImageMapper;
@@ -141,8 +144,15 @@ public class PostService {
   }
 
   public List<Top4OOTDResponse> getTop4OOTDPosts(Long productId) {
-    List<Post> posts = postRepository.findTop4ByOrderByLikeCountDesc(productId);
-    return posts.stream().map(Top4OOTDResponse::fromEntity).collect(Collectors.toList());
+    try {
+      List<Top4OOTDVO> cachedTop4OOTDVOs =
+          top4OOTDRedisRepository.findOrPutTop4OOTDVO(String.valueOf(productId));
+      return cachedTop4OOTDVOs.stream()
+          .map(Top4OOTDResponse::fromTop4OOTDVO)
+          .collect(Collectors.toList());
+    } catch (JsonProcessingException e) {
+      throw new RuntimeException(e);
+    }
   }
 
   @Transactional
