@@ -127,8 +127,7 @@ public class PostRepositoryImpl implements PostRepository {
   }
 
   @Override
-  public PostDetailResponse findDetailByIdWithIsFollowing(
-      Long id, Long postMemberId, Long memberId) {
+  public PostDetailResponse findDetailByIdWithIsFollowing(Long id, Long memberId) {
     JPAQuery<PostDetailResponse> query;
 
     QList hashTags =
@@ -170,6 +169,7 @@ public class PostRepositoryImpl implements PostRepository {
                       hashTags,
                       postImageProductDetails))
               .from(post)
+              .leftJoin(post.member, member)
               .leftJoin(member.following, follow);
     } else {
       query =
@@ -192,12 +192,11 @@ public class PostRepositoryImpl implements PostRepository {
                           member.code),
                       hashTags,
                       postImageProductDetails))
-              .from(post);
+              .from(post)
+              .leftJoin(post.member, member);
     }
 
     return query
-        .leftJoin(post.member, member)
-        .leftJoin(member.following, follow)
         .leftJoin(post.postImage, postImage)
         .leftJoin(postImage.postImageProductDetails, postImageProductDetail)
         .leftJoin(post.hashTags, hashTag)

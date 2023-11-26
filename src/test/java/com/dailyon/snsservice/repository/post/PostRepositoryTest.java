@@ -182,12 +182,11 @@ class PostRepositoryTest {
   void findDetailByIdWithIsFollowingWithAuth() {
     // given
     Long postId = 1L;
-    Long postMemberId = 1L;
     Long memberId = 2L;
 
     // when
     PostDetailResponse postDetailResponse =
-        postRepository.findDetailByIdWithIsFollowing(postId, postMemberId, memberId);
+        postRepository.findDetailByIdWithIsFollowing(postId, memberId);
 
     // then
     assertThat(postDetailResponse.getId()).isSameAs(postId);
@@ -197,7 +196,6 @@ class PostRepositoryTest {
     assertThat(postDetailResponse.getWeight()).isNotNull();
     assertThat(postDetailResponse.getImgUrl()).isNotNull();
     assertThat(postDetailResponse.getCreatedAt()).isNotNull();
-    assertThat(postDetailResponse.getMember().getId()).isSameAs(postMemberId);
     assertThat(postDetailResponse.getMember().getNickname()).isNotNull();
     assertThat(postDetailResponse.getMember().getProfileImgUrl()).isNotNull();
     assertThat(postDetailResponse.getMember().getCode()).isNotNull();
@@ -221,12 +219,11 @@ class PostRepositoryTest {
   void findDetailByIdWithIsFollowingWithoutAuth() {
     // given
     Long postId = 1L;
-    Long postMemberId = 1L;
     Long memberId = null;
 
     // when
     PostDetailResponse postDetailResponse =
-        postRepository.findDetailByIdWithIsFollowing(postId, postMemberId, memberId);
+        postRepository.findDetailByIdWithIsFollowing(postId, memberId);
 
     // then
     assertThat(postDetailResponse.getId()).isSameAs(postId);
@@ -236,7 +233,6 @@ class PostRepositoryTest {
     assertThat(postDetailResponse.getWeight()).isNotNull();
     assertThat(postDetailResponse.getImgUrl()).isNotNull();
     assertThat(postDetailResponse.getCreatedAt()).isNotNull();
-    assertThat(postDetailResponse.getMember().getId()).isSameAs(postMemberId);
     assertThat(postDetailResponse.getMember().getNickname()).isNotNull();
     assertThat(postDetailResponse.getMember().getProfileImgUrl()).isNotNull();
     assertThat(postDetailResponse.getMember().getCode()).isNotNull();

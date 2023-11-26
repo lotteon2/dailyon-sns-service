@@ -27,5 +27,5 @@ public interface PostRepository {
 
   int updateCountsById(Long id, Integer viewCount, Integer likeCount, Integer commentCount);
 
-  PostDetailResponse findDetailByIdWithIsFollowing(Long id, Long postMemberId, Long memberId);
+  PostDetailResponse findDetailByIdWithIsFollowing(Long id, Long memberId);
 }
