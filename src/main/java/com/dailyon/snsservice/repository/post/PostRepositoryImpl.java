@@ -158,6 +158,9 @@ public class PostRepositoryImpl implements PostRepository {
                       post.stature,
                       post.weight,
                       postImage.imgUrl,
+                      post.viewCount,
+                      post.likeCount,
+                      post.commentCount,
                       post.createdAt,
                       Projections.constructor(
                           PostDetailMemberResponse.class,
@@ -169,8 +172,8 @@ public class PostRepositoryImpl implements PostRepository {
                       hashTags,
                       postImageProductDetails))
               .from(post)
-              .leftJoin(post.member, member)
-              .leftJoin(member.following, follow);
+              .innerJoin(post.member, member)
+              .innerJoin(member.following, follow);
     } else {
       query =
           jpaQueryFactory
@@ -183,6 +186,9 @@ public class PostRepositoryImpl implements PostRepository {
                       post.stature,
                       post.weight,
                       postImage.imgUrl,
+                      post.viewCount,
+                      post.likeCount,
+                      post.commentCount,
                       post.createdAt,
                       Projections.fields(
                           PostDetailMemberResponse.class,
@@ -193,13 +199,13 @@ public class PostRepositoryImpl implements PostRepository {
                       hashTags,
                       postImageProductDetails))
               .from(post)
-              .leftJoin(post.member, member);
+              .innerJoin(post.member, member);
     }
 
     return query
-        .leftJoin(post.postImage, postImage)
-        .leftJoin(postImage.postImageProductDetails, postImageProductDetail)
-        .leftJoin(post.hashTags, hashTag)
+        .innerJoin(post.postImage, postImage)
+        .innerJoin(postImage.postImageProductDetails, postImageProductDetail)
+        .innerJoin(post.hashTags, hashTag)
         .where(post.id.eq(id), post.isDeleted.eq(false))
         .fetchOne();
   }

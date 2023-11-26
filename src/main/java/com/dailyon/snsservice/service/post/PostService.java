@@ -2,11 +2,18 @@ package com.dailyon.snsservice.service.post;
 
 import com.dailyon.snsservice.cache.PostCountRedisRepository;
 import com.dailyon.snsservice.cache.Top4OOTDRedisRepository;
+import com.dailyon.snsservice.client.dto.CouponForProductResponse;
+import com.dailyon.snsservice.client.dto.ProductInfoResponse;
+import com.dailyon.snsservice.client.feign.ProductServiceClient;
+import com.dailyon.snsservice.client.feign.PromotionServiceClient;
 import com.dailyon.snsservice.dto.request.post.CreatePostRequest;
 import com.dailyon.snsservice.dto.request.post.UpdatePostRequest;
 import com.dailyon.snsservice.dto.response.post.*;
+import com.dailyon.snsservice.dto.response.postimageproductdetail.PostImageProductDetailResponse;
 import com.dailyon.snsservice.dto.response.postlike.PostLikePageResponse;
 import com.dailyon.snsservice.entity.*;
+import com.dailyon.snsservice.exception.feign.ProductServiceOutOfServiceException;
+import com.dailyon.snsservice.exception.feign.PromotionServiceOutOfServiceException;
 import com.dailyon.snsservice.mapper.hashtag.HashTagMapper;
 import com.dailyon.snsservice.mapper.post.PostMapper;
 import com.dailyon.snsservice.mapper.postimage.PostImageMapper;
@@ -17,16 +24,18 @@ import com.dailyon.snsservice.service.s3.S3Service;
 import com.dailyon.snsservice.vo.PostCountVO;
 import com.dailyon.snsservice.vo.Top4OOTDVO;
 import com.fasterxml.jackson.core.JsonProcessingException;
-import java.util.List;
-import java.util.Set;
-import java.util.UUID;
+import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
+
+import java.util.*;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+@Slf4j
 @Service
 @Transactional(readOnly = true)
 @RequiredArgsConstructor
@@ -44,6 +53,8 @@ public class PostService {
   private final HashTagMapper hashTagMapper;
   private final MemberReader memberReader;
   private final S3Service s3Service;
+  private final ProductServiceClient productServiceClient;
+  private final PromotionServiceClient promotionServiceClient;
 
   public PostPageResponse getPosts(Long memberId, Pageable pageable) {
     Page<PostResponse> postResponses = postRepository.findAllWithIsLike(memberId, pageable);
@@ -166,5 +177,84 @@ public class PostService {
     } catch (JsonProcessingException e) {
       throw new RuntimeException(e);
     }
+  }
+
+  private void promotionServiceOutOfServiceException(Throwable t) {
+    throw new PromotionServiceOutOfServiceException();
+  }
+
+  @CircuitBreaker(name = "circuitBreaker", fallbackMethod = "promotionServiceOutOfServiceException")
+  private List<CouponForProductResponse> getCouponsForProduct(
+      Long memberId, List<Long> productIds) {
+    return promotionServiceClient.getCouponsForProduct(memberId, "product", productIds).getBody();
+  }
+
+  private void productServiceOutOfServiceException(Throwable t) {
+    throw new ProductServiceOutOfServiceException();
+  }
+
+  @CircuitBreaker(name = "circuitBreaker", fallbackMethod = "productServiceOutOfServiceException")
+  private List<ProductInfoResponse> getProductInfos(List<Long> productIds) {
+    return productServiceClient.getProductInfos(productIds).getBody();
+  }
+
+  public PostDetailResponse findDetailByIdWithIsFollowing(Long id, Long memberId) {
+    PostDetailResponse postDetailResponse =
+        postRepository.findDetailByIdWithIsFollowing(id, memberId);
+    List<Long> productIds =
+        postDetailResponse.getPostImageProductDetails().stream()
+            .map(PostImageProductDetailResponse::getProductId)
+            .collect(Collectors.toList());
+
+    // feign client call
+    List<ProductInfoResponse> productInfos = getProductInfos(productIds);
+    List<CouponForProductResponse> couponsForProduct;
+    if (Objects.nonNull(memberId)) {
+      couponsForProduct = getCouponsForProduct(memberId, productIds);
+    } else {
+      couponsForProduct = new ArrayList<>();
+    }
+
+    postDetailResponse
+        .getPostImageProductDetails()
+        .forEach(
+            pipd -> {
+              productInfos.forEach(
+                  pi -> {
+                    if (pipd.getProductId().equals(pi.getId())) {
+                      pipd.setFromProductInfoResponse(pi);
+                    }
+                  });
+              couponsForProduct.forEach(
+                  cfp -> {
+                    if (pipd.getProductId().equals(cfp.getProductId())) {
+                      pipd.setHasAvailableCoupon(Objects.nonNull(cfp.getCoupon()));
+                    }
+                  });
+            });
+
+    try {
+      PostCountVO dbPostCountVO =
+          new PostCountVO(
+              postDetailResponse.getViewCount(),
+              postDetailResponse.getLikeCount(),
+              postDetailResponse.getCommentCount());
+
+      // get count from cache or add all counts to cache
+      PostCountVO cachedPostCountVO =
+          postCountRedisRepository.findOrPutPostCountVO(
+              String.valueOf(postDetailResponse.getId()), dbPostCountVO);
+
+      // cache hit 로 인해서 db와 cache의 내용이 서로 다르다면 response를 업데이트
+      if (!dbPostCountVO.equals(cachedPostCountVO)) {
+        postDetailResponse.setViewCount(cachedPostCountVO.getViewCount());
+        postDetailResponse.setLikeCount(cachedPostCountVO.getLikeCount());
+        postDetailResponse.setCommentCount(cachedPostCountVO.getCommentCount());
+      }
+    } catch (JsonProcessingException e) {
+      throw new RuntimeException(e);
+    }
+
+    return postDetailResponse;
   }
 }

@@ -45,6 +45,14 @@ public class PostApiController {
     return ResponseEntity.ok(postPageResponse);
   }
 
+  @GetMapping("/posts/{postId}")
+  public ResponseEntity<PostDetailResponse> getPostDetail(
+      @RequestHeader(name = "memberId") Long memberId, @PathVariable("postId") Long postId) {
+    PostDetailResponse postDetailResponse =
+        postService.findDetailByIdWithIsFollowing(postId, memberId);
+    return ResponseEntity.ok(postDetailResponse);
+  }
+
   @PutMapping("/posts/{postId}")
   public ResponseEntity<UpdatePostResponse> updatePost(
       @RequestHeader(name = "memberId") Long memberId,

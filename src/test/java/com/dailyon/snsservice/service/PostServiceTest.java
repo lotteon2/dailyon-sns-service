@@ -3,27 +3,35 @@ package com.dailyon.snsservice.service;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 
+import com.dailyon.snsservice.client.dto.CouponForProductResponse;
+import com.dailyon.snsservice.client.dto.CouponResponse;
+import com.dailyon.snsservice.client.dto.ProductInfoResponse;
+import com.dailyon.snsservice.client.feign.ProductServiceClient;
+import com.dailyon.snsservice.client.feign.PromotionServiceClient;
 import com.dailyon.snsservice.dto.response.post.OOTDPostPageResponse;
+import com.dailyon.snsservice.dto.response.post.PostDetailResponse;
 import com.dailyon.snsservice.dto.response.post.PostPageResponse;
 import com.dailyon.snsservice.dto.response.post.Top4OOTDResponse;
 import com.dailyon.snsservice.dto.response.postlike.PostLikePageResponse;
 import com.dailyon.snsservice.entity.Post;
 import com.dailyon.snsservice.service.post.PostService;
+import com.dailyon.snsservice.vo.PostCountVO;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.List;
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
-
-import com.dailyon.snsservice.vo.PostCountVO;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -40,6 +48,8 @@ class PostServiceTest {
   @PersistenceContext private EntityManager em;
   @Autowired private RedisTemplate<String, String> redisTemplate;
   @Autowired private ObjectMapper objectMapper;
+  @MockBean private ProductServiceClient productServiceClient;
+  @MockBean private PromotionServiceClient promotionServiceClient;
 
   @Test
   @DisplayName("게시글 목록 조회 - 미인증")
@@ -159,8 +169,138 @@ class PostServiceTest {
 
     // then
     PostCountVO postCountVO =
-            objectMapper.readValue(redisTemplate.opsForValue().get(String.format("postCount::%s", postId)), PostCountVO.class);
+        objectMapper.readValue(
+            redisTemplate.opsForValue().get(String.format("postCount::%s", postId)),
+            PostCountVO.class);
     assertThat(postCountVO.getViewCount()).isSameAs(105);
+  }
+
+  @Test
+  @DisplayName("게시글 상세 조회 - 인증")
+  void findDetailByIdWithIsFollowingWithAuth() {
+    // given
+    Long postId = 1L;
+    Long memberId = 2L;
+
+    Mockito.when(productServiceClient.getProductInfos(List.of(101L)))
+        .thenReturn(
+            ResponseEntity.ok(
+                List.of(
+                    ProductInfoResponse.builder()
+                        .id(101L)
+                        .name("test 상품")
+                        .brandName("test 브랜드")
+                        .imgUrl("/test.png")
+                        .price(10000)
+                        .build())));
+
+    Mockito.when(promotionServiceClient.getCouponsForProduct(memberId, "product", List.of(101L)))
+        .thenReturn(
+            ResponseEntity.ok(
+                List.of(
+                    CouponForProductResponse.builder()
+                        .productId(101L)
+                        .productName("test 상품")
+                        .coupon(
+                            CouponResponse.builder()
+                                .couponName("test 쿠폰")
+                                .discountAmount(10000L)
+                                .type("product")
+                                .build())
+                        .build())));
+
+    // when
+    PostDetailResponse postDetailResponse =
+        postService.findDetailByIdWithIsFollowing(postId, memberId);
+
+    // then
+    assertThat(postDetailResponse.getId()).isSameAs(postId);
+    assertThat(postDetailResponse.getTitle()).isNotNull();
+    assertThat(postDetailResponse.getDescription()).isNotNull();
+    assertThat(postDetailResponse.getStature()).isNotNull();
+    assertThat(postDetailResponse.getWeight()).isNotNull();
+    assertThat(postDetailResponse.getImgUrl()).isNotNull();
+    assertThat(postDetailResponse.getViewCount()).isNotNull();
+    assertThat(postDetailResponse.getLikeCount()).isNotNull();
+    assertThat(postDetailResponse.getCommentCount()).isNotNull();
+    assertThat(postDetailResponse.getCreatedAt()).isNotNull();
+    assertThat(postDetailResponse.getMember().getNickname()).isNotNull();
+    assertThat(postDetailResponse.getMember().getProfileImgUrl()).isNotNull();
+    assertThat(postDetailResponse.getMember().getCode()).isNotNull();
+    assertThat(postDetailResponse.getMember().getIsFollowing()).isTrue();
+    assertThat(postDetailResponse.getHashTags().size()).isSameAs(1);
+    assertThat(postDetailResponse.getHashTags().get(0).getId()).isNotNull();
+    assertThat(postDetailResponse.getHashTags().get(0).getName()).isNotNull();
+    assertThat(postDetailResponse.getPostImageProductDetails().size()).isSameAs(1);
+    assertThat(postDetailResponse.getPostImageProductDetails().get(0).getId()).isNotNull();
+    assertThat(postDetailResponse.getPostImageProductDetails().get(0).getSize()).isNotNull();
+    assertThat(postDetailResponse.getPostImageProductDetails().get(0).getLeftGapPercent())
+        .isNotNull();
+    assertThat(postDetailResponse.getPostImageProductDetails().get(0).getTopGapPercent())
+        .isNotNull();
+    assertThat(postDetailResponse.getPostImageProductDetails().get(0).getHasAvailableCoupon())
+        .isNotNull();
+  }
+
+  @Test
+  @DisplayName("게시글 상세 조회 - 미인증")
+  void findDetailByIdWithIsFollowingWithoutAuth() {
+    // given
+    Long postId = 1L;
+    Long memberId = null;
+
+    Mockito.when(productServiceClient.getProductInfos(List.of(101L)))
+        .thenReturn(
+            ResponseEntity.ok(
+                List.of(
+                    ProductInfoResponse.builder()
+                        .id(101L)
+                        .name("test 상품")
+                        .brandName("test 브랜드")
+                        .imgUrl("/test.png")
+                        .price(10000)
+                        .build())));
+
+    Mockito.when(promotionServiceClient.getCouponsForProduct(memberId, "product", List.of(101L)))
+        .thenReturn(
+            ResponseEntity.ok(
+                List.of(
+                    CouponForProductResponse.builder()
+                        .productId(101L)
+                        .productName("test 상품")
+                        .build())));
+
+    // when
+    PostDetailResponse postDetailResponse =
+        postService.findDetailByIdWithIsFollowing(postId, memberId);
+
+    // then
+    assertThat(postDetailResponse.getId()).isSameAs(postId);
+    assertThat(postDetailResponse.getTitle()).isNotNull();
+    assertThat(postDetailResponse.getDescription()).isNotNull();
+    assertThat(postDetailResponse.getStature()).isNotNull();
+    assertThat(postDetailResponse.getWeight()).isNotNull();
+    assertThat(postDetailResponse.getImgUrl()).isNotNull();
+    assertThat(postDetailResponse.getViewCount()).isNotNull();
+    assertThat(postDetailResponse.getLikeCount()).isNotNull();
+    assertThat(postDetailResponse.getCommentCount()).isNotNull();
+    assertThat(postDetailResponse.getCreatedAt()).isNotNull();
+    assertThat(postDetailResponse.getMember().getNickname()).isNotNull();
+    assertThat(postDetailResponse.getMember().getProfileImgUrl()).isNotNull();
+    assertThat(postDetailResponse.getMember().getCode()).isNotNull();
+    assertThat(postDetailResponse.getMember().getIsFollowing()).isNull();
+    assertThat(postDetailResponse.getHashTags().size()).isSameAs(1);
+    assertThat(postDetailResponse.getHashTags().get(0).getId()).isNotNull();
+    assertThat(postDetailResponse.getHashTags().get(0).getName()).isNotNull();
+    assertThat(postDetailResponse.getPostImageProductDetails().size()).isSameAs(1);
+    assertThat(postDetailResponse.getPostImageProductDetails().get(0).getId()).isNotNull();
+    assertThat(postDetailResponse.getPostImageProductDetails().get(0).getSize()).isNotNull();
+    assertThat(postDetailResponse.getPostImageProductDetails().get(0).getLeftGapPercent())
+        .isNotNull();
+    assertThat(postDetailResponse.getPostImageProductDetails().get(0).getTopGapPercent())
+        .isNotNull();
+    assertThat(postDetailResponse.getPostImageProductDetails().get(0).getHasAvailableCoupon())
+        .isNull();
   }
 
   //    @Test

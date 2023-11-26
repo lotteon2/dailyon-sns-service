@@ -37,3 +37,7 @@ logging:
       amazonaws:
         util:
           EC2MetadataUtils: error
+
+endpoint:
+  promotion-service: http://promotion-service:8084
+  product-service: http://product-service:8085

@@ -56,3 +56,7 @@ logging:
       amazonaws:
         util:
           EC2MetadataUtils: error
+
+endpoint:
+  promotion-service: localhost:8084
+  product-service: localhost:8085

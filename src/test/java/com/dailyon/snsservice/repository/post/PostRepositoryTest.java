@@ -195,6 +195,9 @@ class PostRepositoryTest {
     assertThat(postDetailResponse.getStature()).isNotNull();
     assertThat(postDetailResponse.getWeight()).isNotNull();
     assertThat(postDetailResponse.getImgUrl()).isNotNull();
+    assertThat(postDetailResponse.getViewCount()).isNotNull();
+    assertThat(postDetailResponse.getLikeCount()).isNotNull();
+    assertThat(postDetailResponse.getCommentCount()).isNotNull();
     assertThat(postDetailResponse.getCreatedAt()).isNotNull();
     assertThat(postDetailResponse.getMember().getNickname()).isNotNull();
     assertThat(postDetailResponse.getMember().getProfileImgUrl()).isNotNull();
@@ -232,6 +235,9 @@ class PostRepositoryTest {
     assertThat(postDetailResponse.getStature()).isNotNull();
     assertThat(postDetailResponse.getWeight()).isNotNull();
     assertThat(postDetailResponse.getImgUrl()).isNotNull();
+    assertThat(postDetailResponse.getViewCount()).isNotNull();
+    assertThat(postDetailResponse.getLikeCount()).isNotNull();
+    assertThat(postDetailResponse.getCommentCount()).isNotNull();
     assertThat(postDetailResponse.getCreatedAt()).isNotNull();
     assertThat(postDetailResponse.getMember().getNickname()).isNotNull();
     assertThat(postDetailResponse.getMember().getProfileImgUrl()).isNotNull();

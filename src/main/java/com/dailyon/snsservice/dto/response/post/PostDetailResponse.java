@@ -29,26 +29,15 @@ public class PostDetailResponse {
   private List<PostDetailHashTagResponse> hashTags;
   private List<PostImageProductDetailResponse> postImageProductDetails;
 
-  public PostDetailResponse(
-      Long id,
-      String title,
-      String description,
-      Double stature,
-      Double weight,
-      String imgUrl,
-      LocalDateTime createdAt,
-      PostDetailMemberResponse member,
-      List<PostDetailHashTagResponse> hashTags,
-      List<PostImageProductDetailResponse> postImageProductDetails) {
-    this.id = id;
-    this.title = title;
-    this.description = description;
-    this.stature = stature;
-    this.weight = weight;
-    this.imgUrl = imgUrl;
-    this.createdAt = createdAt;
-    this.member = member;
-    this.hashTags = hashTags;
-    this.postImageProductDetails = postImageProductDetails;
+  public void setViewCount(Integer viewCount) {
+    this.viewCount = viewCount;
+  }
+
+  public void setLikeCount(Integer likeCount) {
+    this.likeCount = likeCount;
+  }
+
+  public void setCommentCount(Integer commentCount) {
+    this.commentCount = commentCount;
   }
 }
