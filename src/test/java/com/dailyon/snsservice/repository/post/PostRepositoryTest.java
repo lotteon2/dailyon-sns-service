@@ -3,6 +3,7 @@ package com.dailyon.snsservice.repository.post;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 
+import com.dailyon.snsservice.dto.response.post.PostDetailResponse;
 import com.dailyon.snsservice.dto.response.post.PostResponse;
 import com.dailyon.snsservice.entity.*;
 import com.dailyon.snsservice.exception.MemberEntityNotFoundException;
@@ -29,7 +30,6 @@ class PostRepositoryTest {
 
   @Autowired private PostRepository postRepository;
   @Autowired private MemberJpaRepository memberJpaRepository;
-  @Autowired private PostJpaRepository postJpaRepository;
   @PersistenceContext private EntityManager em;
 
   @Test
@@ -175,5 +175,85 @@ class PostRepositoryTest {
                 .setParameter("postId", postId)
                 .setParameter("memberId", memberId)
                 .getSingleResult());
+  }
+
+  @Test
+  @DisplayName("게시글 상세 조회 - 인증")
+  void findDetailByIdWithIsFollowingWithAuth() {
+    // given
+    Long postId = 1L;
+    Long memberId = 2L;
+
+    // when
+    PostDetailResponse postDetailResponse =
+        postRepository.findDetailByIdWithIsFollowing(postId, memberId);
+
+    // then
+    assertThat(postDetailResponse.getId()).isSameAs(postId);
+    assertThat(postDetailResponse.getTitle()).isNotNull();
+    assertThat(postDetailResponse.getDescription()).isNotNull();
+    assertThat(postDetailResponse.getStature()).isNotNull();
+    assertThat(postDetailResponse.getWeight()).isNotNull();
+    assertThat(postDetailResponse.getImgUrl()).isNotNull();
+    assertThat(postDetailResponse.getViewCount()).isNotNull();
+    assertThat(postDetailResponse.getLikeCount()).isNotNull();
+    assertThat(postDetailResponse.getCommentCount()).isNotNull();
+    assertThat(postDetailResponse.getCreatedAt()).isNotNull();
+    assertThat(postDetailResponse.getMember().getNickname()).isNotNull();
+    assertThat(postDetailResponse.getMember().getProfileImgUrl()).isNotNull();
+    assertThat(postDetailResponse.getMember().getCode()).isNotNull();
+    assertThat(postDetailResponse.getMember().getIsFollowing()).isTrue();
+    assertThat(postDetailResponse.getHashTags().size()).isSameAs(1);
+    assertThat(postDetailResponse.getHashTags().get(0).getId()).isNotNull();
+    assertThat(postDetailResponse.getHashTags().get(0).getName()).isNotNull();
+    assertThat(postDetailResponse.getPostImageProductDetails().size()).isSameAs(1);
+    assertThat(postDetailResponse.getPostImageProductDetails().get(0).getId()).isNotNull();
+    assertThat(postDetailResponse.getPostImageProductDetails().get(0).getSize()).isNotNull();
+    assertThat(postDetailResponse.getPostImageProductDetails().get(0).getLeftGapPercent())
+        .isNotNull();
+    assertThat(postDetailResponse.getPostImageProductDetails().get(0).getTopGapPercent())
+        .isNotNull();
+    assertThat(postDetailResponse.getPostImageProductDetails().get(0).getHasAvailableCoupon())
+        .isNull();
+  }
+
+  @Test
+  @DisplayName("게시글 상세 조회 - 미인증")
+  void findDetailByIdWithIsFollowingWithoutAuth() {
+    // given
+    Long postId = 1L;
+    Long memberId = null;
+
+    // when
+    PostDetailResponse postDetailResponse =
+        postRepository.findDetailByIdWithIsFollowing(postId, memberId);
+
+    // then
+    assertThat(postDetailResponse.getId()).isSameAs(postId);
+    assertThat(postDetailResponse.getTitle()).isNotNull();
+    assertThat(postDetailResponse.getDescription()).isNotNull();
+    assertThat(postDetailResponse.getStature()).isNotNull();
+    assertThat(postDetailResponse.getWeight()).isNotNull();
+    assertThat(postDetailResponse.getImgUrl()).isNotNull();
+    assertThat(postDetailResponse.getViewCount()).isNotNull();
+    assertThat(postDetailResponse.getLikeCount()).isNotNull();
+    assertThat(postDetailResponse.getCommentCount()).isNotNull();
+    assertThat(postDetailResponse.getCreatedAt()).isNotNull();
+    assertThat(postDetailResponse.getMember().getNickname()).isNotNull();
+    assertThat(postDetailResponse.getMember().getProfileImgUrl()).isNotNull();
+    assertThat(postDetailResponse.getMember().getCode()).isNotNull();
+    assertThat(postDetailResponse.getMember().getIsFollowing()).isNull();
+    assertThat(postDetailResponse.getHashTags().size()).isSameAs(1);
+    assertThat(postDetailResponse.getHashTags().get(0).getId()).isNotNull();
+    assertThat(postDetailResponse.getHashTags().get(0).getName()).isNotNull();
+    assertThat(postDetailResponse.getPostImageProductDetails().size()).isSameAs(1);
+    assertThat(postDetailResponse.getPostImageProductDetails().get(0).getId()).isNotNull();
+    assertThat(postDetailResponse.getPostImageProductDetails().get(0).getSize()).isNotNull();
+    assertThat(postDetailResponse.getPostImageProductDetails().get(0).getLeftGapPercent())
+        .isNotNull();
+    assertThat(postDetailResponse.getPostImageProductDetails().get(0).getTopGapPercent())
+        .isNotNull();
+    assertThat(postDetailResponse.getPostImageProductDetails().get(0).getHasAvailableCoupon())
+        .isNull();
   }
 }

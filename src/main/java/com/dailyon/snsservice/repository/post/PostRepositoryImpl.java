@@ -1,14 +1,20 @@
 package com.dailyon.snsservice.repository.post;
 
+import static com.dailyon.snsservice.entity.QFollow.follow;
+import static com.dailyon.snsservice.entity.QHashTag.hashTag;
+import static com.dailyon.snsservice.entity.QMember.member;
 import static com.dailyon.snsservice.entity.QPost.post;
+import static com.dailyon.snsservice.entity.QPostImage.postImage;
+import static com.dailyon.snsservice.entity.QPostImageProductDetail.postImageProductDetail;
 import static com.dailyon.snsservice.entity.QPostLike.postLike;
 
-import com.dailyon.snsservice.dto.response.post.PostResponse;
+import com.dailyon.snsservice.dto.response.member.PostDetailMemberResponse;
+import com.dailyon.snsservice.dto.response.post.*;
+import com.dailyon.snsservice.dto.response.postimageproductdetail.PostImageProductDetailResponse;
 import com.dailyon.snsservice.entity.Post;
 import com.dailyon.snsservice.exception.PostEntityNotFoundException;
-import com.querydsl.core.types.Order;
-import com.querydsl.core.types.OrderSpecifier;
-import com.querydsl.core.types.Projections;
+import com.querydsl.core.types.*;
+import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.core.types.dsl.CaseBuilder;
 import com.querydsl.core.types.dsl.PathBuilder;
 import com.querydsl.jpa.impl.JPAQuery;
@@ -118,6 +124,90 @@ public class PostRepositoryImpl implements PostRepository {
   @Override
   public int updateCountsById(Long id, Integer viewCount, Integer likeCount, Integer commentCount) {
     return postJpaRepository.updateCountsById(id, viewCount, likeCount, commentCount);
+  }
+
+  @Override
+  public PostDetailResponse findDetailByIdWithIsFollowing(Long id, Long memberId) {
+    JPAQuery<PostDetailResponse> query;
+
+    QList hashTags =
+        Projections.list(
+            Projections.constructor(PostDetailHashTagResponse.class, hashTag.id, hashTag.name));
+
+    QList postImageProductDetails =
+        Projections.list(
+            Projections.constructor(
+                PostImageProductDetailResponse.class,
+                postImageProductDetail.id,
+                postImageProductDetail.productId,
+                postImageProductDetail.productSize,
+                postImageProductDetail.leftGapPercent,
+                postImageProductDetail.topGapPercent));
+
+    if (Objects.nonNull(memberId)) {
+      BooleanExpression isFollowingExpression =
+          new CaseBuilder().when(follow.follower.id.eq(memberId)).then(true).otherwise(false);
+      query =
+          jpaQueryFactory
+              .select(
+                  Projections.constructor(
+                      PostDetailResponse.class,
+                      post.id,
+                      post.title,
+                      post.description,
+                      post.stature,
+                      post.weight,
+                      postImage.imgUrl,
+                      post.viewCount,
+                      post.likeCount,
+                      post.commentCount,
+                      post.createdAt,
+                      Projections.constructor(
+                          PostDetailMemberResponse.class,
+                          member.id,
+                          member.nickname,
+                          member.profileImgUrl,
+                          member.code,
+                          isFollowingExpression),
+                      hashTags,
+                      postImageProductDetails))
+              .from(post)
+              .innerJoin(post.member, member)
+              .innerJoin(member.following, follow);
+    } else {
+      query =
+          jpaQueryFactory
+              .select(
+                  Projections.constructor(
+                      PostDetailResponse.class,
+                      post.id,
+                      post.title,
+                      post.description,
+                      post.stature,
+                      post.weight,
+                      postImage.imgUrl,
+                      post.viewCount,
+                      post.likeCount,
+                      post.commentCount,
+                      post.createdAt,
+                      Projections.fields(
+                          PostDetailMemberResponse.class,
+                          member.id,
+                          member.nickname,
+                          member.profileImgUrl,
+                          member.code),
+                      hashTags,
+                      postImageProductDetails))
+              .from(post)
+              .innerJoin(post.member, member);
+    }
+
+    return query
+        .innerJoin(post.postImage, postImage)
+        .innerJoin(postImage.postImageProductDetails, postImageProductDetail)
+        .innerJoin(post.hashTags, hashTag)
+        .where(post.id.eq(id), post.isDeleted.eq(false))
+        .fetchOne();
   }
 
   private Long getTotalPageCount() {

@@ -1,5 +1,6 @@
 package com.dailyon.snsservice.repository.post;
 
+import com.dailyon.snsservice.dto.response.post.PostDetailResponse;
 import com.dailyon.snsservice.dto.response.post.PostResponse;
 import com.dailyon.snsservice.entity.Post;
 import java.util.List;
@@ -25,4 +26,6 @@ public interface PostRepository {
   List<Post> findTop4ByOrderByLikeCountDesc(Long productId);
 
   int updateCountsById(Long id, Integer viewCount, Integer likeCount, Integer commentCount);
+
+  PostDetailResponse findDetailByIdWithIsFollowing(Long id, Long memberId);
 }
