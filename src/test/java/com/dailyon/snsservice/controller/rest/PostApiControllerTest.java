@@ -3,13 +3,22 @@ package com.dailyon.snsservice.controller.rest;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 
+import com.dailyon.snsservice.client.dto.CouponForProductResponse;
+import com.dailyon.snsservice.client.dto.CouponResponse;
+import com.dailyon.snsservice.client.dto.ProductInfoResponse;
+import com.dailyon.snsservice.client.feign.ProductServiceClient;
+import com.dailyon.snsservice.client.feign.PromotionServiceClient;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
@@ -27,6 +36,8 @@ class PostApiControllerTest {
   }
 
   @Autowired private MockMvc mockMvc;
+  @MockBean private ProductServiceClient productServiceClient;
+  @MockBean private PromotionServiceClient promotionServiceClient;
 
   private final ObjectMapper objectMapper = new ObjectMapper();
 
@@ -193,6 +204,147 @@ class PostApiControllerTest {
 
     // then
     resultActions.andExpect(MockMvcResultMatchers.status().isOk());
+  }
+
+  @Test
+  @DisplayName("게시글 상세 조회 - 인증")
+  void getPostDetailWithAuth() throws Exception {
+    // given
+    Long postId = 1L;
+    Long memberId = 2L;
+
+    Mockito.when(productServiceClient.getProductInfos(List.of(101L)))
+        .thenReturn(
+            ResponseEntity.ok(
+                List.of(
+                    ProductInfoResponse.builder()
+                        .id(101L)
+                        .name("test 상품")
+                        .brandName("test 브랜드")
+                        .imgUrl("/test.png")
+                        .price(10000)
+                        .build())));
+
+    Mockito.when(promotionServiceClient.getCouponsForProduct(memberId, "product", List.of(101L)))
+        .thenReturn(
+            ResponseEntity.ok(
+                List.of(
+                    CouponForProductResponse.builder()
+                        .productId(101L)
+                        .productName("test 상품")
+                        .coupon(
+                            CouponResponse.builder()
+                                .couponName("test 쿠폰")
+                                .discountAmount(10000L)
+                                .type("product")
+                                .build())
+                        .build())));
+
+    // when
+    ResultActions resultActions =
+        mockMvc
+            .perform(get("/posts/{postId}", postId).header("memberId", memberId))
+            .andExpect(MockMvcResultMatchers.status().isOk())
+            .andExpect(
+                MockMvcResultMatchers.content().contentType(MediaType.APPLICATION_JSON_VALUE));
+
+    // then
+    resultActions
+        .andExpect(jsonPath("$.post.id").isNumber())
+        .andExpect(jsonPath("$.post.title").isString())
+        .andExpect(jsonPath("$.post.description").isString())
+        .andExpect(jsonPath("$.post.stature").isNumber())
+        .andExpect(jsonPath("$.post.weight").isNumber())
+        .andExpect(jsonPath("$.post.imgUrl").isString())
+        .andExpect(jsonPath("$.post.viewCount").isNumber())
+        .andExpect(jsonPath("$.post.likeCount").isNumber())
+        .andExpect(jsonPath("$.post.commentCount").isNumber())
+        .andExpect(jsonPath("$.post.createdAt").isString())
+        .andExpect(jsonPath("$.post.member.id").isNumber())
+        .andExpect(jsonPath("$.post.member.nickname").isString())
+        .andExpect(jsonPath("$.post.member.profileImgUrl").isString())
+        .andExpect(jsonPath("$.post.member.code").isString())
+        .andExpect(jsonPath("$.post.member.isFollowing").isBoolean())
+        .andExpect(jsonPath("$.post.hashTags[0].id").isNumber())
+        .andExpect(jsonPath("$.post.hashTags[0].name").isString())
+        .andExpect(jsonPath("$.post.postImageProductDetails[0].id").isNumber())
+        .andExpect(jsonPath("$.post.postImageProductDetails[0].productId").isNumber())
+        .andExpect(jsonPath("$.post.postImageProductDetails[0].name").isString())
+        .andExpect(jsonPath("$.post.postImageProductDetails[0].brandName").isString())
+        .andExpect(jsonPath("$.post.postImageProductDetails[0].price").isNumber())
+        .andExpect(jsonPath("$.post.postImageProductDetails[0].imgUrl").isString())
+        .andExpect(jsonPath("$.post.postImageProductDetails[0].size").isString())
+        .andExpect(jsonPath("$.post.postImageProductDetails[0].leftGapPercent").isNumber())
+        .andExpect(jsonPath("$.post.postImageProductDetails[0].topGapPercent").isNumber())
+        .andExpect(jsonPath("$.post.postImageProductDetails[0].hasAvailableCoupon").isBoolean());
+  }
+
+  @Test
+  @DisplayName("게시글 상세 조회 - 미인증")
+  void getPostDetailWithoutAuth() throws Exception {
+    // given
+    Long postId = 1L;
+    Long memberId = null;
+
+    Mockito.when(productServiceClient.getProductInfos(List.of(101L)))
+        .thenReturn(
+            ResponseEntity.ok(
+                List.of(
+                    ProductInfoResponse.builder()
+                        .id(101L)
+                        .name("test 상품")
+                        .brandName("test 브랜드")
+                        .imgUrl("/test.png")
+                        .price(10000)
+                        .build())));
+
+    Mockito.when(promotionServiceClient.getCouponsForProduct(memberId, "product", List.of(101L)))
+        .thenReturn(
+            ResponseEntity.ok(
+                List.of(
+                    CouponForProductResponse.builder()
+                        .productId(101L)
+                        .productName("test 상품")
+                        .build())));
+
+    // when
+    ResultActions resultActions =
+        mockMvc
+            .perform(get("/posts/{postId}", postId))
+            .andExpect(MockMvcResultMatchers.status().isOk())
+            .andExpect(
+                MockMvcResultMatchers.content().contentType(MediaType.APPLICATION_JSON_VALUE));
+
+    // then
+    resultActions
+        .andExpect(jsonPath("$.post.id").isNumber())
+        .andExpect(jsonPath("$.post.title").isString())
+        .andExpect(jsonPath("$.post.description").isString())
+        .andExpect(jsonPath("$.post.stature").isNumber())
+        .andExpect(jsonPath("$.post.weight").isNumber())
+        .andExpect(jsonPath("$.post.imgUrl").isString())
+        .andExpect(jsonPath("$.post.viewCount").isNumber())
+        .andExpect(jsonPath("$.post.likeCount").isNumber())
+        .andExpect(jsonPath("$.post.commentCount").isNumber())
+        .andExpect(jsonPath("$.post.createdAt").isString())
+        .andExpect(jsonPath("$.post.member.id").isNumber())
+        .andExpect(jsonPath("$.post.member.nickname").isString())
+        .andExpect(jsonPath("$.post.member.profileImgUrl").isString())
+        .andExpect(jsonPath("$.post.member.code").isString())
+        .andExpect(jsonPath("$.post.member.isFollowing").doesNotExist())
+        .andExpect(jsonPath("$.post.hashTags[0].id").isNumber())
+        .andExpect(jsonPath("$.post.hashTags[0].name").isString())
+        .andExpect(jsonPath("$.post.postImageProductDetails[0].id").isNumber())
+        .andExpect(jsonPath("$.post.postImageProductDetails[0].productId").isNumber())
+        .andExpect(jsonPath("$.post.postImageProductDetails[0].name").isString())
+        .andExpect(jsonPath("$.post.postImageProductDetails[0].brandName").isString())
+        .andExpect(jsonPath("$.post.postImageProductDetails[0].price").isNumber())
+        .andExpect(jsonPath("$.post.postImageProductDetails[0].imgUrl").isString())
+        .andExpect(jsonPath("$.post.postImageProductDetails[0].size").isString())
+        .andExpect(jsonPath("$.post.postImageProductDetails[0].leftGapPercent").isNumber())
+        .andExpect(jsonPath("$.post.postImageProductDetails[0].topGapPercent").isNumber())
+        .andExpect(
+            jsonPath("$.post.member.postImageProductDetails[0].hasAvailableCoupon").doesNotExist());
   }
 
   //  @Test

@@ -46,11 +46,12 @@ public class PostApiController {
   }
 
   @GetMapping("/posts/{postId}")
-  public ResponseEntity<PostDetailResponse> getPostDetail(
-      @RequestHeader(name = "memberId") Long memberId, @PathVariable("postId") Long postId) {
+  public ResponseEntity<Map<String, PostDetailResponse>> getPostDetail(
+      @RequestHeader(name = "memberId", required = false) Long memberId,
+      @PathVariable("postId") Long postId) {
     PostDetailResponse postDetailResponse =
         postService.findDetailByIdWithIsFollowing(postId, memberId);
-    return ResponseEntity.ok(postDetailResponse);
+    return ResponseEntity.ok(Map.of("post", postDetailResponse));
   }
 
   @PutMapping("/posts/{postId}")
