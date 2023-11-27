@@ -4,7 +4,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 
 import com.dailyon.snsservice.client.dto.CouponForProductResponse;
-import com.dailyon.snsservice.client.dto.CouponResponse;
 import com.dailyon.snsservice.client.dto.ProductInfoResponse;
 import com.dailyon.snsservice.client.feign.ProductServiceClient;
 import com.dailyon.snsservice.client.feign.PromotionServiceClient;
@@ -200,13 +199,7 @@ class PostServiceTest {
                 List.of(
                     CouponForProductResponse.builder()
                         .productId(101L)
-                        .productName("test 상품")
-                        .coupon(
-                            CouponResponse.builder()
-                                .couponName("test 쿠폰")
-                                .discountAmount(10000L)
-                                .type("product")
-                                .build())
+                        .hasAvailableCoupon(true)
                         .build())));
 
     // when
@@ -262,13 +255,7 @@ class PostServiceTest {
                         .build())));
 
     Mockito.when(promotionServiceClient.getCouponsForProduct(memberId, "product", List.of(101L)))
-        .thenReturn(
-            ResponseEntity.ok(
-                List.of(
-                    CouponForProductResponse.builder()
-                        .productId(101L)
-                        .productName("test 상품")
-                        .build())));
+        .thenReturn(ResponseEntity.ok(List.of()));
 
     // when
     PostDetailResponse postDetailResponse =

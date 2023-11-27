@@ -25,7 +25,6 @@ import com.dailyon.snsservice.vo.PostCountVO;
 import com.dailyon.snsservice.vo.Top4OOTDVO;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
-
 import java.util.*;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
@@ -228,7 +227,7 @@ public class PostService {
               couponsForProduct.forEach(
                   cfp -> {
                     if (pipd.getProductId().equals(cfp.getProductId())) {
-                      pipd.setHasAvailableCoupon(Objects.nonNull(cfp.getCoupon()));
+                      pipd.setHasAvailableCoupon(cfp.getHasAvailableCoupon());
                     }
                   });
             });
