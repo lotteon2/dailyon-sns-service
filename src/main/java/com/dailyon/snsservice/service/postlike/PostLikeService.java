@@ -30,10 +30,15 @@ public class PostLikeService {
     try {
       PostCountVO postCountVO =
           new PostCountVO(
-              post.getViewCount(), post.getLikeCount() + todoCalcLikeCount, post.getCommentCount());
+              post.getViewCount(), post.getLikeCount(), post.getCommentCount());
 
+      // cache hit 시 cache에 있는 likeCount 를 반환, 아니라면 postCountVO 반환
+      PostCountVO cachedPostCountVO =
+          postCountRedisRepository.findOrPutPostCountVO(String.valueOf(postId), postCountVO);
+      cachedPostCountVO.addLikeCount(todoCalcLikeCount);
       // update like count to cache
-      postCountRedisRepository.modifyPostCountVOAboutLikeCount(String.valueOf(postId), postCountVO);
+      postCountRedisRepository.modifyPostCountVOAboutLikeCount(
+          String.valueOf(postId), cachedPostCountVO);
     } catch (JsonProcessingException e) {
       throw new RuntimeException(e);
     }
