@@ -15,7 +15,7 @@ public interface FollowJpaRepository extends JpaRepository<Follow, FollowId> {
           "select f from Follow f "
               + "join fetch f.following following "
               + "where f.follower.id = :memberId",
-      countQuery = "select count(f) from Follow f")
+      countQuery = "select count(f) from Follow f where f.follower.id = :memberId")
   Page<Follow> findFollowingsByMemberId(Long memberId, Pageable pageable);
 
   @Query(
@@ -30,6 +30,6 @@ public interface FollowJpaRepository extends JpaRepository<Follow, FollowId> {
               + "from Follow f "
               + "inner join f.follower follower "
               + "where f.following.id = :memberId",
-      countQuery = "select count(f) from Follow f")
+      countQuery = "select count(f) from Follow f where f.following.id = :memberId")
   Page<FollowerResponse> findFollowersByMemberId(Long memberId, Pageable pageable);
 }
