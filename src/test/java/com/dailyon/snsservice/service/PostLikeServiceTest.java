@@ -39,16 +39,23 @@ class PostLikeServiceTest {
     Long memberId = 1L;
     Long postId = 4L;
 
+    PostCountVO beforePostCountVO =
+        objectMapper.readValue(
+            redisTemplate.opsForValue().get(String.format("postCount::%s", postId)),
+            PostCountVO.class);
+
     // when
     postLikeService.togglePostLike(memberId, postId);
 
     // then
     Optional<PostLike> postLike = postLikeJpaRepository.findById(new PostLikeId(memberId, postId));
-    String stringValue = redisTemplate.opsForValue().get(String.format("postCount::%s", postId));
-    PostCountVO postCountVO = objectMapper.readValue(stringValue, PostCountVO.class);
+    PostCountVO afterPostCountVO =
+        objectMapper.readValue(
+            redisTemplate.opsForValue().get(String.format("postCount::%s", postId)),
+            PostCountVO.class);
 
     assertThat(postLike.orElse(null)).isNotNull();
-    assertThat(postCountVO.getLikeCount()).isSameAs(41);
+    assertThat(afterPostCountVO.getLikeCount()).isSameAs(beforePostCountVO.getLikeCount() + 1);
   }
 
   @Test
@@ -57,16 +64,22 @@ class PostLikeServiceTest {
     // given
     Long memberId = 1L;
     Long postId = 2L;
+    PostCountVO beforePostCountVO =
+            objectMapper.readValue(
+                    redisTemplate.opsForValue().get(String.format("postCount::%s", postId)),
+                    PostCountVO.class);
 
     // when
     postLikeService.togglePostLike(memberId, postId);
 
     // then
     Optional<PostLike> postLike = postLikeJpaRepository.findById(new PostLikeId(memberId, postId));
-    String stringValue = redisTemplate.opsForValue().get(String.format("postCount::%s", postId));
-    PostCountVO postCountVO = objectMapper.readValue(stringValue, PostCountVO.class);
+    PostCountVO afterPostCountVO =
+            objectMapper.readValue(
+                    redisTemplate.opsForValue().get(String.format("postCount::%s", postId)),
+                    PostCountVO.class);
 
     assertThat(postLike.orElse(null)).isNull();
-    assertThat(postCountVO.getLikeCount()).isSameAs(44);
+    assertThat(afterPostCountVO.getLikeCount()).isSameAs(beforePostCountVO.getLikeCount() - 1);
   }
 }
