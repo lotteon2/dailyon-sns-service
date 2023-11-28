@@ -73,11 +73,9 @@ public class PostService {
                     postCountRedisRepository.findOrPutPostCountVO(
                         String.valueOf(postResponse.getId()), dbPostCountVO);
 
-                // cache hit 로 인해서 db와 cache의 내용이 서로 다르다면 response를 업데이트
-                if (!dbPostCountVO.equals(cachedPostCountVO)) {
-                  postResponse.setViewCount(cachedPostCountVO.getViewCount());
-                  postResponse.setLikeCount(cachedPostCountVO.getLikeCount());
-                }
+                // cache count 값으로 response를 업데이트
+                postResponse.setViewCount(cachedPostCountVO.getViewCount());
+                postResponse.setLikeCount(cachedPostCountVO.getLikeCount());
               } catch (JsonProcessingException e) {
                 throw new RuntimeException(e);
               }
