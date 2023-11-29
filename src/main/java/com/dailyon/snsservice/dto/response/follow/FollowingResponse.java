@@ -11,4 +11,7 @@ public class FollowingResponse {
   private Long id;
   private String nickname;
   private String profileImgUrl;
+
+  @Builder.Default
+  private Boolean isFollowing = true;
 }
