@@ -116,17 +116,19 @@ class PostRepositoryTest {
   }
 
   @Test
-  @DisplayName("사용자 OOTD 게시글 목록 조회")
-  void findAllByMemberId() {
+  @DisplayName("내 OOTD 게시글 목록 조회")
+  void findMyPostsByMemberId() {
     // given
     Long memberId = 1L;
     PageRequest pageRequest = PageRequest.of(0, 8, Sort.by(Sort.Direction.DESC, "createdAt"));
 
     // when
-    Page<MyOOTDPostResponse> myOOTDPostResponses = postRepository.findMyPostsByMemberId(memberId, pageRequest);
+    Page<MyOOTDPostResponse> myOOTDPostResponses =
+        postRepository.findMyPostsByMemberId(memberId, pageRequest);
 
     // then
-    assertThat(myOOTDPostResponses.hasNext()).isFalse();
+    assertThat(myOOTDPostResponses.getTotalPages()).isSameAs(1);
+    assertThat(myOOTDPostResponses.getTotalElements()).isSameAs(6L);
     assertThat(myOOTDPostResponses.getContent().size()).isSameAs(6);
     myOOTDPostResponses
         .getContent()
@@ -134,6 +136,9 @@ class PostRepositoryTest {
             post -> {
               assertThat(post.getId()).isNotNull();
               assertThat(post.getThumbnailImgUrl()).isNotNull();
+              assertThat(post.getLikeCount()).isNotNull();
+              assertThat(post.getViewCount()).isNotNull();
+              assertThat(post.getIsLike()).isNotNull();
             });
   }
 

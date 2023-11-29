@@ -98,8 +98,8 @@ class PostServiceTest {
   }
 
   @Test
-  @DisplayName("OOTD 게시글 목록 조회")
-  void getOOTDPosts() {
+  @DisplayName("내 OOTD 게시글 목록 조회")
+  void getMyOOTDPosts() {
     // given
     Long memberId = 1L;
     PageRequest pageRequest = PageRequest.of(0, 8, Sort.by(Sort.Direction.DESC, "createdAt"));
@@ -108,7 +108,8 @@ class PostServiceTest {
     MyOOTDPostPageResponse myOotdPostPageResponse = postService.getMyOOTDPosts(memberId, pageRequest);
 
     // then
-    assertThat(myOotdPostPageResponse.getHasNext()).isFalse();
+    assertThat(myOotdPostPageResponse.getTotalPages()).isSameAs(1);
+    assertThat(myOotdPostPageResponse.getTotalElements()).isSameAs(6L);
     assertThat(myOotdPostPageResponse.getPosts().size()).isSameAs(6);
     myOotdPostPageResponse
         .getPosts()
@@ -116,6 +117,9 @@ class PostServiceTest {
             post -> {
               assertThat(post.getId()).isNotNull();
               assertThat(post.getThumbnailImgUrl()).isNotNull();
+              assertThat(post.getLikeCount()).isNotNull();
+              assertThat(post.getViewCount()).isNotNull();
+              assertThat(post.getIsLike()).isNotNull();
             });
   }
 

@@ -148,8 +148,8 @@ class PostApiControllerTest {
   }
 
   @Test
-  @DisplayName("OOTD 사용자 게시글 조회")
-  void getOOTDPosts() throws Exception {
+  @DisplayName("내 OOTD 사용자 게시글 조회")
+  void getMyOOTDPosts() throws Exception {
     // given
     Long memberId = 2L;
 
@@ -163,9 +163,13 @@ class PostApiControllerTest {
 
     // then
     resultActions
-        .andExpect(MockMvcResultMatchers.jsonPath("hasNext").isBoolean())
+        .andExpect(MockMvcResultMatchers.jsonPath("totalPages").isNumber())
+        .andExpect(MockMvcResultMatchers.jsonPath("totalElements").isNumber())
         .andExpect(MockMvcResultMatchers.jsonPath("$.posts[0].id").isNumber())
-        .andExpect(MockMvcResultMatchers.jsonPath("$.posts[0].thumbnailImgUrl").isString());
+        .andExpect(MockMvcResultMatchers.jsonPath("$.posts[0].thumbnailImgUrl").isString())
+        .andExpect(MockMvcResultMatchers.jsonPath("$.posts[0].likeCount").isNumber())
+        .andExpect(MockMvcResultMatchers.jsonPath("$.posts[0].viewCount").isNumber())
+        .andExpect(MockMvcResultMatchers.jsonPath("$.posts[0].isLike").isBoolean());
   }
 
   @Test
