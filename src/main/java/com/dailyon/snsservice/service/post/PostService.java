@@ -168,8 +168,8 @@ public class PostService {
     return postLikePageResponse;
   }
 
-  public MyOOTDPostPageResponse getMyOOTDPosts(Long memberId, Pageable pageable) {
-    Page<MyOOTDPostResponse> myOOTDPostResponses = postRepository.findMyPostsByMemberId(memberId, pageable);
+  public OOTDPostPageResponse getMyOOTDPosts(Long memberId, Pageable pageable) {
+    Page<OOTDPostResponse> myOOTDPostResponses = postRepository.findMyPostsByMemberId(memberId, pageable);
     myOOTDPostResponses.getContent().forEach(OOTDPostResponse -> {
       try {
         PostCountVO dbPostCountVO =
@@ -189,7 +189,7 @@ public class PostService {
         throw new RuntimeException(e);
       }
     });
-    return MyOOTDPostPageResponse.fromDto(myOOTDPostResponses);
+    return OOTDPostPageResponse.fromDto(myOOTDPostResponses);
   }
 
   public List<Top4OOTDResponse> getTop4OOTDPosts(Long productId) {

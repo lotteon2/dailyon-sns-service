@@ -9,21 +9,21 @@ import org.springframework.data.domain.Page;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class MyOOTDPostPageResponse {
+public class OOTDPostPageResponse {
 
   private int totalPages;
   private long totalElements;
-  private List<MyOOTDPostResponse> posts;
+  private List<OOTDPostResponse> posts;
 
-  public static MyOOTDPostPageResponse fromDto(Page<MyOOTDPostResponse> myOOTDPostResponses) {
-    return MyOOTDPostPageResponse.builder()
+  public static OOTDPostPageResponse fromDto(Page<OOTDPostResponse> myOOTDPostResponses) {
+    return OOTDPostPageResponse.builder()
         .totalPages(myOOTDPostResponses.getTotalPages())
         .totalElements(myOOTDPostResponses.getTotalElements())
         .posts(
             myOOTDPostResponses.getContent().stream()
                 .map(
                     post ->
-                        MyOOTDPostResponse.builder()
+                        OOTDPostResponse.builder()
                             .id(post.getId())
                             .thumbnailImgUrl(post.getThumbnailImgUrl())
                             .viewCount(post.getViewCount())

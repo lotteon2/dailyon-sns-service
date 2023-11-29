@@ -6,7 +6,6 @@ import static com.dailyon.snsservice.entity.QMember.member;
 import static com.dailyon.snsservice.entity.QPost.post;
 import static com.dailyon.snsservice.entity.QPostImage.postImage;
 import static com.dailyon.snsservice.entity.QPostImageProductDetail.postImageProductDetail;
-import static com.dailyon.snsservice.entity.QPostLike.postLike;
 
 import com.dailyon.snsservice.dto.response.member.PostDetailMemberResponse;
 import com.dailyon.snsservice.dto.response.post.*;
@@ -19,7 +18,6 @@ import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.core.types.dsl.CaseBuilder;
 import com.querydsl.core.types.dsl.PathBuilder;
 import com.querydsl.jpa.JPAExpressions;
-import com.querydsl.jpa.JPQLQuery;
 import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import java.util.ArrayList;
@@ -119,7 +117,7 @@ public class PostRepositoryImpl implements PostRepository {
   }
 
   @Override
-  public Page<MyOOTDPostResponse> findMyPostsByMemberId(Long memberId, Pageable pageable) {
+  public Page<OOTDPostResponse> findMyPostsByMemberId(Long memberId, Pageable pageable) {
     QPostLike postLikeSubQuery = new QPostLike("postLikeSubQuery");
 
     BooleanExpression hasLikedCondition =
@@ -128,11 +126,11 @@ public class PostRepositoryImpl implements PostRepository {
             .where(postLikeSubQuery.post.id.eq(post.id), postLikeSubQuery.member.id.eq(memberId))
             .exists();
 
-    JPAQuery<MyOOTDPostResponse> query =
+    JPAQuery<OOTDPostResponse> query =
         jpaQueryFactory
             .select(
                 Projections.constructor(
-                    MyOOTDPostResponse.class,
+                    OOTDPostResponse.class,
                     post.id,
                     post.postImage.thumbnailImgUrl,
                     post.likeCount,

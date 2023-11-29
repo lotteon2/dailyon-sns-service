@@ -3,7 +3,7 @@ package com.dailyon.snsservice.repository.post;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 
-import com.dailyon.snsservice.dto.response.post.MyOOTDPostResponse;
+import com.dailyon.snsservice.dto.response.post.OOTDPostResponse;
 import com.dailyon.snsservice.dto.response.post.PostDetailResponse;
 import com.dailyon.snsservice.dto.response.post.PostResponse;
 import com.dailyon.snsservice.entity.*;
@@ -123,7 +123,7 @@ class PostRepositoryTest {
     PageRequest pageRequest = PageRequest.of(0, 8, Sort.by(Sort.Direction.DESC, "createdAt"));
 
     // when
-    Page<MyOOTDPostResponse> myOOTDPostResponses =
+    Page<OOTDPostResponse> myOOTDPostResponses =
         postRepository.findMyPostsByMemberId(memberId, pageRequest);
 
     // then
