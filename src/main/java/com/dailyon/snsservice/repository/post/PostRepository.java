@@ -1,5 +1,6 @@
 package com.dailyon.snsservice.repository.post;
 
+import com.dailyon.snsservice.dto.response.post.MyOOTDPostResponse;
 import com.dailyon.snsservice.dto.response.post.PostDetailResponse;
 import com.dailyon.snsservice.dto.response.post.PostResponse;
 import com.dailyon.snsservice.entity.Post;
@@ -21,7 +22,7 @@ public interface PostRepository {
 
   Page<Post> findAllWithPostLikeByMemberIdIn(Long memberId, Pageable pageable);
 
-  Page<Post> findAllByMemberId(Long memberId, Pageable pageable);
+  Page<MyOOTDPostResponse> findMyPostsByMemberId(Long memberId, Pageable pageable);
 
   List<Post> findTop4ByOrderByLikeCountDesc(Long productId);
 

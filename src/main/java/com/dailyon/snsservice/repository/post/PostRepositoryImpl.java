@@ -88,7 +88,7 @@ public class PostRepositoryImpl implements PostRepository {
         .offset(pageable.getOffset())
         .limit(pageable.getPageSize());
 
-    return new PageImpl<>(query.fetch(), pageable, getTotalPageCount());
+    return new PageImpl<>(query.fetch(), pageable, getPostTotalPageCount());
   }
 
   @Override
@@ -111,8 +111,29 @@ public class PostRepositoryImpl implements PostRepository {
   }
 
   @Override
-  public Page<Post> findAllByMemberId(Long memberId, Pageable pageable) {
-    return postJpaRepository.findAllByMemberId(memberId, pageable);
+  public Page<MyOOTDPostResponse> findMyPostsByMemberId(Long memberId, Pageable pageable) {
+    JPAQuery<MyOOTDPostResponse> query =
+        jpaQueryFactory
+            .select(
+                Projections.constructor(
+                    MyOOTDPostResponse.class,
+                    post.id,
+                    post.postImage.thumbnailImgUrl,
+                    post.likeCount,
+                    post.viewCount,
+                    post.commentCount,
+                    new CaseBuilder()
+                        .when(postLike.member.id.eq(memberId))
+                        .then(true)
+                        .otherwise(false)))
+            .from(post)
+            .leftJoin(post.postLikes, postLike)
+            .innerJoin(post.postImage)
+            .where(post.member.id.eq(memberId), post.isDeleted.isFalse())
+            .orderBy(getOrderCondition(pageable.getSort()).toArray(OrderSpecifier[]::new))
+            .offset(pageable.getOffset())
+            .limit(pageable.getPageSize());
+    return new PageImpl<>(query.fetch(), pageable, getMyPageTotalPageCount(memberId));
   }
 
   @Override
@@ -210,8 +231,13 @@ public class PostRepositoryImpl implements PostRepository {
         .fetchOne();
   }
 
-  private Long getTotalPageCount() {
-    return jpaQueryFactory.select(post.count()).from(post).fetchOne();
+  private Long getMyPageTotalPageCount(Long memberId) {
+    return jpaQueryFactory.select(post.count()).from(post)
+            .where(post.member.id.eq(memberId), post.isDeleted.isFalse()).fetchOne();
+  }
+
+  private Long getPostTotalPageCount() {
+    return jpaQueryFactory.select(post.count()).from(post).where(post.isDeleted.isFalse()).fetchOne();
   }
 
   private List<OrderSpecifier> getOrderCondition(Sort sort) {

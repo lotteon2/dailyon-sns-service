@@ -7,7 +7,7 @@ import com.dailyon.snsservice.client.dto.CouponForProductResponse;
 import com.dailyon.snsservice.client.dto.ProductInfoResponse;
 import com.dailyon.snsservice.client.feign.ProductServiceClient;
 import com.dailyon.snsservice.client.feign.PromotionServiceClient;
-import com.dailyon.snsservice.dto.response.post.OOTDPostPageResponse;
+import com.dailyon.snsservice.dto.response.post.MyOOTDPostPageResponse;
 import com.dailyon.snsservice.dto.response.post.PostDetailResponse;
 import com.dailyon.snsservice.dto.response.post.PostPageResponse;
 import com.dailyon.snsservice.dto.response.post.Top4OOTDResponse;
@@ -105,12 +105,12 @@ class PostServiceTest {
     PageRequest pageRequest = PageRequest.of(0, 8, Sort.by(Sort.Direction.DESC, "createdAt"));
 
     // when
-    OOTDPostPageResponse ootdPostPageResponse = postService.getOOTDPosts(memberId, pageRequest);
+    MyOOTDPostPageResponse myOotdPostPageResponse = postService.getMyOOTDPosts(memberId, pageRequest);
 
     // then
-    assertThat(ootdPostPageResponse.getHasNext()).isFalse();
-    assertThat(ootdPostPageResponse.getPosts().size()).isSameAs(6);
-    ootdPostPageResponse
+    assertThat(myOotdPostPageResponse.getHasNext()).isFalse();
+    assertThat(myOotdPostPageResponse.getPosts().size()).isSameAs(6);
+    myOotdPostPageResponse
         .getPosts()
         .forEach(
             post -> {

@@ -3,6 +3,7 @@ package com.dailyon.snsservice.repository.post;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 
+import com.dailyon.snsservice.dto.response.post.MyOOTDPostResponse;
 import com.dailyon.snsservice.dto.response.post.PostDetailResponse;
 import com.dailyon.snsservice.dto.response.post.PostResponse;
 import com.dailyon.snsservice.entity.*;
@@ -122,17 +123,17 @@ class PostRepositoryTest {
     PageRequest pageRequest = PageRequest.of(0, 8, Sort.by(Sort.Direction.DESC, "createdAt"));
 
     // when
-    Page<Post> posts = postRepository.findAllByMemberId(memberId, pageRequest);
+    Page<MyOOTDPostResponse> myOOTDPostResponses = postRepository.findMyPostsByMemberId(memberId, pageRequest);
 
     // then
-    assertThat(posts.hasNext()).isFalse();
-    assertThat(posts.getContent().size()).isSameAs(6);
-    posts
+    assertThat(myOOTDPostResponses.hasNext()).isFalse();
+    assertThat(myOOTDPostResponses.getContent().size()).isSameAs(6);
+    myOOTDPostResponses
         .getContent()
         .forEach(
             post -> {
               assertThat(post.getId()).isNotNull();
-              assertThat(post.getPostImage().getThumbnailImgUrl()).isNotNull();
+              assertThat(post.getThumbnailImgUrl()).isNotNull();
             });
   }
 

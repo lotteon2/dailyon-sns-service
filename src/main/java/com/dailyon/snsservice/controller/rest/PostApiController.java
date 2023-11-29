@@ -90,16 +90,16 @@ public class PostApiController {
   }
 
   @GetMapping("/my-posts")
-  public ResponseEntity<OOTDPostPageResponse> getOOTDPosts(
+  public ResponseEntity<MyOOTDPostPageResponse> getMyOOTDPosts(
       @RequestHeader(name = "memberId") Long memberId,
       @PageableDefault(
               page = 0,
-              size = 8,
+              size = 6,
               sort = {"createdAt"},
               direction = Sort.Direction.DESC)
           Pageable pageable) {
-    OOTDPostPageResponse ootdPostPageResponse = postService.getOOTDPosts(memberId, pageable);
-    return ResponseEntity.ok(ootdPostPageResponse);
+    MyOOTDPostPageResponse myOOTDPostPageResponse = postService.getMyOOTDPosts(memberId, pageable);
+    return ResponseEntity.ok(myOOTDPostPageResponse);
   }
 
   @GetMapping("/top4-posts")

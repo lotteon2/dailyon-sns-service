@@ -35,14 +35,6 @@ public interface PostJpaRepository extends JpaRepository<Post, Long> {
   Page<Post> findAllWithPostLikeByMemberIdIn(Long memberId, Pageable pageable);
 
   @Query(
-      value =
-          "select p from Post p "
-              + "join fetch p.postImage pi "
-              + "where p.member.id = :memberId and p.isDeleted = false",
-      countQuery = "select count(p) from Post p where p.member.id = :memberId and p.isDeleted = false")
-  Page<Post> findAllByMemberId(Long memberId, Pageable pageable);
-
-  @Query(
       "select p from Post p "
           + "join fetch p.postImage pi "
           + "join fetch pi.postImageProductDetails pipd "
@@ -53,9 +45,9 @@ public interface PostJpaRepository extends JpaRepository<Post, Long> {
   // JPQL 연산이 끝난 후 영속성 컨텍스트를 비워줌
   @Modifying(clearAutomatically = true, flushAutomatically = true)
   @Query(
-      "update Post p " +
-              "set p.viewCount = :viewCount, p.likeCount = :likeCount, p.commentCount = :commentCount " +
-              "where p.id = :id and p.isDeleted = false")
+      "update Post p "
+          + "set p.viewCount = :viewCount, p.likeCount = :likeCount, p.commentCount = :commentCount "
+          + "where p.id = :id and p.isDeleted = false")
   int updateCountsById(
       @Param("id") Long id,
       @Param("viewCount") Integer viewCount,
