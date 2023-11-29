@@ -7,7 +7,7 @@ import com.dailyon.snsservice.client.dto.CouponForProductResponse;
 import com.dailyon.snsservice.client.dto.ProductInfoResponse;
 import com.dailyon.snsservice.client.feign.ProductServiceClient;
 import com.dailyon.snsservice.client.feign.PromotionServiceClient;
-import com.dailyon.snsservice.dto.response.post.MyOOTDPostPageResponse;
+import com.dailyon.snsservice.dto.response.post.OOTDPostPageResponse;
 import com.dailyon.snsservice.dto.response.post.PostDetailResponse;
 import com.dailyon.snsservice.dto.response.post.PostPageResponse;
 import com.dailyon.snsservice.dto.response.post.Top4OOTDResponse;
@@ -93,7 +93,8 @@ class PostServiceTest {
     PostLikePageResponse postLikePageResponse = postService.getPostLikes(memberId, pageRequest);
 
     // then
-    assertThat(postLikePageResponse.getHasNext()).isFalse();
+    assertThat(postLikePageResponse.getTotalPages()).isSameAs(1);
+    assertThat(postLikePageResponse.getTotalElements()).isSameAs(1L);
     assertThat(postLikePageResponse.getPosts().size()).isSameAs(1);
   }
 
@@ -105,13 +106,13 @@ class PostServiceTest {
     PageRequest pageRequest = PageRequest.of(0, 8, Sort.by(Sort.Direction.DESC, "createdAt"));
 
     // when
-    MyOOTDPostPageResponse myOotdPostPageResponse = postService.getMyOOTDPosts(memberId, pageRequest);
+    OOTDPostPageResponse ootdPostPageResponse = postService.getMyOOTDPosts(memberId, pageRequest);
 
     // then
-    assertThat(myOotdPostPageResponse.getTotalPages()).isSameAs(1);
-    assertThat(myOotdPostPageResponse.getTotalElements()).isSameAs(6L);
-    assertThat(myOotdPostPageResponse.getPosts().size()).isSameAs(6);
-    myOotdPostPageResponse
+    assertThat(ootdPostPageResponse.getTotalPages()).isSameAs(1);
+    assertThat(ootdPostPageResponse.getTotalElements()).isSameAs(6L);
+    assertThat(ootdPostPageResponse.getPosts().size()).isSameAs(6);
+    ootdPostPageResponse
         .getPosts()
         .forEach(
             post -> {

@@ -7,7 +7,7 @@ import lombok.*;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class MyOOTDPostResponse {
+public class OOTDPostResponse {
 
   private Long id;
   private String thumbnailImgUrl;

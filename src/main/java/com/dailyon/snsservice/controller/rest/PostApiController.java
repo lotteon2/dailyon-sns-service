@@ -90,7 +90,7 @@ public class PostApiController {
   }
 
   @GetMapping("/my-posts")
-  public ResponseEntity<MyOOTDPostPageResponse> getMyOOTDPosts(
+  public ResponseEntity<OOTDPostPageResponse> getMyOOTDPosts(
       @RequestHeader(name = "memberId") Long memberId,
       @PageableDefault(
               page = 0,
@@ -98,8 +98,22 @@ public class PostApiController {
               sort = {"createdAt"},
               direction = Sort.Direction.DESC)
           Pageable pageable) {
-    MyOOTDPostPageResponse myOOTDPostPageResponse = postService.getMyOOTDPosts(memberId, pageable);
-    return ResponseEntity.ok(myOOTDPostPageResponse);
+    OOTDPostPageResponse OOTDPostPageResponse = postService.getMyOOTDPosts(memberId, pageable);
+    return ResponseEntity.ok(OOTDPostPageResponse);
+  }
+
+  @GetMapping("/member-posts")
+  public ResponseEntity<OOTDPostPageResponse> getMemberOOTDPosts(
+          @RequestHeader(name = "memberId") Long memberId,
+          @RequestParam(name = "postMemberId") Long postMemberId,
+          @PageableDefault(
+                  page = 0,
+                  size = 6,
+                  sort = {"createdAt"},
+                  direction = Sort.Direction.DESC)
+          Pageable pageable) {
+    OOTDPostPageResponse OOTDPostPageResponse = postService.getMyOOTDPosts(postMemberId, pageable);
+    return ResponseEntity.ok(OOTDPostPageResponse);
   }
 
   @GetMapping("/top4-posts")

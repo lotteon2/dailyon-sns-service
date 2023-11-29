@@ -13,7 +13,7 @@ public class MemberService {
 
   private final MemberRepository memberRepository;
 
-  public OOTDMemberProfileResponse getOOTDMemberProfile(Long memberId, Long followerId) {
-    return memberRepository.findOOTDMemberProfile(memberId, followerId);
+  public OOTDMemberProfileResponse getOOTDMemberProfile(Long ootdMemberId, Long memberId) {
+    return memberRepository.findOOTDMemberProfile(ootdMemberId, memberId);
   }
 }
