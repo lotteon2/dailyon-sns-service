@@ -15,12 +15,12 @@ public class MemberApiController {
 
   private final MemberService memberService;
 
-  @GetMapping("/{memberId}")
+  @GetMapping("/{ootdMemberId}")
   public ResponseEntity<Map<String, OOTDMemberProfileResponse>> getOOTDMemberProfile(
-      @RequestHeader(name = "memberId") Long followerId,
-      @PathVariable(name = "memberId") Long memberId) {
+      @RequestHeader(name = "memberId") Long memberId,
+      @PathVariable(name = "ootdMemberId") Long ootdMemberId) {
     OOTDMemberProfileResponse ootdMemberProfileResponse =
-        memberService.getOOTDMemberProfile(memberId, followerId);
+        memberService.getOOTDMemberProfile(ootdMemberId, memberId);
     return ResponseEntity.ok(Map.of("member", ootdMemberProfileResponse));
   }
 }

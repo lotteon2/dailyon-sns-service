@@ -12,9 +12,9 @@ public class MemberRepositoryImpl implements MemberRepository {
   private final MemberJpaRepository memberJpaRepository;
 
   @Override
-  public OOTDMemberProfileResponse findOOTDMemberProfile(Long memberId, Long followerId) {
+  public OOTDMemberProfileResponse findOOTDMemberProfile(Long ootdMemberId, Long memberId) {
     return memberJpaRepository
-        .findOOTDMemberProfile(memberId, followerId)
+        .findOOTDMemberProfile(ootdMemberId, memberId)
         .orElseThrow(MemberEntityNotFoundException::new);
   }
 }

@@ -13,9 +13,9 @@ public interface MemberJpaRepository extends JpaRepository<Member, Long> {
           + ".OOTDMemberProfileResponse(m.id, m.nickname, m.profileImgUrl, m.followingCount, m.followerCount, "
           + "exists ("
           + "select f from Follow f "
-          + "where f.follower.id = :followerId and f.following.id = :memberId)"
+          + "where f.follower.id = :memberId and f.following.id = :ootdMemberId)"
           + ") "
           + "from Member m "
-          + "where m.id = :memberId")
-  Optional<OOTDMemberProfileResponse> findOOTDMemberProfile(Long memberId, Long followerId);
+          + "where m.id = :ootdMemberId")
+  Optional<OOTDMemberProfileResponse> findOOTDMemberProfile(Long ootdMemberId, Long memberId);
 }
