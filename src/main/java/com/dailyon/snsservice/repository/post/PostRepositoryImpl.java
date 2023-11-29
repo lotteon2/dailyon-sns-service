@@ -12,11 +12,14 @@ import com.dailyon.snsservice.dto.response.member.PostDetailMemberResponse;
 import com.dailyon.snsservice.dto.response.post.*;
 import com.dailyon.snsservice.dto.response.postimageproductdetail.PostImageProductDetailResponse;
 import com.dailyon.snsservice.entity.Post;
+import com.dailyon.snsservice.entity.QPostLike;
 import com.dailyon.snsservice.exception.PostEntityNotFoundException;
 import com.querydsl.core.types.*;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.core.types.dsl.CaseBuilder;
 import com.querydsl.core.types.dsl.PathBuilder;
+import com.querydsl.jpa.JPAExpressions;
+import com.querydsl.jpa.JPQLQuery;
 import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import java.util.ArrayList;
@@ -51,6 +54,14 @@ public class PostRepositoryImpl implements PostRepository {
   public Page<PostResponse> findAllWithIsLike(Long memberId, Pageable pageable) {
     JPAQuery<PostResponse> query;
     if (Objects.nonNull(memberId)) {
+      QPostLike postLikeSubQuery = new QPostLike("postLikeSubQuery");
+
+      BooleanExpression hasLikedCondition =
+          JPAExpressions.select(postLikeSubQuery)
+              .from(postLikeSubQuery)
+              .where(postLikeSubQuery.post.id.eq(post.id), postLikeSubQuery.member.id.eq(memberId))
+              .exists();
+
       query =
           jpaQueryFactory
               .select(
@@ -61,12 +72,9 @@ public class PostRepositoryImpl implements PostRepository {
                       post.likeCount,
                       post.viewCount,
                       post.commentCount,
-                      new CaseBuilder()
-                          .when(postLike.member.id.eq(memberId))
-                          .then(true)
-                          .otherwise(false)))
-              .from(post)
-              .leftJoin(post.postLikes, postLike);
+                      hasLikedCondition))
+              .from(post);
+
     } else {
       query =
           jpaQueryFactory
@@ -112,6 +120,14 @@ public class PostRepositoryImpl implements PostRepository {
 
   @Override
   public Page<MyOOTDPostResponse> findMyPostsByMemberId(Long memberId, Pageable pageable) {
+    QPostLike postLikeSubQuery = new QPostLike("postLikeSubQuery");
+
+    BooleanExpression hasLikedCondition =
+        JPAExpressions.select(postLikeSubQuery)
+            .from(postLikeSubQuery)
+            .where(postLikeSubQuery.post.id.eq(post.id), postLikeSubQuery.member.id.eq(memberId))
+            .exists();
+
     JPAQuery<MyOOTDPostResponse> query =
         jpaQueryFactory
             .select(
@@ -122,18 +138,17 @@ public class PostRepositoryImpl implements PostRepository {
                     post.likeCount,
                     post.viewCount,
                     post.commentCount,
-                    new CaseBuilder()
-                        .when(postLike.member.id.eq(memberId))
-                        .then(true)
-                        .otherwise(false)))
+                    hasLikedCondition))
             .from(post)
-            .leftJoin(post.postLikes, postLike)
             .innerJoin(post.postImage)
             .where(post.member.id.eq(memberId), post.isDeleted.isFalse())
             .orderBy(getOrderCondition(pageable.getSort()).toArray(OrderSpecifier[]::new))
             .offset(pageable.getOffset())
             .limit(pageable.getPageSize());
-    return new PageImpl<>(query.fetch(), pageable, getMyPageTotalPageCount(memberId));
+
+    Long totalElements = getMyPageTotalPageCount(pageable, memberId);
+
+    return new PageImpl<>(query.fetch(), pageable, totalElements);
   }
 
   @Override
@@ -231,13 +246,20 @@ public class PostRepositoryImpl implements PostRepository {
         .fetchOne();
   }
 
-  private Long getMyPageTotalPageCount(Long memberId) {
-    return jpaQueryFactory.select(post.count()).from(post)
-            .where(post.member.id.eq(memberId), post.isDeleted.isFalse()).fetchOne();
+  private Long getMyPageTotalPageCount(Pageable pageable, Long memberId) {
+    return jpaQueryFactory
+        .select(post.count())
+        .from(post)
+        .where(post.member.id.eq(memberId), post.isDeleted.isFalse())
+        .fetchOne();
   }
 
   private Long getPostTotalPageCount() {
-    return jpaQueryFactory.select(post.count()).from(post).where(post.isDeleted.isFalse()).fetchOne();
+    return jpaQueryFactory
+        .select(post.count())
+        .from(post)
+        .where(post.isDeleted.isFalse())
+        .fetchOne();
   }
 
   private List<OrderSpecifier> getOrderCondition(Sort sort) {

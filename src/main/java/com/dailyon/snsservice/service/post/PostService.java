@@ -143,7 +143,29 @@ public class PostService {
 
   public PostLikePageResponse getPostLikes(Long memberId, Pageable pageable) {
     Page<Post> posts = postRepository.findAllWithPostLikeByMemberIdIn(memberId, pageable);
-    return PostLikePageResponse.fromEntity(posts);
+
+    PostLikePageResponse postLikePageResponse = PostLikePageResponse.fromEntity(posts);
+    postLikePageResponse.getPosts().forEach(post -> {
+      try {
+        PostCountVO dbPostCountVO =
+                new PostCountVO(
+                        post.getViewCount(),
+                        post.getLikeCount(),
+                        post.getCommentCount());
+
+        // get count from cache or add all counts to cache
+        PostCountVO cachedPostCountVO = postCountRedisRepository.findOrPutPostCountVO(
+                String.valueOf(post.getId()), dbPostCountVO);
+
+        // cache count 값으로 response를 업데이트
+        post.setViewCount(cachedPostCountVO.getViewCount());
+        post.setLikeCount(cachedPostCountVO.getLikeCount());
+      } catch (JsonProcessingException e) {
+        throw new RuntimeException(e);
+      }
+    });
+
+    return postLikePageResponse;
   }
 
   public MyOOTDPostPageResponse getMyOOTDPosts(Long memberId, Pageable pageable) {
