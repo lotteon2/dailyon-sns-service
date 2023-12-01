@@ -31,10 +31,6 @@ public class FollowService {
   public FollowerPageResponse getFollowers(Long memberId, Pageable pageable) {
     Page<FollowerResponse> followerResponses =
             followRepository.findFollowersByMemberId(memberId, pageable);
-    return FollowerPageResponse.builder()
-            .totalPages(followerResponses.getTotalPages())
-            .totalElements(followerResponses.getTotalElements())
-            .followers(followerResponses.getContent())
-            .build();
+    return FollowerPageResponse.fromDto(followerResponses);
   }
 }
