@@ -15,6 +15,6 @@ public class UpdateHashTagRequest {
   private Long id;
 
   @NotBlank(message = "해시태그를 입력해주세요.")
-  @Size(min = 1, max = 20, message = "해시태그 이름은 최소 1글자 이상 최대 20글자 이하로 입력 가능합니다.")
+  @Size(min = 1, max = 10, message = "해시태그는 최소 1글자 이상 최대 10글자 이하로 입력 가능합니다.")
   private String name;
 }

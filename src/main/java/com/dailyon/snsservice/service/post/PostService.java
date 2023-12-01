@@ -110,8 +110,8 @@ public class PostService {
 
     postRepository.save(post);
 
-    String thumbnailImgPreSignedUrl = s3Service.getPreSignedUrl(STATIC_IMG_BUCKET, thumbnailImgUrl);
-    String imgPreSignedUrl = s3Service.getPreSignedUrl(STATIC_IMG_BUCKET, imgUrl);
+    String thumbnailImgPreSignedUrl = s3Service.getPreSignedUrl(STATIC_IMG_BUCKET, thumbnailImgUrl.substring(1));
+    String imgPreSignedUrl = s3Service.getPreSignedUrl(STATIC_IMG_BUCKET, imgUrl.substring(1));
 
     return CreatePostResponse.builder()
         .thumbnailImgPreSignedUrl(thumbnailImgPreSignedUrl)

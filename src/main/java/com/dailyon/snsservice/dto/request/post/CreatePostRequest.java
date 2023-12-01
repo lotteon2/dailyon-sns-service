@@ -22,6 +22,7 @@ public class CreatePostRequest {
   private Double weight;
 
   @NotEmpty(message = "해시태그는 최소 1개 이상 입력해야 합니다.")
+  @Size(min = 1, max = 10, message = "해시태그는 최소 1글자 이상 최대 10글자 이하로 입력 가능합니다.")
   private List<String> hashTagNames;
 
   @NotBlank(message = "썸네일 이미지를 등록해주세요.")
