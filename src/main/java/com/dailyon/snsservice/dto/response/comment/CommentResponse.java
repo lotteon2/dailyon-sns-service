@@ -16,7 +16,7 @@ public class CommentResponse {
   private Long id;
   private String description;
   private Boolean isDeleted;
-  private LocalDateTime createdAt;
+  private String createdAt;
   private MemberResponse member;
 
   @JsonInclude(JsonInclude.Include.NON_EMPTY)
