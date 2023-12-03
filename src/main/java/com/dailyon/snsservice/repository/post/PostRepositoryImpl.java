@@ -204,7 +204,7 @@ public class PostRepositoryImpl implements PostRepository {
                           member.code,
                           isFollowingExpression),
                       hashTags,
-                      postImageProductDetails))
+                      postImageProductDetails)).distinct()
               .from(post)
               .innerJoin(post.member, member)
               .innerJoin(member.following, follow);
@@ -231,7 +231,7 @@ public class PostRepositoryImpl implements PostRepository {
                           member.profileImgUrl,
                           member.code),
                       hashTags,
-                      postImageProductDetails))
+                      postImageProductDetails)).distinct()
               .from(post)
               .innerJoin(post.member, member);
     }
