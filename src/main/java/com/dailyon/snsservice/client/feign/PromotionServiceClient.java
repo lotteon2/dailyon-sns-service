@@ -11,9 +11,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 @FeignClient(name = "promotionServiceClient", url = "${endpoint.promotion-service}")
 public interface PromotionServiceClient {
 
-  @GetMapping("/clients/coupons")
+  @GetMapping("/clients/coupons/coupon-existence")
   ResponseEntity<List<CouponForProductResponse>> getCouponsForProduct(
       @RequestHeader(name = "memberId") Long memberId,
-      @RequestParam(name = "type") String couponType,
       @RequestParam(name = "productIds") List<Long> productIds);
 }

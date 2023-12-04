@@ -198,7 +198,7 @@ class PostServiceTest {
                         .price(10000)
                         .build())));
 
-    Mockito.when(promotionServiceClient.getCouponsForProduct(memberId, "product", List.of(101L)))
+    Mockito.when(promotionServiceClient.getCouponsForProduct(memberId, List.of(101L)))
         .thenReturn(
             ResponseEntity.ok(
                 List.of(
@@ -259,7 +259,7 @@ class PostServiceTest {
                         .price(10000)
                         .build())));
 
-    Mockito.when(promotionServiceClient.getCouponsForProduct(memberId, "product", List.of(101L)))
+    Mockito.when(promotionServiceClient.getCouponsForProduct(memberId, List.of(101L)))
         .thenReturn(ResponseEntity.ok(List.of()));
 
     // when

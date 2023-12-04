@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 @FeignClient(name = "productServiceClient", url = "${endpoint.product-service}")
 public interface ProductServiceClient {
 
-  @GetMapping("/clients/post-image/products")
+  @GetMapping("/clients/products/post-image")
   ResponseEntity<List<ProductInfoResponse>> getProductInfos(
       @RequestParam(name = "id") List<Long> productIds);
 }
