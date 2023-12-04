@@ -1,27 +1,32 @@
 package com.dailyon.snsservice.repository.post;
 
-import static com.dailyon.snsservice.entity.QFollow.follow;
 import static com.dailyon.snsservice.entity.QHashTag.hashTag;
 import static com.dailyon.snsservice.entity.QMember.member;
 import static com.dailyon.snsservice.entity.QPost.post;
 import static com.dailyon.snsservice.entity.QPostImage.postImage;
 import static com.dailyon.snsservice.entity.QPostImageProductDetail.postImageProductDetail;
+import static com.querydsl.core.group.GroupBy.*;
 
 import com.dailyon.snsservice.dto.response.member.PostDetailMemberResponse;
+import com.dailyon.snsservice.dto.response.member.QPostDetailMemberResponse;
 import com.dailyon.snsservice.dto.response.post.*;
 import com.dailyon.snsservice.dto.response.postimageproductdetail.PostImageProductDetailResponse;
+import com.dailyon.snsservice.dto.response.postimageproductdetail.QPostImageProductDetailResponse;
 import com.dailyon.snsservice.entity.Post;
+import com.dailyon.snsservice.entity.QFollow;
 import com.dailyon.snsservice.entity.QPostLike;
 import com.dailyon.snsservice.exception.PostEntityNotFoundException;
+import com.querydsl.core.Tuple;
 import com.querydsl.core.types.*;
 import com.querydsl.core.types.dsl.BooleanExpression;
-import com.querydsl.core.types.dsl.CaseBuilder;
+import com.querydsl.core.types.dsl.Expressions;
 import com.querydsl.core.types.dsl.PathBuilder;
 import com.querydsl.jpa.JPAExpressions;
 import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.*;
@@ -161,87 +166,94 @@ public class PostRepositoryImpl implements PostRepository {
   }
 
   @Override
-  public PostDetailResponse findDetailByIdWithIsFollowing(Long id, Long memberId) {
-    JPAQuery<PostDetailResponse> query;
-
-    QList hashTags =
-        Projections.list(
-            Projections.constructor(PostDetailHashTagResponse.class, hashTag.id, hashTag.name));
-
-    QList postImageProductDetails =
-        Projections.list(
-            Projections.constructor(
-                PostImageProductDetailResponse.class,
-                postImageProductDetail.id,
-                postImageProductDetail.productId,
-                postImageProductDetail.productSize,
-                postImageProductDetail.leftGapPercent,
-                postImageProductDetail.topGapPercent));
+  public PostDetailResponse findDetailByIdWithIsFollowingAndIsLike(Long id, Long memberId) {
+    JPAQuery<?> query =
+        jpaQueryFactory
+            .from(post)
+            .innerJoin(post.member, member)
+            .innerJoin(post.postImage, postImage)
+            .innerJoin(post.hashTags, hashTag)
+            .innerJoin(postImage.postImageProductDetails, postImageProductDetail)
+            .where(post.id.eq(id), post.isDeleted.eq(false));
 
     if (Objects.nonNull(memberId)) {
-      BooleanExpression isFollowingExpression =
-          new CaseBuilder().when(follow.follower.id.eq(memberId)).then(true).otherwise(false);
-      query =
-          jpaQueryFactory
-              .select(
-                  Projections.constructor(
-                      PostDetailResponse.class,
-                      post.id,
-                      post.title,
-                      post.description,
-                      post.stature,
-                      post.weight,
-                      postImage.imgUrl,
-                      post.viewCount,
-                      post.likeCount,
-                      post.commentCount,
-                      post.createdAt,
-                      Projections.constructor(
-                          PostDetailMemberResponse.class,
-                          member.id,
-                          member.nickname,
-                          member.profileImgUrl,
-                          member.code,
-                          isFollowingExpression),
-                      hashTags,
-                      postImageProductDetails)).distinct()
-              .from(post)
-              .innerJoin(post.member, member)
-              .innerJoin(member.following, follow);
-    } else {
-      query =
-          jpaQueryFactory
-              .select(
-                  Projections.constructor(
-                      PostDetailResponse.class,
-                      post.id,
-                      post.title,
-                      post.description,
-                      post.stature,
-                      post.weight,
-                      postImage.imgUrl,
-                      post.viewCount,
-                      post.likeCount,
-                      post.commentCount,
-                      post.createdAt,
-                      Projections.fields(
-                          PostDetailMemberResponse.class,
-                          member.id,
-                          member.nickname,
-                          member.profileImgUrl,
-                          member.code),
-                      hashTags,
-                      postImageProductDetails)).distinct()
-              .from(post)
-              .innerJoin(post.member, member);
-    }
+      QPostLike postLikeSubQuery = new QPostLike("postLikeSubQuery");
 
-    return query
-        .innerJoin(post.postImage, postImage)
-        .innerJoin(postImage.postImageProductDetails, postImageProductDetail)
-        .innerJoin(post.hashTags, hashTag)
-        .where(post.id.eq(id), post.isDeleted.eq(false))
-        .fetchOne();
+      BooleanExpression hasLikedCondition =
+          JPAExpressions.select(postLikeSubQuery)
+              .from(postLikeSubQuery)
+              .where(postLikeSubQuery.post.id.eq(post.id), postLikeSubQuery.member.id.eq(memberId))
+              .exists();
+
+      QFollow followSubQuery = new QFollow("followSubQuery");
+
+      BooleanExpression isFollowingExpression =
+          JPAExpressions.select(followSubQuery)
+              .from(followSubQuery)
+              .where(
+                  followSubQuery.following.id.eq(member.id),
+                  followSubQuery.follower.id.eq(memberId))
+              .exists();
+
+      return query
+          .transform(
+              groupBy(post.id)
+                  .as(
+                      new QPostDetailResponse(
+                          post.id,
+                          post.title,
+                          post.description,
+                          post.stature,
+                          post.weight,
+                          postImage.imgUrl,
+                          post.viewCount,
+                          post.likeCount,
+                          post.commentCount,
+                          hasLikedCondition,
+                          post.createdAt,
+                          new QPostDetailMemberResponse(
+                              member.id,
+                              member.nickname,
+                              member.profileImgUrl,
+                              member.code,
+                              isFollowingExpression),
+                          set(new QPostDetailHashTagResponse(hashTag.id, hashTag.name)),
+                          set(
+                              new QPostImageProductDetailResponse(
+                                  postImageProductDetail.id,
+                                  postImageProductDetail.productId,
+                                  postImageProductDetail.productSize,
+                                  postImageProductDetail.leftGapPercent,
+                                  postImageProductDetail.topGapPercent)))))
+          .get(id);
+    } else {
+      return query
+          .transform(
+              groupBy(post.id)
+                  .as(
+                      new QPostDetailResponse(
+                          post.id,
+                          post.title,
+                          post.description,
+                          post.stature,
+                          post.weight,
+                          postImage.imgUrl,
+                          post.viewCount,
+                          post.likeCount,
+                          post.commentCount,
+                          post.createdAt,
+                          new QPostDetailMemberResponse(
+                              member.id, member.nickname, member.profileImgUrl, member.code),
+                          set(new QPostDetailHashTagResponse(hashTag.id, hashTag.name)),
+                          set(
+                              new QPostImageProductDetailResponse(
+                                  postImageProductDetail.id,
+                                  postImageProductDetail.productId,
+                                  postImageProductDetail.productSize,
+                                  postImageProductDetail.leftGapPercent,
+                                  postImageProductDetail.topGapPercent)))))
+          .get(id);
+    }
   }
 
   private Long getMyPageTotalPageCount(Pageable pageable, Long memberId) {

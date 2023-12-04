@@ -192,7 +192,7 @@ class PostRepositoryTest {
 
     // when
     PostDetailResponse postDetailResponse =
-        postRepository.findDetailByIdWithIsFollowing(postId, memberId);
+        postRepository.findDetailByIdWithIsFollowingAndIsLike(postId, memberId);
 
     // then
     assertThat(postDetailResponse.getId()).isSameAs(postId);
@@ -210,17 +210,24 @@ class PostRepositoryTest {
     assertThat(postDetailResponse.getMember().getCode()).isNotNull();
     assertThat(postDetailResponse.getMember().getIsFollowing()).isTrue();
     assertThat(postDetailResponse.getHashTags().size()).isSameAs(1);
-    assertThat(postDetailResponse.getHashTags().get(0).getId()).isNotNull();
-    assertThat(postDetailResponse.getHashTags().get(0).getName()).isNotNull();
+    postDetailResponse
+        .getHashTags()
+        .forEach(
+            hashTag -> {
+              assertThat(hashTag.getId()).isNotNull();
+              assertThat(hashTag.getName()).isNotNull();
+            });
     assertThat(postDetailResponse.getPostImageProductDetails().size()).isSameAs(1);
-    assertThat(postDetailResponse.getPostImageProductDetails().get(0).getId()).isNotNull();
-    assertThat(postDetailResponse.getPostImageProductDetails().get(0).getSize()).isNotNull();
-    assertThat(postDetailResponse.getPostImageProductDetails().get(0).getLeftGapPercent())
-        .isNotNull();
-    assertThat(postDetailResponse.getPostImageProductDetails().get(0).getTopGapPercent())
-        .isNotNull();
-    assertThat(postDetailResponse.getPostImageProductDetails().get(0).getHasAvailableCoupon())
-        .isNull();
+    postDetailResponse
+        .getPostImageProductDetails()
+        .forEach(
+            postImageProductDetailResponse -> {
+              assertThat(postImageProductDetailResponse.getId()).isNotNull();
+              assertThat(postImageProductDetailResponse.getSize()).isNotNull();
+              assertThat(postImageProductDetailResponse.getLeftGapPercent()).isNotNull();
+              assertThat(postImageProductDetailResponse.getTopGapPercent()).isNotNull();
+              assertThat(postImageProductDetailResponse.getHasAvailableCoupon()).isNull();
+            });
   }
 
   @Test
@@ -232,7 +239,7 @@ class PostRepositoryTest {
 
     // when
     PostDetailResponse postDetailResponse =
-        postRepository.findDetailByIdWithIsFollowing(postId, memberId);
+        postRepository.findDetailByIdWithIsFollowingAndIsLike(postId, memberId);
 
     // then
     assertThat(postDetailResponse.getId()).isSameAs(postId);
@@ -250,16 +257,23 @@ class PostRepositoryTest {
     assertThat(postDetailResponse.getMember().getCode()).isNotNull();
     assertThat(postDetailResponse.getMember().getIsFollowing()).isNull();
     assertThat(postDetailResponse.getHashTags().size()).isSameAs(1);
-    assertThat(postDetailResponse.getHashTags().get(0).getId()).isNotNull();
-    assertThat(postDetailResponse.getHashTags().get(0).getName()).isNotNull();
+    postDetailResponse
+        .getHashTags()
+        .forEach(
+            hashTag -> {
+              assertThat(hashTag.getId()).isNotNull();
+              assertThat(hashTag.getName()).isNotNull();
+            });
     assertThat(postDetailResponse.getPostImageProductDetails().size()).isSameAs(1);
-    assertThat(postDetailResponse.getPostImageProductDetails().get(0).getId()).isNotNull();
-    assertThat(postDetailResponse.getPostImageProductDetails().get(0).getSize()).isNotNull();
-    assertThat(postDetailResponse.getPostImageProductDetails().get(0).getLeftGapPercent())
-        .isNotNull();
-    assertThat(postDetailResponse.getPostImageProductDetails().get(0).getTopGapPercent())
-        .isNotNull();
-    assertThat(postDetailResponse.getPostImageProductDetails().get(0).getHasAvailableCoupon())
-        .isNull();
+    postDetailResponse
+        .getPostImageProductDetails()
+        .forEach(
+            postImageProductDetailResponse -> {
+              assertThat(postImageProductDetailResponse.getId()).isNotNull();
+              assertThat(postImageProductDetailResponse.getSize()).isNotNull();
+              assertThat(postImageProductDetailResponse.getLeftGapPercent()).isNotNull();
+              assertThat(postImageProductDetailResponse.getTopGapPercent()).isNotNull();
+              assertThat(postImageProductDetailResponse.getHasAvailableCoupon()).isNull();
+            });
   }
 }

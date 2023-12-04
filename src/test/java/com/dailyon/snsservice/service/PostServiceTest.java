@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import com.dailyon.snsservice.client.dto.CouponForProductResponse;
 import com.dailyon.snsservice.client.dto.ProductInfoResponse;
+import com.dailyon.snsservice.client.dto.ProductInfoWrapperResponse;
 import com.dailyon.snsservice.client.feign.ProductServiceClient;
 import com.dailyon.snsservice.client.feign.PromotionServiceClient;
 import com.dailyon.snsservice.dto.response.post.OOTDPostPageResponse;
@@ -189,14 +190,17 @@ class PostServiceTest {
     Mockito.when(productServiceClient.getProductInfos(List.of(101L)))
         .thenReturn(
             ResponseEntity.ok(
-                List.of(
-                    ProductInfoResponse.builder()
-                        .id(101L)
-                        .name("test 상품")
-                        .brandName("test 브랜드")
-                        .imgUrl("/test.png")
-                        .price(10000)
-                        .build())));
+                ProductInfoWrapperResponse.builder()
+                    .productInfos(
+                        List.of(
+                            ProductInfoResponse.builder()
+                                .id(101L)
+                                .name("test 상품")
+                                .brandName("test 브랜드")
+                                .imgUrl("/test.png")
+                                .price(10000)
+                                .build()))
+                    .build()));
 
     Mockito.when(promotionServiceClient.getCouponsForProduct(memberId, List.of(101L)))
         .thenReturn(
@@ -227,17 +231,24 @@ class PostServiceTest {
     assertThat(postDetailResponse.getMember().getCode()).isNotNull();
     assertThat(postDetailResponse.getMember().getIsFollowing()).isTrue();
     assertThat(postDetailResponse.getHashTags().size()).isSameAs(1);
-    assertThat(postDetailResponse.getHashTags().get(0).getId()).isNotNull();
-    assertThat(postDetailResponse.getHashTags().get(0).getName()).isNotNull();
+    postDetailResponse
+        .getHashTags()
+        .forEach(
+            hashTag -> {
+              assertThat(hashTag.getId()).isNotNull();
+              assertThat(hashTag.getName()).isNotNull();
+            });
     assertThat(postDetailResponse.getPostImageProductDetails().size()).isSameAs(1);
-    assertThat(postDetailResponse.getPostImageProductDetails().get(0).getId()).isNotNull();
-    assertThat(postDetailResponse.getPostImageProductDetails().get(0).getSize()).isNotNull();
-    assertThat(postDetailResponse.getPostImageProductDetails().get(0).getLeftGapPercent())
-        .isNotNull();
-    assertThat(postDetailResponse.getPostImageProductDetails().get(0).getTopGapPercent())
-        .isNotNull();
-    assertThat(postDetailResponse.getPostImageProductDetails().get(0).getHasAvailableCoupon())
-        .isNotNull();
+    postDetailResponse
+        .getPostImageProductDetails()
+        .forEach(
+            postImageProductDetailResponse -> {
+              assertThat(postImageProductDetailResponse.getId()).isNotNull();
+              assertThat(postImageProductDetailResponse.getSize()).isNotNull();
+              assertThat(postImageProductDetailResponse.getLeftGapPercent()).isNotNull();
+              assertThat(postImageProductDetailResponse.getTopGapPercent()).isNotNull();
+              assertThat(postImageProductDetailResponse.getHasAvailableCoupon()).isNotNull();
+            });
   }
 
   @Test
@@ -250,14 +261,17 @@ class PostServiceTest {
     Mockito.when(productServiceClient.getProductInfos(List.of(101L)))
         .thenReturn(
             ResponseEntity.ok(
-                List.of(
-                    ProductInfoResponse.builder()
-                        .id(101L)
-                        .name("test 상품")
-                        .brandName("test 브랜드")
-                        .imgUrl("/test.png")
-                        .price(10000)
-                        .build())));
+                ProductInfoWrapperResponse.builder()
+                    .productInfos(
+                        List.of(
+                            ProductInfoResponse.builder()
+                                .id(101L)
+                                .name("test 상품")
+                                .brandName("test 브랜드")
+                                .imgUrl("/test.png")
+                                .price(10000)
+                                .build()))
+                    .build()));
 
     Mockito.when(promotionServiceClient.getCouponsForProduct(memberId, List.of(101L)))
         .thenReturn(ResponseEntity.ok(List.of()));
@@ -282,17 +296,24 @@ class PostServiceTest {
     assertThat(postDetailResponse.getMember().getCode()).isNotNull();
     assertThat(postDetailResponse.getMember().getIsFollowing()).isNull();
     assertThat(postDetailResponse.getHashTags().size()).isSameAs(1);
-    assertThat(postDetailResponse.getHashTags().get(0).getId()).isNotNull();
-    assertThat(postDetailResponse.getHashTags().get(0).getName()).isNotNull();
+    postDetailResponse
+        .getHashTags()
+        .forEach(
+            hashTag -> {
+              assertThat(hashTag.getId()).isNotNull();
+              assertThat(hashTag.getName()).isNotNull();
+            });
     assertThat(postDetailResponse.getPostImageProductDetails().size()).isSameAs(1);
-    assertThat(postDetailResponse.getPostImageProductDetails().get(0).getId()).isNotNull();
-    assertThat(postDetailResponse.getPostImageProductDetails().get(0).getSize()).isNotNull();
-    assertThat(postDetailResponse.getPostImageProductDetails().get(0).getLeftGapPercent())
-        .isNotNull();
-    assertThat(postDetailResponse.getPostImageProductDetails().get(0).getTopGapPercent())
-        .isNotNull();
-    assertThat(postDetailResponse.getPostImageProductDetails().get(0).getHasAvailableCoupon())
-        .isNull();
+    postDetailResponse
+        .getPostImageProductDetails()
+        .forEach(
+            postImageProductDetailResponse -> {
+              assertThat(postImageProductDetailResponse.getId()).isNotNull();
+              assertThat(postImageProductDetailResponse.getSize()).isNotNull();
+              assertThat(postImageProductDetailResponse.getLeftGapPercent()).isNotNull();
+              assertThat(postImageProductDetailResponse.getTopGapPercent()).isNotNull();
+              assertThat(postImageProductDetailResponse.getHasAvailableCoupon()).isNull();
+            });
   }
 
   //    @Test
