@@ -1,16 +1,20 @@
 package com.dailyon.snsservice.dto.response.post;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import com.querydsl.core.annotations.QueryProjection;
+import lombok.*;
 
 @Getter
 @Builder
 @NoArgsConstructor
-@AllArgsConstructor
+@EqualsAndHashCode(of = "id")
 public class PostDetailHashTagResponse {
 
   private Long id;
   private String name;
+
+  @QueryProjection
+  public PostDetailHashTagResponse(Long id, String name) {
+    this.id = id;
+    this.name = name;
+  }
 }

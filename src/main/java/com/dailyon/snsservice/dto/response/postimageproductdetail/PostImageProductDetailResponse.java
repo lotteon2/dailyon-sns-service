@@ -2,15 +2,14 @@ package com.dailyon.snsservice.dto.response.postimageproductdetail;
 
 import com.dailyon.snsservice.client.dto.ProductInfoResponse;
 import com.fasterxml.jackson.annotation.JsonInclude;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import com.querydsl.core.annotations.QueryProjection;
+import lombok.*;
 
 @Getter
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
+@EqualsAndHashCode(of = "id")
 public class PostImageProductDetailResponse {
 
   private Long id;
@@ -26,6 +25,7 @@ public class PostImageProductDetailResponse {
   @JsonInclude(JsonInclude.Include.NON_NULL)
   private Boolean hasAvailableCoupon;
 
+  @QueryProjection
   public PostImageProductDetailResponse(
       Long id, Long productId, String size, Double leftGapPercent, Double topGapPercent) {
     this.id = id;

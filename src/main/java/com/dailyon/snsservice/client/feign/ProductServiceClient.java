@@ -1,6 +1,6 @@
 package com.dailyon.snsservice.client.feign;
 
-import com.dailyon.snsservice.client.dto.ProductInfoResponse;
+import com.dailyon.snsservice.client.dto.ProductInfoWrapperResponse;
 import java.util.List;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.http.ResponseEntity;
@@ -11,6 +11,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 public interface ProductServiceClient {
 
   @GetMapping("/clients/products/post-image")
-  ResponseEntity<List<ProductInfoResponse>> getProductInfos(
+  ResponseEntity<ProductInfoWrapperResponse> getProductInfos(
       @RequestParam(name = "id") List<Long> productIds);
 }

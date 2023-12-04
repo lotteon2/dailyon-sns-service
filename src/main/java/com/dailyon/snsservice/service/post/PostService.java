@@ -12,8 +12,6 @@ import com.dailyon.snsservice.dto.response.post.*;
 import com.dailyon.snsservice.dto.response.postimageproductdetail.PostImageProductDetailResponse;
 import com.dailyon.snsservice.dto.response.postlike.PostLikePageResponse;
 import com.dailyon.snsservice.entity.*;
-import com.dailyon.snsservice.exception.feign.ProductServiceOutOfServiceException;
-import com.dailyon.snsservice.exception.feign.PromotionServiceOutOfServiceException;
 import com.dailyon.snsservice.mapper.hashtag.HashTagMapper;
 import com.dailyon.snsservice.mapper.post.PostMapper;
 import com.dailyon.snsservice.mapper.postimage.PostImageMapper;
@@ -108,12 +106,14 @@ public class PostService {
     List<HashTag> hashTags = hashTagMapper.createHashTags(createPostRequest.getHashTagNames());
     Post post = postMapper.createPost(createPostRequest, member, postImage, hashTags);
 
-    postRepository.save(post);
+    Post savedPost = postRepository.save(post);
 
-    String thumbnailImgPreSignedUrl = s3Service.getPreSignedUrl(STATIC_IMG_BUCKET, thumbnailImgUrl.substring(1));
+    String thumbnailImgPreSignedUrl =
+        s3Service.getPreSignedUrl(STATIC_IMG_BUCKET, thumbnailImgUrl.substring(1));
     String imgPreSignedUrl = s3Service.getPreSignedUrl(STATIC_IMG_BUCKET, imgUrl.substring(1));
 
     return CreatePostResponse.builder()
+        .id(savedPost.getId())
         .thumbnailImgPreSignedUrl(thumbnailImgPreSignedUrl)
         .imgPreSignedUrl(imgPreSignedUrl)
         .build();
@@ -145,50 +145,57 @@ public class PostService {
     Page<Post> posts = postRepository.findAllWithPostLikeByMemberIdIn(memberId, pageable);
 
     PostLikePageResponse postLikePageResponse = PostLikePageResponse.fromEntity(posts);
-    postLikePageResponse.getPosts().forEach(post -> {
-      try {
-        PostCountVO dbPostCountVO =
-                new PostCountVO(
-                        post.getViewCount(),
-                        post.getLikeCount(),
-                        post.getCommentCount());
+    postLikePageResponse
+        .getPosts()
+        .forEach(
+            post -> {
+              try {
+                PostCountVO dbPostCountVO =
+                    new PostCountVO(
+                        post.getViewCount(), post.getLikeCount(), post.getCommentCount());
 
-        // get count from cache or add all counts to cache
-        PostCountVO cachedPostCountVO = postCountRedisRepository.findOrPutPostCountVO(
-                String.valueOf(post.getId()), dbPostCountVO);
+                // get count from cache or add all counts to cache
+                PostCountVO cachedPostCountVO =
+                    postCountRedisRepository.findOrPutPostCountVO(
+                        String.valueOf(post.getId()), dbPostCountVO);
 
-        // cache count 값으로 response를 업데이트
-        post.setViewCount(cachedPostCountVO.getViewCount());
-        post.setLikeCount(cachedPostCountVO.getLikeCount());
-      } catch (JsonProcessingException e) {
-        throw new RuntimeException(e);
-      }
-    });
+                // cache count 값으로 response를 업데이트
+                post.setViewCount(cachedPostCountVO.getViewCount());
+                post.setLikeCount(cachedPostCountVO.getLikeCount());
+              } catch (JsonProcessingException e) {
+                throw new RuntimeException(e);
+              }
+            });
 
     return postLikePageResponse;
   }
 
   public OOTDPostPageResponse getMyOOTDPosts(Long memberId, Pageable pageable) {
-    Page<OOTDPostResponse> myOOTDPostResponses = postRepository.findMyPostsByMemberId(memberId, pageable);
-    myOOTDPostResponses.getContent().forEach(OOTDPostResponse -> {
-      try {
-        PostCountVO dbPostCountVO =
-                new PostCountVO(
+    Page<OOTDPostResponse> myOOTDPostResponses =
+        postRepository.findMyPostsByMemberId(memberId, pageable);
+    myOOTDPostResponses
+        .getContent()
+        .forEach(
+            OOTDPostResponse -> {
+              try {
+                PostCountVO dbPostCountVO =
+                    new PostCountVO(
                         OOTDPostResponse.getViewCount(),
                         OOTDPostResponse.getLikeCount(),
                         OOTDPostResponse.getCommentCount());
 
-        // get count from cache or add all counts to cache
-        PostCountVO cachedPostCountVO = postCountRedisRepository.findOrPutPostCountVO(
-                String.valueOf(OOTDPostResponse.getId()), dbPostCountVO);
+                // get count from cache or add all counts to cache
+                PostCountVO cachedPostCountVO =
+                    postCountRedisRepository.findOrPutPostCountVO(
+                        String.valueOf(OOTDPostResponse.getId()), dbPostCountVO);
 
-        // cache count 값으로 response를 업데이트
-        OOTDPostResponse.setViewCount(cachedPostCountVO.getViewCount());
-        OOTDPostResponse.setLikeCount(cachedPostCountVO.getLikeCount());
-      } catch (JsonProcessingException e) {
-        throw new RuntimeException(e);
-      }
-    });
+                // cache count 값으로 response를 업데이트
+                OOTDPostResponse.setViewCount(cachedPostCountVO.getViewCount());
+                OOTDPostResponse.setLikeCount(cachedPostCountVO.getLikeCount());
+              } catch (JsonProcessingException e) {
+                throw new RuntimeException(e);
+              }
+            });
     return OOTDPostPageResponse.fromDto(myOOTDPostResponses);
   }
 
@@ -217,28 +224,35 @@ public class PostService {
     }
   }
 
-  private void promotionServiceOutOfServiceException(Throwable t) {
-    throw new PromotionServiceOutOfServiceException();
-  }
-
-  @CircuitBreaker(name = "circuitBreaker", fallbackMethod = "promotionServiceOutOfServiceException")
+  @CircuitBreaker(
+      name = "myCircuitBreaker",
+      fallbackMethod = "promotionServiceOutOfServiceException")
   private List<CouponForProductResponse> getCouponsForProduct(
       Long memberId, List<Long> productIds) {
-    return promotionServiceClient.getCouponsForProduct(memberId, "product", productIds).getBody();
+    return promotionServiceClient.getCouponsForProduct(memberId, productIds).getBody();
   }
 
-  private void productServiceOutOfServiceException(Throwable t) {
-    throw new ProductServiceOutOfServiceException();
+  public List<CouponForProductResponse> promotionServiceOutOfServiceException(Throwable t) {
+    log.error(t.getMessage());
+    return new ArrayList<>();
   }
 
-  @CircuitBreaker(name = "circuitBreaker", fallbackMethod = "productServiceOutOfServiceException")
-  private List<ProductInfoResponse> getProductInfos(List<Long> productIds) {
-    return productServiceClient.getProductInfos(productIds).getBody();
+  @CircuitBreaker(
+      name = "productServiceClient",
+      fallbackMethod = "productServiceOutOfServiceException")
+  public List<ProductInfoResponse> getProductInfos(List<Long> productIds) {
+    return Objects.requireNonNull(productServiceClient.getProductInfos(productIds).getBody())
+        .getProductInfos();
+  }
+
+  public List<ProductInfoResponse> productServiceOutOfServiceException(Throwable t) {
+    log.error(t.getMessage());
+    return new ArrayList<>();
   }
 
   public PostDetailResponse findDetailByIdWithIsFollowing(Long id, Long memberId) {
     PostDetailResponse postDetailResponse =
-        postRepository.findDetailByIdWithIsFollowing(id, memberId);
+        postRepository.findDetailByIdWithIsFollowingAndIsLike(id, memberId);
     List<Long> productIds =
         postDetailResponse.getPostImageProductDetails().stream()
             .map(PostImageProductDetailResponse::getProductId)

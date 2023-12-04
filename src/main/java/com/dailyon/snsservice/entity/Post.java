@@ -36,7 +36,10 @@ public class Post extends BaseEntity {
       cascade = {CascadeType.PERSIST, CascadeType.REMOVE})
   private PostImage postImage;
 
-  @OneToMany(mappedBy = "post", fetch = FetchType.LAZY)
+  @OneToMany(
+      mappedBy = "post",
+      fetch = FetchType.LAZY,
+      cascade = {CascadeType.PERSIST})
   @Builder.Default
   private List<HashTag> hashTags = new ArrayList<>();
 
@@ -84,6 +87,7 @@ public class Post extends BaseEntity {
             .description(description)
             .stature(stature)
             .weight(weight)
+            .hashTags(hashTags)
             .postImage(postImage)
             .build();
     postImage.setPost(post);

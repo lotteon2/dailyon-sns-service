@@ -5,6 +5,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import com.dailyon.snsservice.client.dto.CouponForProductResponse;
 import com.dailyon.snsservice.client.dto.ProductInfoResponse;
+import com.dailyon.snsservice.client.dto.ProductInfoWrapperResponse;
 import com.dailyon.snsservice.client.feign.ProductServiceClient;
 import com.dailyon.snsservice.client.feign.PromotionServiceClient;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -219,14 +220,17 @@ class PostApiControllerTest {
     Mockito.when(productServiceClient.getProductInfos(List.of(101L)))
         .thenReturn(
             ResponseEntity.ok(
-                List.of(
-                    ProductInfoResponse.builder()
-                        .id(101L)
-                        .name("test 상품")
-                        .brandName("test 브랜드")
-                        .imgUrl("/test.png")
-                        .price(10000)
-                        .build())));
+                ProductInfoWrapperResponse.builder()
+                    .productInfos(
+                        List.of(
+                            ProductInfoResponse.builder()
+                                .id(101L)
+                                .name("test 상품")
+                                .brandName("test 브랜드")
+                                .imgUrl("/test.png")
+                                .price(10000)
+                                .build()))
+                    .build()));
 
     Mockito.when(promotionServiceClient.getCouponsForProduct(memberId, List.of(101L)))
         .thenReturn(
@@ -286,14 +290,17 @@ class PostApiControllerTest {
     Mockito.when(productServiceClient.getProductInfos(List.of(101L)))
         .thenReturn(
             ResponseEntity.ok(
-                List.of(
-                    ProductInfoResponse.builder()
-                        .id(101L)
-                        .name("test 상품")
-                        .brandName("test 브랜드")
-                        .imgUrl("/test.png")
-                        .price(10000)
-                        .build())));
+                ProductInfoWrapperResponse.builder()
+                    .productInfos(
+                        List.of(
+                            ProductInfoResponse.builder()
+                                .id(101L)
+                                .name("test 상품")
+                                .brandName("test 브랜드")
+                                .imgUrl("/test.png")
+                                .price(10000)
+                                .build()))
+                    .build()));
 
     Mockito.when(promotionServiceClient.getCouponsForProduct(memberId, List.of(101L)))
         .thenReturn(ResponseEntity.ok(List.of()));

@@ -2,12 +2,13 @@ package com.dailyon.snsservice.client.dto;
 
 import lombok.*;
 
+import java.util.List;
+
 @Getter
 @Builder
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PROTECTED)
-public class CouponForProductResponse {
+public class ProductInfoWrapperResponse {
 
-  private Long productId;
-  private Boolean hasAvailableCoupon;
+    private List<ProductInfoResponse> productInfos;
 }
