@@ -8,6 +8,7 @@ import lombok.*;
 @AllArgsConstructor(access = AccessLevel.PROTECTED)
 public class UpdatePostResponse {
 
+  private Long id;
   private String thumbnailImgPreSignedUrl;
   private String imgPreSignedUrl;
 }

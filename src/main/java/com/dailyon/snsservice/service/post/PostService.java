@@ -130,6 +130,7 @@ public class PostService {
     String imgPreSignedUrl =
         s3Service.getPreSignedUrl(STATIC_IMG_BUCKET, post.getPostImage().getImgUrl());
     return UpdatePostResponse.builder()
+        .id(id)
         .thumbnailImgPreSignedUrl(thumbnailImgPreSignedUrl)
         .imgPreSignedUrl(imgPreSignedUrl)
         .build();

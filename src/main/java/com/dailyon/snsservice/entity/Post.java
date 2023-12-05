@@ -98,6 +98,8 @@ public class Post extends BaseEntity {
   public void updatePostAndPostImageProductDetail(UpdatePostRequest updatePostRequest) {
     this.title = updatePostRequest.getTitle();
     this.description = updatePostRequest.getDescription();
+    this.stature = updatePostRequest.getStature();
+    this.weight = updatePostRequest.getWeight();
     updatePostRequest
         .getHashTags()
         .forEach(
