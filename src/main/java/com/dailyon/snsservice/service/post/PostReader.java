@@ -6,6 +6,8 @@ import com.dailyon.snsservice.repository.post.PostJpaRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
+import java.util.List;
+
 @Component
 @RequiredArgsConstructor
 public class PostReader {
@@ -16,5 +18,9 @@ public class PostReader {
     return postJpaRepository
         .findByIdAndIsDeletedFalse(postId)
         .orElseThrow(PostEntityNotFoundException::new);
+  }
+
+  public List<Post> readAll(List<Long> postIds) {
+    return postJpaRepository.findAllById(postIds);
   }
 }
