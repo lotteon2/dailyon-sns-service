@@ -10,6 +10,8 @@ import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @CrossOrigin(origins = "*", allowedHeaders = "*")
 @RequestMapping("/follows")
 @RestController
@@ -44,11 +46,11 @@ public class FollowApiController {
     return ResponseEntity.ok(followerPageResponse);
   }
 
-  @PutMapping("/{followingId}")
+  @PutMapping
   public ResponseEntity<Void> toggleFollow(
-      @RequestHeader(name = "memberId") Long memberId,
-      @PathVariable(name = "followingId") Long followingId) {
-    followService.toggleFollow(memberId, followingId);
+          @RequestHeader(name = "memberId") Long memberId,
+          @RequestParam(name = "followingIds") List<Long> followingIds) {
+    followService.toggleFollow(memberId, followingIds);
     return ResponseEntity.ok().build();
   }
 }

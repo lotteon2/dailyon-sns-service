@@ -6,7 +6,10 @@ import static org.junit.jupiter.api.Assertions.*;
 import com.dailyon.snsservice.dto.response.follow.FollowerResponse;
 import com.dailyon.snsservice.entity.Follow;
 import com.dailyon.snsservice.entity.ids.FollowId;
+import java.util.List;
 import java.util.Optional;
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,34 +29,32 @@ class FollowRepositoryTest {
 
   @Autowired private FollowJpaRepository followJpaRepository;
 
-  @Test
-  @DisplayName("팔로우 추가")
-  void createFollow() {
-    // given
-    Long followerId = 1L;
-    Long followingId = 4L;
-
-    // when
-    followRepository.toggleFollow(followerId, followingId);
-
-    // then
-    Optional<Follow> follow = followJpaRepository.findById(new FollowId(followerId, followingId));
-    assertNotNull(follow.orElse(null));
-  }
+  @PersistenceContext private EntityManager em;
 
   @Test
-  @DisplayName("팔로우 삭제")
-  void deleteFollow() {
+  @DisplayName("팔로우 토글 - 벌크 연산")
+  void toggleFollow() {
     // given
     Long followerId = 1L;
-    Long followingId = 2L;
+    List<Long> followingIds = List.of(2L, 3L, 4L);
 
     // when
-    followRepository.toggleFollow(followerId, followingId);
+    followRepository.toggleFollow(followerId, followingIds);
+
+    em.flush();
+    em.clear();
 
     // then
-    Optional<Follow> follow = followJpaRepository.findById(new FollowId(followerId, followingId));
-    assertNull(follow.orElse(null));
+    followingIds.forEach(
+        followingId -> {
+          Optional<Follow> follow =
+              followJpaRepository.findById(new FollowId(followerId, followingId));
+          if (followingId.equals(4L)) {
+            assertThat(follow.orElse(null)).isNotNull();
+          } else {
+            assertThat(follow.orElse(null)).isNull();
+          }
+        });
   }
 
   @Test
@@ -92,10 +93,13 @@ class FollowRepositoryTest {
     // then
     assertSame(1, followerResponses.getTotalPages());
     assertSame(2L, followerResponses.getTotalElements());
-    followerResponses.getContent().forEach(followerResponse -> {
-      if(followerResponse.getId().equals(1L)) {
-        assertThat(followerResponse.getIsFollowing()).isTrue();
-      }
-    });
+    followerResponses
+        .getContent()
+        .forEach(
+            followerResponse -> {
+              if (followerResponse.getId().equals(1L)) {
+                assertThat(followerResponse.getIsFollowing()).isTrue();
+              }
+            });
   }
 }

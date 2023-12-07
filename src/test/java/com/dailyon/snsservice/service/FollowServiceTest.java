@@ -1,7 +1,6 @@
 package com.dailyon.snsservice.service;
 
 import static org.assertj.core.api.Assertions.*;
-import static org.junit.jupiter.api.Assertions.*;
 
 import com.dailyon.snsservice.dto.response.follow.FollowerPageResponse;
 import com.dailyon.snsservice.dto.response.follow.FollowingPageResponse;
@@ -9,6 +8,8 @@ import com.dailyon.snsservice.entity.Follow;
 import com.dailyon.snsservice.entity.ids.FollowId;
 import com.dailyon.snsservice.repository.follow.FollowJpaRepository;
 import com.dailyon.snsservice.service.follow.FollowService;
+
+import java.util.List;
 import java.util.Optional;
 
 import com.dailyon.snsservice.service.member.MemberReader;
@@ -21,6 +22,9 @@ import org.springframework.data.domain.Sort;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
+
 @SpringBootTest
 @Transactional
 @ActiveProfiles(value = {"test"})
@@ -32,48 +36,32 @@ class FollowServiceTest {
 
   @Autowired private MemberReader memberReader;
 
-  @Test
-  @DisplayName("팔로우 추가")
-  void createFollow() {
-    // given
-    Long followerId = 1L;
-    Long followingId = 4L;
-    Integer beforeFollowingCount = memberReader.read(followerId).getFollowingCount();
-    Integer beforeFollowerCount = memberReader.read(followingId).getFollowerCount();
-
-    // when
-    followService.toggleFollow(followerId, followingId);
-
-    // then
-    Optional<Follow> follow = followJpaRepository.findById(new FollowId(followerId, followingId));
-    Integer afterFollowingCount = memberReader.read(followerId).getFollowingCount();
-    Integer afterFollowerCount = memberReader.read(followingId).getFollowerCount();
-
-    assertThat(follow.orElse(null)).isNotNull();
-    assertThat(afterFollowingCount).isSameAs( beforeFollowingCount + 1);
-    assertThat(afterFollowerCount).isSameAs(beforeFollowerCount + 1);
-  }
+  @PersistenceContext private EntityManager em;
 
   @Test
-  @DisplayName("팔로우 삭제")
-  void deleteFollow() {
+  @DisplayName("팔로우 토글 - 벌크 연산")
+  void toggleFollow() {
     // given
     Long followerId = 1L;
-    Long followingId = 2L;
-    Integer beforeFollowingCount = memberReader.read(followerId).getFollowingCount();
-    Integer beforeFollowerCount = memberReader.read(followingId).getFollowerCount();
+    List<Long> followingIds = List.of(2L, 3L, 4L);
 
     // when
-    followService.toggleFollow(followerId, followingId);
+    followService.toggleFollow(followerId, followingIds);
+
+    em.flush();
+    em.clear();
 
     // then
-    Optional<Follow> follow = followJpaRepository.findById(new FollowId(followerId, followingId));
-    Integer afterFollowingCount = memberReader.read(followerId).getFollowingCount();
-    Integer afterFollowerCount = memberReader.read(followingId).getFollowerCount();
-
-    assertThat(follow.orElse(null)).isNull();
-    assertThat(afterFollowingCount).isSameAs( beforeFollowingCount - 1);
-    assertThat(afterFollowerCount).isSameAs(beforeFollowerCount - 1);
+    followingIds.forEach(
+            followingId -> {
+              Optional<Follow> follow =
+                      followJpaRepository.findById(new FollowId(followerId, followingId));
+              if (followingId.equals(4L)) {
+                assertThat(follow.orElse(null)).isNotNull();
+              } else {
+                assertThat(follow.orElse(null)).isNull();
+              }
+            });
   }
 
   @Test

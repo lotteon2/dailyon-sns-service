@@ -6,6 +6,8 @@ import com.dailyon.snsservice.repository.member.MemberJpaRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
+import java.util.List;
+
 @Component
 @RequiredArgsConstructor
 public class MemberReader {
@@ -14,5 +16,9 @@ public class MemberReader {
 
   public Member read(Long memberId) {
     return memberJpaRepository.findById(memberId).orElseThrow(MemberEntityNotFoundException::new);
+  }
+
+  public List<Member> readAll(List<Long> memberIds) {
+    return memberJpaRepository.findAllById(memberIds);
   }
 }
