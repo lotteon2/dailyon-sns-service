@@ -30,9 +30,9 @@ public class Resilience4JConfig {
         // 회로가 닫혀있을 때 기록할 슬라이딩 윈도우 개수
         .slidingWindowSize(10)
         // 회로가 반 개방 상태일 때 열림 상태가 되기까지 대기시간
-//        .maxWaitDurationInHalfOpenState(Duration.ofMillis(1000))
-//        // 열린 상태로 10초 유지 후 반 개방상태로 전환
-//        .waitDurationInOpenState(Duration.ofMillis(10000))
+        .maxWaitDurationInHalfOpenState(Duration.ofMillis(1000))
+        // 열린 상태로 10초 유지 후 반 개방상태로 전환
+        .waitDurationInOpenState(Duration.ofMillis(10000))
         // 회로가 반 개방 상태일 때 받아들일 요청의 개수
         .permittedNumberOfCallsInHalfOpenState(3)
         .build();
