@@ -41,7 +41,7 @@ public class Resilience4JConfig {
   @Bean
   public Customizer<Resilience4JCircuitBreakerFactory> globalCustomConfiguration() {
 
-    // future supplier의 time limit 지정: 4초 동안 응답이 오지 않으면 Open state
+    // future supplier의 time limit 지정: 6초 동안 응답이 오지 않으면 Open state
     TimeLimiterConfig timeLimiterConfig =
         TimeLimiterConfig.custom().timeoutDuration(Duration.ofSeconds(6)).build();
     return factory ->
