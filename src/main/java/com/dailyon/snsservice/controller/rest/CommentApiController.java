@@ -13,7 +13,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-@CrossOrigin(origins = "*", allowedHeaders = "*")
+@CrossOrigin(
+    origins = {"http://localhost:5173", "http://127.0.0.1::5173"},
+    allowCredentials = "true",
+    allowedHeaders = "*")
 @RequestMapping("/posts")
 @RestController
 @RequiredArgsConstructor
@@ -23,13 +26,13 @@ public class CommentApiController {
 
   @GetMapping("/{postId}/comments")
   public ResponseEntity<CommentPageResponse> getComments(
-          @RequestHeader(name = "memberId") Long memberId,
-          @PathVariable(name = "postId") Long postId,
-          @PageableDefault(
-                  page = 0,
-                  size = 5,
-                  sort = {"createdAt"},
-                  direction = Sort.Direction.DESC)
+      @RequestHeader(name = "memberId") Long memberId,
+      @PathVariable(name = "postId") Long postId,
+      @PageableDefault(
+              page = 0,
+              size = 5,
+              sort = {"createdAt"},
+              direction = Sort.Direction.DESC)
           Pageable pageable) {
     CommentPageResponse commentPageResponse = commentService.getComments(postId, pageable);
     return ResponseEntity.ok(commentPageResponse);
