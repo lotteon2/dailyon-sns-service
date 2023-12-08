@@ -17,8 +17,15 @@ spring:
           batch_size: 100
         order_inserts: true
         order_updates: true
+
 management:
   endpoints:
     web:
       exposure:
-        include: health, info, refresh, busrefresh
+        include: health, info, refresh, busrefresh, circuitbreakers
+  health:
+    circuitbreakers:
+      enabled: true
+feign:
+  circuitbreaker:
+    enabled: true
