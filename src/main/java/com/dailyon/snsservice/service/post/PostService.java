@@ -22,7 +22,6 @@ import com.dailyon.snsservice.service.s3.S3Service;
 import com.dailyon.snsservice.vo.PostCountVO;
 import com.dailyon.snsservice.vo.Top4OOTDVO;
 import com.fasterxml.jackson.core.JsonProcessingException;
-import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
 import java.util.*;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
@@ -225,32 +224,6 @@ public class PostService {
     }
   }
 
-  @CircuitBreaker(
-      name = "myCircuitBreaker",
-      fallbackMethod = "promotionServiceOutOfServiceException")
-  private List<CouponForProductResponse> getCouponsForProduct(
-      Long memberId, List<Long> productIds) {
-    return promotionServiceClient.getCouponsForProduct(memberId, productIds).getBody();
-  }
-
-  public List<CouponForProductResponse> promotionServiceOutOfServiceException(Throwable t) {
-    log.error(t.getMessage());
-    return new ArrayList<>();
-  }
-
-  @CircuitBreaker(
-      name = "productServiceClient",
-      fallbackMethod = "productServiceOutOfServiceException")
-  public List<ProductInfoResponse> getProductInfos(List<Long> productIds) {
-    return Objects.requireNonNull(productServiceClient.getProductInfos(productIds).getBody())
-        .getProductInfos();
-  }
-
-  public List<ProductInfoResponse> productServiceOutOfServiceException(Throwable t) {
-    log.error(t.getMessage());
-    return new ArrayList<>();
-  }
-
   public PostDetailResponse findDetailByIdWithIsFollowing(Long id, Long memberId) {
     PostDetailResponse postDetailResponse =
         postRepository.findDetailByIdWithIsFollowingAndIsLike(id, memberId);
@@ -260,10 +233,13 @@ public class PostService {
             .collect(Collectors.toList());
 
     // feign client call
-    List<ProductInfoResponse> productInfos = getProductInfos(productIds);
+    List<ProductInfoResponse> productInfos =
+        Objects.requireNonNull(productServiceClient.getProductInfos(productIds).getBody())
+            .getProductInfos();
     List<CouponForProductResponse> couponsForProduct;
     if (Objects.nonNull(memberId)) {
-      couponsForProduct = getCouponsForProduct(memberId, productIds);
+      couponsForProduct =
+          promotionServiceClient.getCouponsForProduct(memberId, productIds).getBody();
     } else {
       couponsForProduct = new ArrayList<>();
     }

@@ -14,10 +14,19 @@ public class PostImageProductDetailResponse {
 
   private Long id;
   private Long productId;
+
+  @JsonInclude(JsonInclude.Include.NON_NULL)
   private String name;
+
+  @JsonInclude(JsonInclude.Include.NON_NULL)
   private String brandName;
+
+  @JsonInclude(JsonInclude.Include.NON_NULL)
   private Integer price;
+
+  @JsonInclude(JsonInclude.Include.NON_NULL)
   private String imgUrl;
+
   private String size;
   private Double leftGapPercent;
   private Double topGapPercent;
