@@ -167,17 +167,16 @@ class PostServiceTest {
   void addViewCount() throws JsonProcessingException {
     // given
     Long postId = 1L;
-    Integer count = 5;
 
     // when
-    postService.addViewCount(postId, count);
+    postService.addViewCount(postId);
 
     // then
     PostCountVO postCountVO =
         objectMapper.readValue(
             redisTemplate.opsForValue().get(String.format("postCount::%s", postId)),
             PostCountVO.class);
-    assertThat(postCountVO.getViewCount()).isSameAs(105);
+    assertThat(postCountVO.getViewCount()).isSameAs(101);
   }
 
   @Test

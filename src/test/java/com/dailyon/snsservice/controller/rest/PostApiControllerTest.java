@@ -199,12 +199,11 @@ class PostApiControllerTest {
   void addViewCount() throws Exception {
     // given
     Long postId = 1L;
-    Integer count = 5;
 
     // when,
     ResultActions resultActions =
         mockMvc.perform(
-            put("/posts/{postId}/view-count", postId).param("count", String.valueOf(count)));
+            put("/posts/{postId}/view-count", postId));
 
     // then
     resultActions.andExpect(MockMvcResultMatchers.status().isOk());

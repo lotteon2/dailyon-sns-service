@@ -127,9 +127,8 @@ public class PostApiController {
   }
 
   @PutMapping("/posts/{postId}/view-count")
-  public ResponseEntity<Void> addViewCount(
-      @PathVariable("postId") Long postId, @RequestParam(name = "count") Integer count) {
-    postService.addViewCount(postId, count);
+  public ResponseEntity<Void> addViewCount(@PathVariable("postId") Long postId) {
+    postService.addViewCount(postId);
     return ResponseEntity.ok().build();
   }
 }

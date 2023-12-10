@@ -212,11 +212,11 @@ public class PostService {
   }
 
   @Transactional
-  public void addViewCount(Long id, Integer count) {
+  public void addViewCount(Long id) {
     Post post = postRepository.findByIdAndIsDeletedFalse(id);
     try {
       PostCountVO postCountVO =
-          new PostCountVO(post.getViewCount() + count, post.getLikeCount(), post.getCommentCount());
+          new PostCountVO(post.getViewCount() + 1, post.getLikeCount(), post.getCommentCount());
       // update view count to cache
       postCountRedisRepository.modifyPostCountVOAboutLikeCount(String.valueOf(id), postCountVO);
     } catch (JsonProcessingException e) {
