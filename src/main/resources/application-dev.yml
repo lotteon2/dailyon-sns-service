@@ -16,7 +16,7 @@ spring:
     username: root
     password: 11111111
   redis:
-    host: 127.0.0.1
+    host: redis-cluster
     port: 6379
     password: 11111111
 eureka:
