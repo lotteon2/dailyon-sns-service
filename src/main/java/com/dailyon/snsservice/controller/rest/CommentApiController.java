@@ -26,7 +26,7 @@ public class CommentApiController {
 
   @GetMapping("/{postId}/comments")
   public ResponseEntity<CommentPageResponse> getComments(
-      @RequestHeader(name = "memberId") Long memberId,
+      @RequestHeader(name = "memberId", required = false) Long memberId,
       @PathVariable(name = "postId") Long postId,
       @PageableDefault(
               page = 0,
