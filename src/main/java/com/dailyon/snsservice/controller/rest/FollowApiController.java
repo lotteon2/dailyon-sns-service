@@ -3,6 +3,7 @@ package com.dailyon.snsservice.controller.rest;
 import com.dailyon.snsservice.dto.response.follow.FollowerPageResponse;
 import com.dailyon.snsservice.dto.response.follow.FollowingPageResponse;
 import com.dailyon.snsservice.service.follow.FollowService;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -10,12 +11,6 @@ import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-
-@CrossOrigin(
-    origins = {"http://localhost:5173", "http://127.0.0.1:5173"},
-    allowCredentials = "true",
-    allowedHeaders = "*")
 @RequestMapping("/follows")
 @RestController
 @RequiredArgsConstructor
