@@ -75,6 +75,8 @@ spec:
           volumeMounts:
             - name: mysql-config
               mountPath: /etc/mysql/conf.d
+            - name: sns-ebs-pv
+              mountPath: /var/lib/mysql
           imagePullPolicy: IfNotPresent
           # 애플리케이션이 시작된 뒤 초기화 작업이 마무리되어 준비되었는지 검사
           readinessProbe:
@@ -92,6 +94,9 @@ spec:
         - name: mysql-config
           configMap:
             name: mysql-config
+        - name: sns-ebs-pv
+          persistentVolumeClaim:
+            claimName: sns-ebs-pvc
       restartPolicy: Always
       affinity:
         nodeAffinity:
