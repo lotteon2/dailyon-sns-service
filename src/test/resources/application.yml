@@ -1,0 +1,65 @@
+spring:
+  datasource:
+    username: sa
+    password:
+    driver-class-name: org.h2.Driver
+    url: jdbc:h2:mem:test;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MySQL;TRACE_LEVEL_FIle=4
+  jpa:
+    hibernate:
+      ddl-auto: create
+    generate-ddl: true
+    # Bean이 생성되기 전에 ddl 실행
+    defer-datasource-initialization: true
+    properties:
+      hibernate:
+        format_sql: true
+        jdbc:
+          batch_size: 100
+        order_inserts: true
+        order_updates: true
+  redis:
+    host: localhost
+    port: 6379
+    password: 11111111
+
+  h2:
+    console:
+      enabled: true
+  cloud:
+    config:
+      enabled: false
+    discovery:
+      enabled: false
+  config:
+    activate:
+      on-profile: test
+  sql:
+    init:
+      data-locations: classpath:data.sql
+
+cloud:
+  aws:
+    region:
+      static: ap-northeast-2
+      auto: false
+    stack:
+      auto: false
+
+logging:
+  level:
+    org:
+      hibernate:
+        SQL: DEBUG
+        engine.jdbc.batch.internal.BatchingBatch: DEBUG
+      springframework:
+        jdbc:
+          core:
+            JdbcTemplate: DEBUG
+    com:
+      amazonaws:
+        util:
+          EC2MetadataUtils: error
+
+endpoint:
+  promotion-service: localhost:8084
+  product-service: localhost:8085
