@@ -45,3 +45,11 @@ eureka:
 endpoint:
   promotion-service: http://promotion-service:8084
   product-service: http://product-service:8085
+
+logging:
+  level:
+    org:
+      apache:
+        kafka: ERROR
+        zookeeper: ERROR
+      kafka: ERROR
