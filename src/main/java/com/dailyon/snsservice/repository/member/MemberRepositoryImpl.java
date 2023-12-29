@@ -1,6 +1,7 @@
 package com.dailyon.snsservice.repository.member;
 
 import com.dailyon.snsservice.dto.response.member.OOTDMemberProfileResponse;
+import com.dailyon.snsservice.entity.Member;
 import com.dailyon.snsservice.exception.MemberEntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
@@ -16,5 +17,10 @@ public class MemberRepositoryImpl implements MemberRepository {
     return memberJpaRepository
         .findOOTDMemberProfile(ootdMemberId, memberId)
         .orElseThrow(MemberEntityNotFoundException::new);
+  }
+
+  @Override
+  public void save(Member member) {
+    memberJpaRepository.save(member);
   }
 }
