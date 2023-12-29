@@ -11,6 +11,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.kafka.support.Acknowledgment;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 @Slf4j
 @Component
@@ -20,6 +21,7 @@ public class MemberEventListener {
   private final MemberService memberService;
   private final ObjectMapper objectMapper;
 
+  @Transactional
   @KafkaListener(topics = KafkaTopic.CREATE_MEMBER_FOR_SNS)
   public void createMember(String message, Acknowledgment ack) {
     MemberCreateDTO memberCreateDTO;
@@ -36,6 +38,7 @@ public class MemberEventListener {
     }
   }
 
+  @Transactional
   @KafkaListener(topics = KafkaTopic.UPDATE_MEMBER_FOR_SNS)
   public void updateMember(String message, Acknowledgment ack) {
     MemberUpdateDTO memberUpdateDTO;
