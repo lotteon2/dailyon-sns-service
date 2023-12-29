@@ -21,6 +21,7 @@ public class MemberService {
     return memberRepository.findOOTDMemberProfile(ootdMemberId, memberId);
   }
 
+  @Transactional
   public void createMember(MemberCreateDTO memberCreateDTO) {
     Member member =
         Member.createMember(
@@ -31,6 +32,7 @@ public class MemberService {
     memberRepository.save(member);
   }
 
+  @Transactional
   public void updateMember(MemberUpdateDTO memberUpdateDTO) {
     Member member = memberReader.read(memberUpdateDTO.getId());
     member.updateMember(memberUpdateDTO.getNickname(), memberUpdateDTO.getProfileImgUrl());
