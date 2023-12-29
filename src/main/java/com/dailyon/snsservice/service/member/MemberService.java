@@ -24,6 +24,7 @@ public class MemberService {
   public void createMember(MemberCreateDTO memberCreateDTO) {
     Member member =
         Member.createMember(
+            memberCreateDTO.getId(),
             memberCreateDTO.getNickname(),
             memberCreateDTO.getProfileImgUrl(),
             memberCreateDTO.getCode());

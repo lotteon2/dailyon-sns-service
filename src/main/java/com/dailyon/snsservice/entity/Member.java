@@ -60,8 +60,13 @@ public class Member {
     this.followerCount -= 1;
   }
 
-  public static Member createMember(String nickname, String profileImgUrl, String code) {
-    return Member.builder().nickname(nickname).profileImgUrl(profileImgUrl).code(code).build();
+  public static Member createMember(Long id, String nickname, String profileImgUrl, String code) {
+    return Member.builder()
+        .id(id)
+        .nickname(nickname)
+        .profileImgUrl(profileImgUrl)
+        .code(code)
+        .build();
   }
 
   public void updateMember(String nickname, String profileImgUrl) {
