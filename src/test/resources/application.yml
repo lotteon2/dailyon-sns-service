@@ -36,6 +36,9 @@ spring:
   sql:
     init:
       data-locations: classpath:data.sql
+  kafka:
+    consumer:
+      group-id: sns-service
 
 cloud:
   aws:

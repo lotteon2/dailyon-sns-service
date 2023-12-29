@@ -59,4 +59,13 @@ public class Member {
   public void decreaseFollowerCount() {
     this.followerCount -= 1;
   }
+
+  public static Member createMember(String nickname, String profileImgUrl, String code) {
+    return Member.builder().nickname(nickname).profileImgUrl(profileImgUrl).code(code).build();
+  }
+
+  public void updateMember(String nickname, String profileImgUrl) {
+    this.nickname = nickname;
+    this.profileImgUrl = profileImgUrl;
+  }
 }
