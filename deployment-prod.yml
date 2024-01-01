@@ -31,10 +31,10 @@ spec:
           resources:
             requests:
               memory: "256Mi"
-              cpu: "125m"
+              cpu: "175m"
             limits:
               memory: "384Mi"
-              cpu: "250m"
+              cpu: "300m"
           ports:
             - containerPort: 8088
           imagePullPolicy: IfNotPresent
