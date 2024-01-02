@@ -2,9 +2,18 @@
   "version": 2,
   "rules": [
     {
+      "description": "Liveness health check",
       "host": "*",
-      "http_method": "*",
-      "url_path": "*",
+      "http_method": "GET",
+      "url_path": "/actuator/health/liveness",
+      "fixed_target": 1,
+      "rate": 1
+    },
+    {
+      "description": "Readiness health check",
+      "host": "*",
+      "http_method": "GET",
+      "url_path": "/actuator/health/readiness",
       "fixed_target": 1,
       "rate": 1
     }
