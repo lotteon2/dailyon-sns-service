@@ -6,16 +6,16 @@
       "host": "*",
       "http_method": "GET",
       "url_path": "/actuator/health/liveness",
-      "fixed_target": 1,
-      "rate": 1
+      "fixed_target": 0,
+      "rate": 0
     },
     {
       "description": "Readiness health check",
       "host": "*",
       "http_method": "GET",
       "url_path": "/actuator/health/readiness",
-      "fixed_target": 1,
-      "rate": 1
+      "fixed_target": 0,
+      "rate": 0
     }
   ],
   "default": {
