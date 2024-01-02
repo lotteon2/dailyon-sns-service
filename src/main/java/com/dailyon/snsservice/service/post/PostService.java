@@ -1,5 +1,6 @@
 package com.dailyon.snsservice.service.post;
 
+import com.amazonaws.xray.spring.aop.XRayEnabled;
 import com.dailyon.snsservice.cache.PostCountRedisRepository;
 import com.dailyon.snsservice.cache.Top4OOTDRedisRepository;
 import com.dailyon.snsservice.client.dto.CouponForProductResponse;
@@ -32,6 +33,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Slf4j
+@XRayEnabled
 @Service
 @Transactional(readOnly = true)
 @RequiredArgsConstructor

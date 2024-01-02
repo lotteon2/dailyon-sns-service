@@ -54,6 +54,7 @@ dependencies {
     // aws
     implementation 'org.springframework.cloud:spring-cloud-starter-aws:2.2.4.RELEASE'
 
+    implementation 'org.springframework.boot:spring-boot-starter-aop'
     implementation("com.amazonaws:aws-xray-recorder-sdk-core")
     implementation("com.amazonaws:aws-xray-recorder-sdk-spring")
     implementation("com.amazonaws:aws-xray-recorder-sdk-aws-sdk")
