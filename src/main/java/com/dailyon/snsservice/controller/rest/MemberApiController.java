@@ -1,5 +1,6 @@
 package com.dailyon.snsservice.controller.rest;
 
+import com.amazonaws.xray.spring.aop.XRayEnabled;
 import com.dailyon.snsservice.dto.response.member.OOTDMemberProfileResponse;
 import com.dailyon.snsservice.service.member.MemberService;
 import java.util.Map;
@@ -7,6 +8,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+@XRayEnabled
 @RequestMapping("/members")
 @RestController
 @RequiredArgsConstructor

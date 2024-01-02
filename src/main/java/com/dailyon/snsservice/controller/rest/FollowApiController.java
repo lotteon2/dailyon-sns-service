@@ -1,5 +1,6 @@
 package com.dailyon.snsservice.controller.rest;
 
+import com.amazonaws.xray.spring.aop.XRayEnabled;
 import com.dailyon.snsservice.dto.response.follow.FollowerPageResponse;
 import com.dailyon.snsservice.dto.response.follow.FollowingPageResponse;
 import com.dailyon.snsservice.service.follow.FollowService;
@@ -11,6 +12,7 @@ import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+@XRayEnabled
 @RequestMapping("/follows")
 @RestController
 @RequiredArgsConstructor

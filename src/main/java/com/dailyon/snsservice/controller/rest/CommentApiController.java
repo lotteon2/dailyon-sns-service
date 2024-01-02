@@ -1,5 +1,6 @@
 package com.dailyon.snsservice.controller.rest;
 
+import com.amazonaws.xray.spring.aop.XRayEnabled;
 import com.dailyon.snsservice.dto.request.comment.CreateCommentRequest;
 import com.dailyon.snsservice.dto.request.comment.CreateReplyCommentRequest;
 import com.dailyon.snsservice.dto.response.comment.CommentPageResponse;
@@ -13,6 +14,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+@XRayEnabled
 @RequestMapping("/posts")
 @RestController
 @RequiredArgsConstructor

@@ -1,11 +1,13 @@
 package com.dailyon.snsservice.controller.rest;
 
+import com.amazonaws.xray.spring.aop.XRayEnabled;
 import com.dailyon.snsservice.service.postlike.PostLikeService;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+@XRayEnabled
 @RequestMapping("/posts")
 @RestController
 @RequiredArgsConstructor
