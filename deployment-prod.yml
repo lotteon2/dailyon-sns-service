@@ -37,7 +37,7 @@ spec:
               cpu: "300m"
           env:
             - name: AWS_XRAY_DAEMON_ADDRESS
-              value: cloudwatch-agent:25888
+              value: cloudwatch-agent:2000
           ports:
             - containerPort: 8088
           imagePullPolicy: IfNotPresent
