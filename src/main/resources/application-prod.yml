@@ -18,7 +18,7 @@ spring:
   redis:
     host: redis-cluster
     port: 6379
-    password: 11111111
+    password:
   kafka:
     consumer:
       bootstrap-servers: kafka-service:9092
