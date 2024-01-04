@@ -1,33 +1,58 @@
 package com.dailyon.snsservice.config;
 
-import org.springframework.beans.factory.annotation.Value;
+import java.util.HashSet;
+import java.util.Objects;
+import java.util.Set;
+import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Profile;
+import org.springframework.core.env.Environment;
+import org.springframework.data.redis.connection.RedisClusterConfiguration;
+import org.springframework.data.redis.connection.RedisConnectionFactory;
+import org.springframework.data.redis.connection.RedisNode;
 import org.springframework.data.redis.connection.RedisStandaloneConfiguration;
 import org.springframework.data.redis.connection.lettuce.LettuceConnectionFactory;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.serializer.StringRedisSerializer;
 
 @Configuration
+@RequiredArgsConstructor
 public class RedisConfig {
 
-  @Value("${spring.redis.host}")
-  private String host;
-
-  @Value("${spring.redis.port}")
-  private int port;
-
-  @Value("${spring.redis.password}")
-  private String password;
+  private final Environment env;
 
   @Bean
-  public LettuceConnectionFactory redisConnectionFactory() {
+  @Profile(value = "!prod")
+  public LettuceConnectionFactory standaloneRedisConnectionFactory() {
     RedisStandaloneConfiguration redisStandaloneConfiguration = new RedisStandaloneConfiguration();
-    redisStandaloneConfiguration.setHostName(host);
-    redisStandaloneConfiguration.setPort(port);
-    redisStandaloneConfiguration.setPassword(password);
+    redisStandaloneConfiguration.setHostName(
+        Objects.requireNonNull(env.getProperty("spring.redis.host")));
+    redisStandaloneConfiguration.setPort(
+        Integer.parseInt(Objects.requireNonNull(env.getProperty("spring.redis.port"))));
+    redisStandaloneConfiguration.setPassword(env.getProperty("spring.redis.password"));
 
     return new LettuceConnectionFactory(redisStandaloneConfiguration);
+  }
+
+  @Bean
+  @Profile("prod")
+  public RedisConnectionFactory clusterRedisConnectionFactory() {
+    RedisClusterConfiguration clusterConfiguration = new RedisClusterConfiguration();
+    clusterConfiguration.setClusterNodes(
+        parseRedisNodes(Objects.requireNonNull(env.getProperty("spring.redis.cluster.nodes"))));
+    clusterConfiguration.setPassword(env.getProperty("spring.redis.password"));
+
+    return new LettuceConnectionFactory(clusterConfiguration);
+  }
+
+  private Set<RedisNode> parseRedisNodes(String nodes) {
+    Set<RedisNode> redisNodes = new HashSet<>();
+    for (String node : Objects.requireNonNull(nodes).split(",")) {
+      String[] parts = node.split(":");
+      redisNodes.add(new RedisNode(parts[0], Integer.parseInt(parts[1])));
+    }
+    return redisNodes;
   }
 
   @Bean
@@ -35,7 +60,13 @@ public class RedisConfig {
     RedisTemplate<String, Object> redisTemplate = new RedisTemplate<>();
     redisTemplate.setKeySerializer(new StringRedisSerializer());
     redisTemplate.setValueSerializer(new StringRedisSerializer());
-    redisTemplate.setConnectionFactory(redisConnectionFactory());
+
+    boolean isCluster = Objects.nonNull(env.getProperty("spring.redis.cluster.nodes"));
+    if (!isCluster) {
+      redisTemplate.setConnectionFactory(standaloneRedisConnectionFactory());
+    } else {
+      redisTemplate.setConnectionFactory(clusterRedisConnectionFactory());
+    }
     return redisTemplate;
   }
 }
