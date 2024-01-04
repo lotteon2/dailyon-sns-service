@@ -41,7 +41,6 @@ public class RedisConfig {
     RedisClusterConfiguration clusterConfiguration = new RedisClusterConfiguration();
     clusterConfiguration.setClusterNodes(
         parseRedisNodes(Objects.requireNonNull(env.getProperty("spring.redis.cluster.nodes"))));
-    clusterConfiguration.setPassword(env.getProperty("spring.redis.password"));
 
     return new LettuceConnectionFactory(clusterConfiguration);
   }
