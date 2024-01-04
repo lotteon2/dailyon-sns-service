@@ -1,6 +1,5 @@
 package com.dailyon.snsservice.controller.rest;
 
-import com.amazonaws.xray.spring.aop.XRayEnabled;
 import com.dailyon.snsservice.dto.request.post.CreatePostRequest;
 import com.dailyon.snsservice.dto.request.post.UpdatePostRequest;
 import com.dailyon.snsservice.dto.response.post.*;
@@ -19,7 +18,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-@XRayEnabled
 @RestController
 @RequiredArgsConstructor
 public class PostApiController {
