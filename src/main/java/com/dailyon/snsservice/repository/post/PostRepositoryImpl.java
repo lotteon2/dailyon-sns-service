@@ -173,7 +173,7 @@ public class PostRepositoryImpl implements PostRepository {
             .innerJoin(post.member, member)
             .innerJoin(post.postImage, postImage)
             .innerJoin(post.hashTags, hashTag)
-            .innerJoin(postImage.postImageProductDetails, postImageProductDetail)
+            .leftJoin(postImage.postImageProductDetails, postImageProductDetail)
             .where(post.id.eq(id), post.isDeleted.eq(false));
 
     if (Objects.nonNull(memberId)) {
