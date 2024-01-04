@@ -232,10 +232,17 @@ public class PostService {
             .map(PostImageProductDetailResponse::getProductId)
             .collect(Collectors.toList());
 
-    // feign client call
-    List<ProductInfoResponse> productInfos =
-        Objects.requireNonNull(productServiceClient.getProductInfos(productIds).getBody())
-            .getProductInfos();
+    List<ProductInfoResponse> productInfos;
+    if(productIds.size() == 1 && Objects.isNull(productIds.get(0))) {
+      productInfos = new ArrayList<>();
+      postDetailResponse.getPostImageProductDetails().clear();
+    } else {
+      // feign client call
+      productInfos =
+              Objects.requireNonNull(productServiceClient.getProductInfos(productIds).getBody())
+                      .getProductInfos();
+    }
+
     List<CouponForProductResponse> couponsForProduct;
     if (Objects.nonNull(memberId)) {
       couponsForProduct =
