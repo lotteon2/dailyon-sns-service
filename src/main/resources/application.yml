@@ -23,7 +23,7 @@ management:
   endpoints:
     web:
       exposure:
-        include: health, info, refresh, busrefresh, circuitbreakers
+        include: health, info, refresh, busrefresh, circuitbreakers, prometheus
   health:
     circuitbreakers:
       enabled: true
