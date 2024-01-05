@@ -31,6 +31,9 @@ spring:
       value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
     listener:
       ack-mode: manual
+  zipkin:
+    base-url: http://zipkin-service:9411/
+    enabled: true
 eureka:
   client:
     register-with-eureka: true
