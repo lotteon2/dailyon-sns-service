@@ -155,6 +155,39 @@ public class PostRepositoryImpl implements PostRepository {
   }
 
   @Override
+  public Page<OOTDPostResponse> findMemberPostsByMemberId(Long postMemberId, Long memberId, Pageable pageable) {
+    QPostLike postLikeSubQuery = new QPostLike("postLikeSubQuery");
+
+    BooleanExpression hasLikedCondition =
+            JPAExpressions.select(postLikeSubQuery)
+                    .from(postLikeSubQuery)
+                    .where(postLikeSubQuery.post.id.eq(post.id), postLikeSubQuery.member.id.eq(memberId))
+                    .exists();
+
+    JPAQuery<OOTDPostResponse> query =
+            jpaQueryFactory
+                    .select(
+                            Projections.constructor(
+                                    OOTDPostResponse.class,
+                                    post.id,
+                                    post.postImage.thumbnailImgUrl,
+                                    post.likeCount,
+                                    post.viewCount,
+                                    post.commentCount,
+                                    hasLikedCondition))
+                    .from(post)
+                    .innerJoin(post.postImage)
+                    .where(post.member.id.eq(postMemberId), post.isDeleted.isFalse())
+                    .orderBy(getOrderCondition(pageable.getSort()).toArray(OrderSpecifier[]::new))
+                    .offset(pageable.getOffset())
+                    .limit(pageable.getPageSize());
+
+    Long totalElements = getMyPageTotalPageCount(pageable, postMemberId);
+
+    return new PageImpl<>(query.fetch(), pageable, totalElements);
+  }
+
+  @Override
   public List<Post> findTop4ByOrderByLikeCountDesc(Long productId) {
     PageRequest pageRequest = PageRequest.of(0, 4, Sort.by(Sort.Direction.DESC, "likeCount"));
     return postJpaRepository.findTop4ByOrderByLikeCountDesc(productId, pageRequest);

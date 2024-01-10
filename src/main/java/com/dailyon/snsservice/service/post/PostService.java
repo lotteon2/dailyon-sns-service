@@ -199,6 +199,35 @@ public class PostService {
     return OOTDPostPageResponse.fromDto(myOOTDPostResponses);
   }
 
+  public OOTDPostPageResponse getMemberOOTDPosts(Long postMemberId, Long memberId, Pageable pageable) {
+    Page<OOTDPostResponse> myOOTDPostResponses =
+            postRepository.findMemberPostsByMemberId(postMemberId, memberId, pageable);
+    myOOTDPostResponses
+            .getContent()
+            .forEach(
+                    OOTDPostResponse -> {
+                      try {
+                        PostCountVO dbPostCountVO =
+                                new PostCountVO(
+                                        OOTDPostResponse.getViewCount(),
+                                        OOTDPostResponse.getLikeCount(),
+                                        OOTDPostResponse.getCommentCount());
+
+                        // get count from cache or add all counts to cache
+                        PostCountVO cachedPostCountVO =
+                                postCountRedisRepository.findOrPutPostCountVO(
+                                        String.valueOf(OOTDPostResponse.getId()), dbPostCountVO);
+
+                        // cache count 값으로 response를 업데이트
+                        OOTDPostResponse.setViewCount(cachedPostCountVO.getViewCount());
+                        OOTDPostResponse.setLikeCount(cachedPostCountVO.getLikeCount());
+                      } catch (JsonProcessingException e) {
+                        throw new RuntimeException(e);
+                      }
+                    });
+    return OOTDPostPageResponse.fromDto(myOOTDPostResponses);
+  }
+
   public List<Top4OOTDResponse> getTop4OOTDPosts(Long productId) {
     try {
       List<Top4OOTDVO> cachedTop4OOTDVOs =

@@ -111,7 +111,8 @@ public class PostApiController {
               sort = {"createdAt"},
               direction = Sort.Direction.DESC)
           Pageable pageable) {
-    OOTDPostPageResponse OOTDPostPageResponse = postService.getMyOOTDPosts(postMemberId, pageable);
+    OOTDPostPageResponse OOTDPostPageResponse =
+        postService.getMemberOOTDPosts(postMemberId, memberId, pageable);
     return ResponseEntity.ok(OOTDPostPageResponse);
   }
 
