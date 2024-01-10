@@ -38,9 +38,11 @@ public class CommentService {
     Comment comment = Comment.createComment(member, post, createCommentRequest.getDescription());
     try {
       PostCountVO postCountVO =
-          new PostCountVO(post.getViewCount(), post.getLikeCount(), post.getCommentCount() + 1);
+              new PostCountVO(post.getViewCount(), post.getLikeCount(), post.getCommentCount());
+      PostCountVO cachedPostCountVO = postCountRedisRepository.findOrPutPostCountVO(String.valueOf(postId), postCountVO);
+      cachedPostCountVO.addCommentCount(1);
       // update comment count to cache
-      postCountRedisRepository.modifyPostCountVOAboutLikeCount(String.valueOf(postId), postCountVO);
+      postCountRedisRepository.modifyPostCountVOAboutLikeCount(String.valueOf(postId), cachedPostCountVO);
     } catch (JsonProcessingException e) {
       throw new RuntimeException(e);
     }
