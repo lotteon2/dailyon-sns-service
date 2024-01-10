@@ -24,6 +24,8 @@ public interface PostRepository {
 
   Page<OOTDPostResponse> findMyPostsByMemberId(Long memberId, Pageable pageable);
 
+  Page<OOTDPostResponse> findMemberPostsByMemberId(Long postMemberId, Long memberId, Pageable pageable);
+
   List<Post> findTop4ByOrderByLikeCountDesc(Long productId);
 
   int updateCountsById(Long id, Integer viewCount, Integer likeCount, Integer commentCount);
