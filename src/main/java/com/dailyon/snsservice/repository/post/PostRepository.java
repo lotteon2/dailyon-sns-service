@@ -35,4 +35,6 @@ public interface PostRepository {
   Page<Post> findAllByIdAscAndIsDeletedFalse(Pageable pageable);
 
   int softBulkDeleteByIds(List<Long> ids);
+
+  Page<Post> findAllBySearchQueryAndIdAscAndIsDeletedFalse(String query, Pageable pageable);
 }
