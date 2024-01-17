@@ -12,6 +12,7 @@ import com.dailyon.snsservice.dto.response.post.*;
 import com.dailyon.snsservice.dto.response.postimageproductdetail.PostImageProductDetailResponse;
 import com.dailyon.snsservice.dto.response.postlike.PostLikePageResponse;
 import com.dailyon.snsservice.entity.*;
+import com.dailyon.snsservice.exception.PostEntityNotFoundException;
 import com.dailyon.snsservice.mapper.hashtag.HashTagMapper;
 import com.dailyon.snsservice.mapper.post.PostMapper;
 import com.dailyon.snsservice.mapper.postimage.PostImageMapper;
@@ -256,6 +257,9 @@ public class PostService {
   public PostDetailResponse findDetailByIdWithIsFollowing(Long id, Long memberId) {
     PostDetailResponse postDetailResponse =
         postRepository.findDetailByIdWithIsFollowingAndIsLike(id, memberId);
+    if(postDetailResponse == null) {
+      throw new PostEntityNotFoundException();
+    }
     List<Long> productIds =
         postDetailResponse.getPostImageProductDetails().stream()
             .map(PostImageProductDetailResponse::getProductId)

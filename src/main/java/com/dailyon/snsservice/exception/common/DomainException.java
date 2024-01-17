@@ -3,6 +3,7 @@ package com.dailyon.snsservice.exception.common;
 import java.util.HashMap;
 import java.util.Map;
 import lombok.Getter;
+import org.springframework.http.HttpStatus;
 
 @Getter
 public abstract class DomainException extends RuntimeException {
@@ -12,7 +13,7 @@ public abstract class DomainException extends RuntimeException {
         super(message);
     }
 
-    public abstract int getStatusCode();
+    public abstract HttpStatus getStatusCode();
 
     public void addValidation(String fieldName, String errorMessage) {
         validation.put(fieldName, errorMessage);
