@@ -1,5 +1,7 @@
 package com.dailyon.snsservice.exception.common;
 
+import org.springframework.http.HttpStatus;
+
 import javax.servlet.http.HttpServletResponse;
 
 public class EntityNotFoundException extends DomainException {
@@ -9,7 +11,7 @@ public class EntityNotFoundException extends DomainException {
   }
 
   @Override
-  public int getStatusCode() {
-    return HttpServletResponse.SC_NOT_FOUND;
+  public HttpStatus getStatusCode() {
+    return HttpStatus.NOT_FOUND;
   }
 }

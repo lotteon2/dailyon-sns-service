@@ -228,65 +228,77 @@ public class PostRepositoryImpl implements PostRepository {
                   followSubQuery.follower.id.eq(memberId))
               .exists();
 
-      return query
-          .transform(
-              groupBy(post.id)
-                  .as(
-                      new QPostDetailResponse(
-                          post.id,
-                          post.title,
-                          post.description,
-                          post.stature,
-                          post.weight,
-                          postImage.imgUrl,
-                          post.viewCount,
-                          post.likeCount,
-                          post.commentCount,
-                          hasLikedCondition,
-                          post.createdAt,
-                          new QPostDetailMemberResponse(
-                              member.id,
-                              member.nickname,
-                              member.profileImgUrl,
-                              member.code,
-                              isFollowingExpression),
-                          set(new QPostDetailHashTagResponse(hashTag.id, hashTag.name)),
-                          set(
-                              new QPostImageProductDetailResponse(
-                                  postImageProductDetail.id,
-                                  postImageProductDetail.productId,
-                                  postImageProductDetail.productSize,
-                                  postImageProductDetail.leftGapPercent,
-                                  postImageProductDetail.topGapPercent)))))
-          .get(id);
+      PostDetailResponse postDetailResponse = query
+              .transform(
+                      groupBy(post.id)
+                              .as(
+                                      new QPostDetailResponse(
+                                              post.id,
+                                              post.title,
+                                              post.description,
+                                              post.stature,
+                                              post.weight,
+                                              postImage.imgUrl,
+                                              post.viewCount,
+                                              post.likeCount,
+                                              post.commentCount,
+                                              hasLikedCondition,
+                                              post.createdAt,
+                                              new QPostDetailMemberResponse(
+                                                      member.id,
+                                                      member.nickname,
+                                                      member.profileImgUrl,
+                                                      member.code,
+                                                      isFollowingExpression),
+                                              set(new QPostDetailHashTagResponse(hashTag.id, hashTag.name)),
+                                              set(
+                                                      new QPostImageProductDetailResponse(
+                                                              postImageProductDetail.id,
+                                                              postImageProductDetail.productId,
+                                                              postImageProductDetail.productSize,
+                                                              postImageProductDetail.leftGapPercent,
+                                                              postImageProductDetail.topGapPercent)))))
+              .get(id);
+      return postDetailResponse;
     } else {
-      return query
-          .transform(
-              groupBy(post.id)
-                  .as(
-                      new QPostDetailResponse(
-                          post.id,
-                          post.title,
-                          post.description,
-                          post.stature,
-                          post.weight,
-                          postImage.imgUrl,
-                          post.viewCount,
-                          post.likeCount,
-                          post.commentCount,
-                          post.createdAt,
-                          new QPostDetailMemberResponse(
-                              member.id, member.nickname, member.profileImgUrl, member.code),
-                          set(new QPostDetailHashTagResponse(hashTag.id, hashTag.name)),
-                          set(
-                              new QPostImageProductDetailResponse(
-                                  postImageProductDetail.id,
-                                  postImageProductDetail.productId,
-                                  postImageProductDetail.productSize,
-                                  postImageProductDetail.leftGapPercent,
-                                  postImageProductDetail.topGapPercent)))))
-          .get(id);
+      PostDetailResponse postDetailResponse = query
+              .transform(
+                      groupBy(post.id)
+                              .as(
+                                      new QPostDetailResponse(
+                                              post.id,
+                                              post.title,
+                                              post.description,
+                                              post.stature,
+                                              post.weight,
+                                              postImage.imgUrl,
+                                              post.viewCount,
+                                              post.likeCount,
+                                              post.commentCount,
+                                              post.createdAt,
+                                              new QPostDetailMemberResponse(
+                                                      member.id, member.nickname, member.profileImgUrl, member.code),
+                                              set(new QPostDetailHashTagResponse(hashTag.id, hashTag.name)),
+                                              set(
+                                                      new QPostImageProductDetailResponse(
+                                                              postImageProductDetail.id,
+                                                              postImageProductDetail.productId,
+                                                              postImageProductDetail.productSize,
+                                                              postImageProductDetail.leftGapPercent,
+                                                              postImageProductDetail.topGapPercent)))))
+              .get(id);
+      return postDetailResponse;
     }
+  }
+
+  @Override
+  public Page<Post> findAllByIdAscAndIsDeletedFalse(Pageable pageable) {
+    return postJpaRepository.findAllByIdAscAndIsDeletedFalse(pageable);
+  }
+
+  @Override
+  public int softBulkDeleteByIds(List<Long> ids) {
+    return postJpaRepository.softBulkDeleteByIds(ids);
   }
 
   private Long getMyPageTotalPageCount(Pageable pageable, Long memberId) {

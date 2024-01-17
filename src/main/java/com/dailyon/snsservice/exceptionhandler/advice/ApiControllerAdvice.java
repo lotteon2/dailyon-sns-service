@@ -2,6 +2,8 @@ package com.dailyon.snsservice.exceptionhandler.advice;
 
 import com.dailyon.snsservice.exception.HashTagDuplicatedException;
 import com.dailyon.snsservice.exception.common.CustomException;
+import com.dailyon.snsservice.exception.common.DomainException;
+import com.dailyon.snsservice.exception.common.EntityNotFoundException;
 import com.dailyon.snsservice.exceptionhandler.response.ErrorResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -37,6 +39,20 @@ public class ApiControllerAdvice {
             .message(e.getMessage())
             .validation(e.getValidation())
             .build();
+
+    return ResponseEntity.status(statusCode).body(errorResponse);
+  }
+
+  @ExceptionHandler(DomainException.class)
+  public ResponseEntity<ErrorResponse> domainException(DomainException e) {
+    HttpStatus statusCode = e.getStatusCode();
+
+    ErrorResponse errorResponse =
+            ErrorResponse.builder()
+                    .code(statusCode)
+                    .message(e.getMessage())
+                    .validation(e.getValidation())
+                    .build();
 
     return ResponseEntity.status(statusCode).body(errorResponse);
   }
