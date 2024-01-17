@@ -31,6 +31,19 @@ public class PostAdminController {
     return ResponseEntity.ok(postAdminPageResponse);
   }
 
+  @GetMapping("/posts/search")
+  public ResponseEntity<PostAdminPageResponse> searchPosts(
+          @RequestParam(name = "query") String query,
+          @PageableDefault(
+                  page = 0,
+                  size = 5,
+                  sort = {"id"},
+                  direction = Sort.Direction.ASC)
+          Pageable pageable) {
+    PostAdminPageResponse postAdminPageResponse = postAdminService.searchPostsForAdmin(query, pageable);
+    return ResponseEntity.ok(postAdminPageResponse);
+  }
+
   @DeleteMapping("/posts")
   public ResponseEntity<Void> bulkDeletePosts(@RequestParam(name = "postIds") List<Long> postIds) {
     postAdminService.softBulkDeleteByIds(postIds);
