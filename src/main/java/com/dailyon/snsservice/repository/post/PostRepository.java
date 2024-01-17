@@ -31,4 +31,8 @@ public interface PostRepository {
   int updateCountsById(Long id, Integer viewCount, Integer likeCount, Integer commentCount);
 
   PostDetailResponse findDetailByIdWithIsFollowingAndIsLike(Long id, Long memberId);
+
+  Page<Post> findAllByIdAscAndIsDeletedFalse(Pageable pageable);
+
+  int softBulkDeleteByIds(List<Long> ids);
 }

@@ -200,32 +200,33 @@ public class PostService {
     return OOTDPostPageResponse.fromDto(myOOTDPostResponses);
   }
 
-  public OOTDPostPageResponse getMemberOOTDPosts(Long postMemberId, Long memberId, Pageable pageable) {
+  public OOTDPostPageResponse getMemberOOTDPosts(
+      Long postMemberId, Long memberId, Pageable pageable) {
     Page<OOTDPostResponse> myOOTDPostResponses =
-            postRepository.findMemberPostsByMemberId(postMemberId, memberId, pageable);
+        postRepository.findMemberPostsByMemberId(postMemberId, memberId, pageable);
     myOOTDPostResponses
-            .getContent()
-            .forEach(
-                    OOTDPostResponse -> {
-                      try {
-                        PostCountVO dbPostCountVO =
-                                new PostCountVO(
-                                        OOTDPostResponse.getViewCount(),
-                                        OOTDPostResponse.getLikeCount(),
-                                        OOTDPostResponse.getCommentCount());
+        .getContent()
+        .forEach(
+            OOTDPostResponse -> {
+              try {
+                PostCountVO dbPostCountVO =
+                    new PostCountVO(
+                        OOTDPostResponse.getViewCount(),
+                        OOTDPostResponse.getLikeCount(),
+                        OOTDPostResponse.getCommentCount());
 
-                        // get count from cache or add all counts to cache
-                        PostCountVO cachedPostCountVO =
-                                postCountRedisRepository.findOrPutPostCountVO(
-                                        String.valueOf(OOTDPostResponse.getId()), dbPostCountVO);
+                // get count from cache or add all counts to cache
+                PostCountVO cachedPostCountVO =
+                    postCountRedisRepository.findOrPutPostCountVO(
+                        String.valueOf(OOTDPostResponse.getId()), dbPostCountVO);
 
-                        // cache count 값으로 response를 업데이트
-                        OOTDPostResponse.setViewCount(cachedPostCountVO.getViewCount());
-                        OOTDPostResponse.setLikeCount(cachedPostCountVO.getLikeCount());
-                      } catch (JsonProcessingException e) {
-                        throw new RuntimeException(e);
-                      }
-                    });
+                // cache count 값으로 response를 업데이트
+                OOTDPostResponse.setViewCount(cachedPostCountVO.getViewCount());
+                OOTDPostResponse.setLikeCount(cachedPostCountVO.getLikeCount());
+              } catch (JsonProcessingException e) {
+                throw new RuntimeException(e);
+              }
+            });
     return OOTDPostPageResponse.fromDto(myOOTDPostResponses);
   }
 
@@ -257,7 +258,7 @@ public class PostService {
   public PostDetailResponse findDetailByIdWithIsFollowing(Long id, Long memberId) {
     PostDetailResponse postDetailResponse =
         postRepository.findDetailByIdWithIsFollowingAndIsLike(id, memberId);
-    if(postDetailResponse == null) {
+    if (postDetailResponse == null) {
       throw new PostEntityNotFoundException();
     }
     List<Long> productIds =
@@ -266,14 +267,14 @@ public class PostService {
             .collect(Collectors.toList());
 
     List<ProductInfoResponse> productInfos;
-    if(productIds.size() == 1 && Objects.isNull(productIds.get(0))) {
+    if (productIds.size() == 1 && Objects.isNull(productIds.get(0))) {
       productInfos = new ArrayList<>();
       postDetailResponse.getPostImageProductDetails().clear();
     } else {
       // feign client call
       productInfos =
-              Objects.requireNonNull(productServiceClient.getProductInfos(productIds).getBody())
-                      .getProductInfos();
+          Objects.requireNonNull(productServiceClient.getProductInfos(productIds).getBody())
+              .getProductInfos();
     }
 
     List<CouponForProductResponse> couponsForProduct;
