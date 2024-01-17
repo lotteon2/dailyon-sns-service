@@ -301,6 +301,11 @@ public class PostRepositoryImpl implements PostRepository {
     return postJpaRepository.softBulkDeleteByIds(ids);
   }
 
+  @Override
+  public Page<Post> findAllBySearchQueryAndIdAscAndIsDeletedFalse(String query, Pageable pageable) {
+    return postJpaRepository.findAllBySearchQueryAndIdAscAndIsDeletedFalse(query, pageable);
+  }
+
   private Long getMyPageTotalPageCount(Pageable pageable, Long memberId) {
     return jpaQueryFactory
         .select(post.count())

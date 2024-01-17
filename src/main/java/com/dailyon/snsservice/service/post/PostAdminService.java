@@ -25,6 +25,11 @@ public class PostAdminService {
     return PostAdminPageResponse.fromEntity(posts);
   }
 
+  public PostAdminPageResponse searchPostsForAdmin(String query, Pageable pageable) {
+    Page<Post> posts = postRepository.findAllBySearchQueryAndIdAscAndIsDeletedFalse(query, pageable);
+    return PostAdminPageResponse.fromEntity(posts);
+  }
+
   public void softBulkDeleteByIds(List<Long> ids) {
     postRepository.softBulkDeleteByIds(ids);
   }
