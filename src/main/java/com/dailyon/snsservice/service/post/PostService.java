@@ -311,11 +311,9 @@ public class PostService {
               String.valueOf(postDetailResponse.getId()), dbPostCountVO);
 
       // cache hit 로 인해서 db와 cache의 내용이 서로 다르다면 response를 업데이트
-      if (!dbPostCountVO.equals(cachedPostCountVO)) {
-        postDetailResponse.setViewCount(cachedPostCountVO.getViewCount());
-        postDetailResponse.setLikeCount(cachedPostCountVO.getLikeCount());
-        postDetailResponse.setCommentCount(cachedPostCountVO.getCommentCount());
-      }
+      postDetailResponse.setViewCount(cachedPostCountVO.getViewCount());
+      postDetailResponse.setLikeCount(cachedPostCountVO.getLikeCount());
+      postDetailResponse.setCommentCount(cachedPostCountVO.getCommentCount());
     } catch (JsonProcessingException e) {
       throw new RuntimeException(e);
     }
