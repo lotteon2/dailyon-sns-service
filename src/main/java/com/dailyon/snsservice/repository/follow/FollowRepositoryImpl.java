@@ -68,9 +68,8 @@ public class FollowRepositoryImpl implements FollowRepository {
   public Page<Follow> findFollowingsByMemberId(Long memberId, Pageable pageable) {
     JPAQuery<Long> indexQuery =
         jpaQueryFactory
-            .selectDistinct(follow.follower.id)
+            .select(follow.follower.id)
             .from(follow)
-            .leftJoin(follow.following)
             .where(follow.follower.id.eq(memberId))
             .orderBy(getOrderCondition(pageable.getSort()).toArray(OrderSpecifier[]::new))
             .offset(pageable.getOffset())
@@ -145,8 +144,6 @@ public class FollowRepositoryImpl implements FollowRepository {
 
     long total = countQuery.fetchCount();
     return new PageImpl<>(result, pageable, total);
-
-    //    return followJpaRepository.findFollowersByMemberId(memberId, pageable);
   }
 
   private List<OrderSpecifier> getOrderCondition(Sort sort) {
