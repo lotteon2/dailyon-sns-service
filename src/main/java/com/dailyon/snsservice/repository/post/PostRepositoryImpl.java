@@ -7,26 +7,21 @@ import static com.dailyon.snsservice.entity.QPostImage.postImage;
 import static com.dailyon.snsservice.entity.QPostImageProductDetail.postImageProductDetail;
 import static com.querydsl.core.group.GroupBy.*;
 
-import com.dailyon.snsservice.dto.response.member.PostDetailMemberResponse;
 import com.dailyon.snsservice.dto.response.member.QPostDetailMemberResponse;
 import com.dailyon.snsservice.dto.response.post.*;
-import com.dailyon.snsservice.dto.response.postimageproductdetail.PostImageProductDetailResponse;
 import com.dailyon.snsservice.dto.response.postimageproductdetail.QPostImageProductDetailResponse;
 import com.dailyon.snsservice.entity.Post;
 import com.dailyon.snsservice.entity.QFollow;
 import com.dailyon.snsservice.entity.QPostLike;
 import com.dailyon.snsservice.exception.PostEntityNotFoundException;
-import com.querydsl.core.Tuple;
 import com.querydsl.core.types.*;
 import com.querydsl.core.types.dsl.BooleanExpression;
-import com.querydsl.core.types.dsl.Expressions;
 import com.querydsl.core.types.dsl.PathBuilder;
 import com.querydsl.jpa.JPAExpressions;
 import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.*;
@@ -155,32 +150,33 @@ public class PostRepositoryImpl implements PostRepository {
   }
 
   @Override
-  public Page<OOTDPostResponse> findMemberPostsByMemberId(Long postMemberId, Long memberId, Pageable pageable) {
+  public Page<OOTDPostResponse> findMemberPostsByMemberId(
+      Long postMemberId, Long memberId, Pageable pageable) {
     QPostLike postLikeSubQuery = new QPostLike("postLikeSubQuery");
 
     BooleanExpression hasLikedCondition =
-            JPAExpressions.select(postLikeSubQuery)
-                    .from(postLikeSubQuery)
-                    .where(postLikeSubQuery.post.id.eq(post.id), postLikeSubQuery.member.id.eq(memberId))
-                    .exists();
+        JPAExpressions.select(postLikeSubQuery)
+            .from(postLikeSubQuery)
+            .where(postLikeSubQuery.post.id.eq(post.id), postLikeSubQuery.member.id.eq(memberId))
+            .exists();
 
     JPAQuery<OOTDPostResponse> query =
-            jpaQueryFactory
-                    .select(
-                            Projections.constructor(
-                                    OOTDPostResponse.class,
-                                    post.id,
-                                    post.postImage.thumbnailImgUrl,
-                                    post.likeCount,
-                                    post.viewCount,
-                                    post.commentCount,
-                                    hasLikedCondition))
-                    .from(post)
-                    .innerJoin(post.postImage)
-                    .where(post.member.id.eq(postMemberId), post.isDeleted.isFalse())
-                    .orderBy(getOrderCondition(pageable.getSort()).toArray(OrderSpecifier[]::new))
-                    .offset(pageable.getOffset())
-                    .limit(pageable.getPageSize());
+        jpaQueryFactory
+            .select(
+                Projections.constructor(
+                    OOTDPostResponse.class,
+                    post.id,
+                    post.postImage.thumbnailImgUrl,
+                    post.likeCount,
+                    post.viewCount,
+                    post.commentCount,
+                    hasLikedCondition))
+            .from(post)
+            .innerJoin(post.postImage)
+            .where(post.member.id.eq(postMemberId), post.isDeleted.isFalse())
+            .orderBy(getOrderCondition(pageable.getSort()).toArray(OrderSpecifier[]::new))
+            .offset(pageable.getOffset())
+            .limit(pageable.getPageSize());
 
     Long totalElements = getMyPageTotalPageCount(pageable, postMemberId);
 
@@ -228,64 +224,66 @@ public class PostRepositoryImpl implements PostRepository {
                   followSubQuery.follower.id.eq(memberId))
               .exists();
 
-      PostDetailResponse postDetailResponse = query
+      PostDetailResponse postDetailResponse =
+          query
               .transform(
-                      groupBy(post.id)
-                              .as(
-                                      new QPostDetailResponse(
-                                              post.id,
-                                              post.title,
-                                              post.description,
-                                              post.stature,
-                                              post.weight,
-                                              postImage.imgUrl,
-                                              post.viewCount,
-                                              post.likeCount,
-                                              post.commentCount,
-                                              hasLikedCondition,
-                                              post.createdAt,
-                                              new QPostDetailMemberResponse(
-                                                      member.id,
-                                                      member.nickname,
-                                                      member.profileImgUrl,
-                                                      member.code,
-                                                      isFollowingExpression),
-                                              set(new QPostDetailHashTagResponse(hashTag.id, hashTag.name)),
-                                              set(
-                                                      new QPostImageProductDetailResponse(
-                                                              postImageProductDetail.id,
-                                                              postImageProductDetail.productId,
-                                                              postImageProductDetail.productSize,
-                                                              postImageProductDetail.leftGapPercent,
-                                                              postImageProductDetail.topGapPercent)))))
+                  groupBy(post.id)
+                      .as(
+                          new QPostDetailResponse(
+                              post.id,
+                              post.title,
+                              post.description,
+                              post.stature,
+                              post.weight,
+                              postImage.imgUrl,
+                              post.viewCount,
+                              post.likeCount,
+                              post.commentCount,
+                              hasLikedCondition,
+                              post.createdAt,
+                              new QPostDetailMemberResponse(
+                                  member.id,
+                                  member.nickname,
+                                  member.profileImgUrl,
+                                  member.code,
+                                  isFollowingExpression),
+                              set(new QPostDetailHashTagResponse(hashTag.id, hashTag.name)),
+                              set(
+                                  new QPostImageProductDetailResponse(
+                                      postImageProductDetail.id,
+                                      postImageProductDetail.productId,
+                                      postImageProductDetail.productSize,
+                                      postImageProductDetail.leftGapPercent,
+                                      postImageProductDetail.topGapPercent)))))
               .get(id);
       return postDetailResponse;
     } else {
-      PostDetailResponse postDetailResponse = query
+      PostDetailResponse postDetailResponse =
+          query
               .transform(
-                      groupBy(post.id)
-                              .as(
-                                      new QPostDetailResponse(
-                                              post.id,
-                                              post.title,
-                                              post.description,
-                                              post.stature,
-                                              post.weight,
-                                              postImage.imgUrl,
-                                              post.viewCount,
-                                              post.likeCount,
-                                              post.commentCount,
-                                              post.createdAt,
-                                              new QPostDetailMemberResponse(
-                                                      member.id, member.nickname, member.profileImgUrl, member.code),
-                                              set(new QPostDetailHashTagResponse(hashTag.id, hashTag.name)),
-                                              set(
-                                                      new QPostImageProductDetailResponse(
-                                                              postImageProductDetail.id,
-                                                              postImageProductDetail.productId,
-                                                              postImageProductDetail.productSize,
-                                                              postImageProductDetail.leftGapPercent,
-                                                              postImageProductDetail.topGapPercent)))))
+                  groupBy(post.id)
+                      .as(
+                          new QPostDetailResponse(
+                              post.id,
+                              post.title,
+                              post.description,
+                              post.stature,
+                              post.weight,
+                              postImage.imgUrl,
+                              post.viewCount,
+                              post.likeCount,
+                              post.commentCount,
+                              post.createdAt,
+                              new QPostDetailMemberResponse(
+                                  member.id, member.nickname, member.profileImgUrl, member.code),
+                              set(new QPostDetailHashTagResponse(hashTag.id, hashTag.name)),
+                              set(
+                                  new QPostImageProductDetailResponse(
+                                      postImageProductDetail.id,
+                                      postImageProductDetail.productId,
+                                      postImageProductDetail.productSize,
+                                      postImageProductDetail.leftGapPercent,
+                                      postImageProductDetail.topGapPercent)))))
               .get(id);
       return postDetailResponse;
     }
@@ -293,7 +291,40 @@ public class PostRepositoryImpl implements PostRepository {
 
   @Override
   public Page<Post> findAllByIdAscAndIsDeletedFalse(Pageable pageable) {
-    return postJpaRepository.findAllByIdAscAndIsDeletedFalse(pageable);
+
+    JPAQuery<Long> indexQuery =
+        jpaQueryFactory
+            .select(post.id)
+            .from(post)
+            .where(post.isDeleted.eq(false))
+            .orderBy(getOrderCondition(pageable.getSort()).toArray(OrderSpecifier[]::new))
+            .offset(pageable.getOffset())
+            .limit(pageable.getPageSize());
+    List<Long> indexes = indexQuery.fetch();
+    if (indexes.isEmpty()) {
+      return new PageImpl<>(new ArrayList<>(), pageable, 0);
+    }
+
+    JPAQuery<Post> resultQuery =
+        jpaQueryFactory
+            .selectDistinct(post)
+            .from(post)
+            .leftJoin(post.postImage, postImage)
+            .fetchJoin()
+            .leftJoin(post.hashTags, hashTag)
+            .fetchJoin()
+            .leftJoin(post.member, member)
+            .fetchJoin()
+            .where(post.id.in(indexes))
+            .orderBy(getOrderCondition(pageable.getSort()).toArray(OrderSpecifier[]::new));
+
+    List<Post> result = resultQuery.fetch();
+
+    JPAQuery<Long> countQuery =
+        jpaQueryFactory.select(post.id).from(post).where(post.isDeleted.eq(false));
+
+    long total = countQuery.fetchCount();
+    return new PageImpl<>(result, pageable, total);
   }
 
   @Override
@@ -303,7 +334,44 @@ public class PostRepositoryImpl implements PostRepository {
 
   @Override
   public Page<Post> findAllBySearchQueryAndIdAscAndIsDeletedFalse(String query, Pageable pageable) {
-    return postJpaRepository.findAllBySearchQueryAndIdAscAndIsDeletedFalse(query, pageable);
+    JPAQuery<Long> indexQuery =
+            jpaQueryFactory
+                    .selectDistinct(post.id)
+                    .from(post)
+                    .leftJoin(post.hashTags, hashTag)
+                    .leftJoin(post.member, member)
+                    .where(post.title.eq(query)
+                            .or(hashTag.name.eq(query))
+                            .or(member.nickname.eq(query)).and(post.isDeleted.eq(false)))
+                    .orderBy(getOrderCondition(pageable.getSort()).toArray(OrderSpecifier[]::new))
+                    .offset(pageable.getOffset())
+                    .limit(pageable.getPageSize());
+    List<Long> indexes = indexQuery.fetch();
+    if (indexes.isEmpty()) {
+      return new PageImpl<>(new ArrayList<>(), pageable, 0);
+    }
+
+    JPAQuery<Post> resultQuery =
+            jpaQueryFactory
+                    .selectDistinct(post)
+                    .from(post)
+                    .leftJoin(post.postImage, postImage)
+                    .fetchJoin()
+                    .leftJoin(post.hashTags, hashTag)
+                    .fetchJoin()
+                    .leftJoin(post.member, member)
+                    .fetchJoin()
+                    .where(post.id.in(indexes))
+                    .orderBy(getOrderCondition(pageable.getSort()).toArray(OrderSpecifier[]::new));
+
+    List<Post> result = resultQuery.fetch();
+
+    JPAQuery<Long> countQuery =
+            jpaQueryFactory.select(post.id).from(post)
+                    .where(post.id.in(indexes).and(post.isDeleted.eq(false)));
+
+    long total = countQuery.fetchCount();
+    return new PageImpl<>(result, pageable, total);
   }
 
   private Long getMyPageTotalPageCount(Pageable pageable, Long memberId) {
