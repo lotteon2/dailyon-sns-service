@@ -20,7 +20,7 @@ public interface PostJpaRepository extends JpaRepository<Post, Long> {
       "select p from Post p "
           + "join fetch p.postImage pi "
           + "join fetch p.hashTags ht "
-          + "join fetch pi.postImageProductDetails pipd "
+          + "left join pi.postImageProductDetails pipd "
           + "where p.id = :id and p.member.id = :memberId and p.isDeleted = false")
   Optional<Post> findByIdAndMemberIdForUpdate(Long id, Long memberId);
 
@@ -37,7 +37,7 @@ public interface PostJpaRepository extends JpaRepository<Post, Long> {
   @Query(
       "select p from Post p "
           + "join fetch p.postImage pi "
-          + "join fetch pi.postImageProductDetails pipd "
+          + "left join pi.postImageProductDetails pipd "
           + "where pipd.productId = :productId and p.isDeleted = false")
   List<Post> findTop4ByOrderByLikeCountDesc(Long productId, Pageable pageable);
 
