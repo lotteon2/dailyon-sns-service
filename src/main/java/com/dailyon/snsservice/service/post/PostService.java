@@ -246,10 +246,12 @@ public class PostService {
   public void addViewCount(Long id) {
     Post post = postRepository.findByIdAndIsDeletedFalse(id);
     try {
-      PostCountVO postCountVO =
-          new PostCountVO(post.getViewCount() + 1, post.getLikeCount(), post.getCommentCount());
+      PostCountVO dbPostCountVO =
+          new PostCountVO(post.getViewCount(), post.getLikeCount(), post.getCommentCount());
+      PostCountVO cachedPostCountVO = postCountRedisRepository.findOrPutPostCountVO(String.valueOf(id), dbPostCountVO);
+      cachedPostCountVO.addViewCount(1);
       // update view count to cache
-      postCountRedisRepository.modifyPostCountVOAboutLikeCount(String.valueOf(id), postCountVO);
+      postCountRedisRepository.modifyPostCountVOAboutLikeCount(String.valueOf(id), cachedPostCountVO);
     } catch (JsonProcessingException e) {
       throw new RuntimeException(e);
     }
@@ -315,10 +317,10 @@ public class PostService {
           postCountRedisRepository.findOrPutPostCountVO(
               String.valueOf(postDetailResponse.getId()), dbPostCountVO);
 
-      // cache hit 로 인해서 db와 cache의 내용이 서로 다르다면 response를 업데이트
       postDetailResponse.setViewCount(cachedPostCountVO.getViewCount());
       postDetailResponse.setLikeCount(cachedPostCountVO.getLikeCount());
       postDetailResponse.setCommentCount(cachedPostCountVO.getCommentCount());
+
     } catch (JsonProcessingException e) {
       throw new RuntimeException(e);
     }
