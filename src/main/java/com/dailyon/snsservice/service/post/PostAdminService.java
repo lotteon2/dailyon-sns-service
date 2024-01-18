@@ -30,6 +30,7 @@ public class PostAdminService {
     return PostAdminPageResponse.fromEntity(posts);
   }
 
+  @Transactional
   public void softBulkDeleteByIds(List<Long> ids) {
     postRepository.softBulkDeleteByIds(ids);
   }
