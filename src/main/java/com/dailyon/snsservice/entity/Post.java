@@ -146,4 +146,12 @@ public class Post extends BaseEntity {
   public void setDeleted(Boolean deleted) {
     this.isDeleted = deleted;
   }
+
+  public void setViewCount(Integer viewCount) {
+    this.viewCount = viewCount;
+  }
+
+  public void setLikeCount(Integer likeCount) {
+    this.likeCount = likeCount;
+  }
 }

@@ -171,9 +171,7 @@ public class PostService {
 
     List<Post> modifiedPosts = new ArrayList<>();
 
-    PostLikePageResponse postLikePageResponse = PostLikePageResponse.fromEntity(posts);
-    postLikePageResponse
-        .getPosts()
+    posts
         .forEach(
             post -> {
               try {
@@ -189,6 +187,8 @@ public class PostService {
                 // cache count 값으로 response를 업데이트
                 post.setViewCount(cachedPostCountVO.getViewCount());
                 post.setLikeCount(cachedPostCountVO.getLikeCount());
+
+                modifiedPosts.add(post);
               } catch (JsonProcessingException e) {
                 throw new RuntimeException(e);
               }
@@ -237,6 +237,9 @@ public class PostService {
                 // cache count 값으로 response를 업데이트
                 OOTDPostResponse.setViewCount(cachedPostCountVO.getViewCount());
                 OOTDPostResponse.setLikeCount(cachedPostCountVO.getLikeCount());
+
+                // Add the modified PostResponse to the list
+                modifiedMyOOTDPostResponses.add(OOTDPostResponse);
               } catch (JsonProcessingException e) {
                 throw new RuntimeException(e);
               }
@@ -286,6 +289,9 @@ public class PostService {
                 // cache count 값으로 response를 업데이트
                 OOTDPostResponse.setViewCount(cachedPostCountVO.getViewCount());
                 OOTDPostResponse.setLikeCount(cachedPostCountVO.getLikeCount());
+
+                // Add the modified PostResponse to the list
+                modifiedMemberOOTDPostResponses.add(OOTDPostResponse);
               } catch (JsonProcessingException e) {
                 throw new RuntimeException(e);
               }
