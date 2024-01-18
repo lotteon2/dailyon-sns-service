@@ -57,32 +57,7 @@ public interface PostJpaRepository extends JpaRepository<Post, Long> {
   @Query("select p from Post p where p.id = :id and p.member.id = :memberId")
   Optional<Post> findByIdAndMemberId(Long id, Long memberId);
 
-  @Query(
-      value =
-          "select p from Post p "
-              + "join fetch p.postImage "
-              + "join fetch p.hashTags "
-              + "join fetch p.member "
-              + "where p.isDeleted = false",
-      countQuery = "select count(p) from Post p where p.isDeleted = false")
-  Page<Post> findAllByIdAscAndIsDeletedFalse(Pageable pageable);
-
   @Modifying(clearAutomatically = true, flushAutomatically = true)
-  @Query("update Post p "
-                  + "set p.isDeleted = true "
-                  + "where p.id in :ids")
+  @Query("update Post p " + "set p.isDeleted = true " + "where p.id in :ids")
   int softBulkDeleteByIds(List<Long> ids);
-
-  @Query(
-          value =
-                  "select p from Post p "
-                          + "join fetch p.postImage "
-                          + "join fetch p.hashTags ht "
-                          + "join fetch p.member m "
-                          + "where p.title like %:query% " +
-                          "or ht.name like %:query% " +
-                          "or m.nickname like %:query% " +
-                          "and p.isDeleted = false",
-          countQuery = "select count(p) from Post p where p.isDeleted = false")
-  Page<Post> findAllBySearchQueryAndIdAscAndIsDeletedFalse(String query, Pageable pageable);
 }
