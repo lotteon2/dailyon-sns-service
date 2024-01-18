@@ -28,7 +28,9 @@ import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -55,6 +57,9 @@ public class PostService {
 
   public PostPageResponse getPosts(Long memberId, Pageable pageable) {
     Page<PostResponse> postResponses = postRepository.findAllWithIsLike(memberId, pageable);
+
+    List<PostResponse> modifiedPostResponses = new ArrayList<>();
+
     postResponses
         .getContent()
         .forEach(
@@ -74,11 +79,30 @@ public class PostService {
                 // cache count 값으로 response를 업데이트
                 postResponse.setViewCount(cachedPostCountVO.getViewCount());
                 postResponse.setLikeCount(cachedPostCountVO.getLikeCount());
+
+                // Add the modified PostResponse to the list
+                modifiedPostResponses.add(postResponse);
               } catch (JsonProcessingException e) {
                 throw new RuntimeException(e);
               }
             });
-    return PostPageResponse.fromDto(postResponses);
+
+    // TODO: 정렬 기준은 하나로 고정
+    List<String> sortProperties = getSortProperties(pageable);
+    if (sortProperties.get(0).equals("viewCount")) {
+      modifiedPostResponses.sort(Comparator.comparing(PostResponse::getViewCount).reversed());
+    } else if (sortProperties.get(0).equals("likeCount")) {
+      modifiedPostResponses.sort(Comparator.comparing(PostResponse::getLikeCount).reversed());
+    }
+
+    PostPageResponse sortedPostPageResponse =
+        PostPageResponse.fromDto(
+            new PageImpl<>(
+                modifiedPostResponses,
+                postResponses.getPageable(),
+                postResponses.getTotalElements()));
+
+    return sortedPostPageResponse;
   }
 
   @Transactional
@@ -145,6 +169,8 @@ public class PostService {
   public PostLikePageResponse getPostLikes(Long memberId, Pageable pageable) {
     Page<Post> posts = postRepository.findAllWithPostLikeByMemberIdIn(memberId, pageable);
 
+    List<Post> modifiedPosts = new ArrayList<>();
+
     PostLikePageResponse postLikePageResponse = PostLikePageResponse.fromEntity(posts);
     postLikePageResponse
         .getPosts()
@@ -168,12 +194,30 @@ public class PostService {
               }
             });
 
-    return postLikePageResponse;
+    // TODO: 정렬 기준은 하나로 고정
+    List<String> sortProperties = getSortProperties(pageable);
+    if (sortProperties.get(0).equals("viewCount")) {
+      modifiedPosts.sort(Comparator.comparing(Post::getViewCount).reversed());
+    } else if (sortProperties.get(0).equals("likeCount")) {
+      modifiedPosts.sort(Comparator.comparing(Post::getLikeCount).reversed());
+    }
+
+    PostLikePageResponse sortedPostPageResponse =
+            PostLikePageResponse.fromEntity(
+                    new PageImpl<>(
+                            modifiedPosts,
+                            posts.getPageable(),
+                            posts.getTotalElements()));
+
+    return sortedPostPageResponse;
   }
 
   public OOTDPostPageResponse getMyOOTDPosts(Long memberId, Pageable pageable) {
     Page<OOTDPostResponse> myOOTDPostResponses =
         postRepository.findMyPostsByMemberId(memberId, pageable);
+
+    List<OOTDPostResponse> modifiedMyOOTDPostResponses = new ArrayList<>();
+
     myOOTDPostResponses
         .getContent()
         .forEach(
@@ -197,14 +241,33 @@ public class PostService {
                 throw new RuntimeException(e);
               }
             });
-    return OOTDPostPageResponse.fromDto(myOOTDPostResponses);
+
+    // TODO: 정렬 기준은 하나로 고정
+    List<String> sortProperties = getSortProperties(pageable);
+    if (sortProperties.get(0).equals("viewCount")) {
+      modifiedMyOOTDPostResponses.sort(Comparator.comparing(OOTDPostResponse::getViewCount).reversed());
+    } else if (sortProperties.get(0).equals("likeCount")) {
+      modifiedMyOOTDPostResponses.sort(Comparator.comparing(OOTDPostResponse::getLikeCount).reversed());
+    }
+
+    OOTDPostPageResponse sortedPostPageResponse =
+            OOTDPostPageResponse.fromDto(
+                    new PageImpl<>(
+                            modifiedMyOOTDPostResponses,
+                            myOOTDPostResponses.getPageable(),
+                            myOOTDPostResponses.getTotalElements()));
+
+    return sortedPostPageResponse;
   }
 
   public OOTDPostPageResponse getMemberOOTDPosts(
       Long postMemberId, Long memberId, Pageable pageable) {
-    Page<OOTDPostResponse> myOOTDPostResponses =
+    Page<OOTDPostResponse> memberOOTDPostResponses =
         postRepository.findMemberPostsByMemberId(postMemberId, memberId, pageable);
-    myOOTDPostResponses
+
+    List<OOTDPostResponse> modifiedMemberOOTDPostResponses = new ArrayList<>();
+
+    memberOOTDPostResponses
         .getContent()
         .forEach(
             OOTDPostResponse -> {
@@ -227,7 +290,23 @@ public class PostService {
                 throw new RuntimeException(e);
               }
             });
-    return OOTDPostPageResponse.fromDto(myOOTDPostResponses);
+
+    // TODO: 정렬 기준은 하나로 고정
+    List<String> sortProperties = getSortProperties(pageable);
+    if (sortProperties.get(0).equals("viewCount")) {
+      modifiedMemberOOTDPostResponses.sort(Comparator.comparing(OOTDPostResponse::getViewCount).reversed());
+    } else if (sortProperties.get(0).equals("likeCount")) {
+      modifiedMemberOOTDPostResponses.sort(Comparator.comparing(OOTDPostResponse::getLikeCount).reversed());
+    }
+
+    OOTDPostPageResponse sortedPostPageResponse =
+            OOTDPostPageResponse.fromDto(
+                    new PageImpl<>(
+                            modifiedMemberOOTDPostResponses,
+                            memberOOTDPostResponses.getPageable(),
+                            memberOOTDPostResponses.getTotalElements()));
+
+    return sortedPostPageResponse;
   }
 
   public List<Top4OOTDResponse> getTop4OOTDPosts(Long productId) {
@@ -248,10 +327,12 @@ public class PostService {
     try {
       PostCountVO dbPostCountVO =
           new PostCountVO(post.getViewCount(), post.getLikeCount(), post.getCommentCount());
-      PostCountVO cachedPostCountVO = postCountRedisRepository.findOrPutPostCountVO(String.valueOf(id), dbPostCountVO);
+      PostCountVO cachedPostCountVO =
+          postCountRedisRepository.findOrPutPostCountVO(String.valueOf(id), dbPostCountVO);
       cachedPostCountVO.addViewCount(1);
       // update view count to cache
-      postCountRedisRepository.modifyPostCountVOAboutLikeCount(String.valueOf(id), cachedPostCountVO);
+      postCountRedisRepository.modifyPostCountVOAboutLikeCount(
+          String.valueOf(id), cachedPostCountVO);
     } catch (JsonProcessingException e) {
       throw new RuntimeException(e);
     }
@@ -326,5 +407,17 @@ public class PostService {
     }
 
     return postDetailResponse;
+  }
+
+  public List<String> getSortProperties(Pageable pageable) {
+    Sort sort = pageable.getSort();
+
+    List<String> sortColumnNames = new ArrayList<>();
+
+    for (Sort.Order order : sort) {
+      sortColumnNames.add(order.getProperty());
+    }
+
+    return sortColumnNames;
   }
 }
