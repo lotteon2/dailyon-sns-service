@@ -23,4 +23,8 @@ public class PostCountVO implements Serializable {
   public void addCommentCount(Integer count) {
     this.commentCount += count;
   }
+
+  public void addViewCount(Integer count) {
+    this.viewCount += count;
+  }
 }

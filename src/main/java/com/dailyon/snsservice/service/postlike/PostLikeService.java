@@ -40,7 +40,7 @@ public class PostLikeService {
         cachedPostCountVO.addLikeCount(countMap.get(post.getId()));
         // update like count to cache
         postCountRedisRepository.modifyPostCountVOAboutLikeCount(
-            String.valueOf(post.getId()), cachedPostCountVO);
+                String.valueOf(post.getId()), cachedPostCountVO);
       }
     } catch (JsonProcessingException e) {
       throw new RuntimeException(e);
