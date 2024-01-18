@@ -334,7 +334,44 @@ public class PostRepositoryImpl implements PostRepository {
 
   @Override
   public Page<Post> findAllBySearchQueryAndIdAscAndIsDeletedFalse(String query, Pageable pageable) {
-    return postJpaRepository.findAllBySearchQueryAndIdAscAndIsDeletedFalse(query, pageable);
+    JPAQuery<Long> indexQuery =
+            jpaQueryFactory
+                    .selectDistinct(post.id)
+                    .from(post)
+                    .leftJoin(post.hashTags, hashTag)
+                    .leftJoin(post.member, member)
+                    .where(post.title.eq(query)
+                            .or(hashTag.name.eq(query))
+                            .or(member.nickname.eq(query)).and(post.isDeleted.eq(false)))
+                    .orderBy(getOrderCondition(pageable.getSort()).toArray(OrderSpecifier[]::new))
+                    .offset(pageable.getOffset())
+                    .limit(pageable.getPageSize());
+    List<Long> indexes = indexQuery.fetch();
+    if (indexes.isEmpty()) {
+      return new PageImpl<>(new ArrayList<>(), pageable, 0);
+    }
+
+    JPAQuery<Post> resultQuery =
+            jpaQueryFactory
+                    .selectDistinct(post)
+                    .from(post)
+                    .leftJoin(post.postImage, postImage)
+                    .fetchJoin()
+                    .leftJoin(post.hashTags, hashTag)
+                    .fetchJoin()
+                    .leftJoin(post.member, member)
+                    .fetchJoin()
+                    .where(post.id.in(indexes))
+                    .orderBy(getOrderCondition(pageable.getSort()).toArray(OrderSpecifier[]::new));
+
+    List<Post> result = resultQuery.fetch();
+
+    JPAQuery<Long> countQuery =
+            jpaQueryFactory.select(post.id).from(post)
+                    .where(post.id.in(indexes).and(post.isDeleted.eq(false)));
+
+    long total = countQuery.fetchCount();
+    return new PageImpl<>(result, pageable, total);
   }
 
   private Long getMyPageTotalPageCount(Pageable pageable, Long memberId) {
