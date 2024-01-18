@@ -35,9 +35,8 @@ public class CommentRepositoryImpl implements CommentRepository {
   public Page<Comment> findAllByPostId(Long postId, Pageable pageable) {
     JPAQuery<Long> indexQuery =
         jpaQueryFactory
-            .selectDistinct(comment.id)
+            .select(comment.id)
             .from(comment)
-            .leftJoin(comment.post, post)
             .where(post.id.eq(postId).and(comment.parent.isNull()))
             .orderBy(getOrderCondition(pageable.getSort()).toArray(OrderSpecifier[]::new))
             .offset(pageable.getOffset())
