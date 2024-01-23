@@ -2,7 +2,6 @@ package com.dailyon.snsservice.config;
 
 import com.dailyon.snsservice.vo.PostCountVO;
 import com.dailyon.snsservice.vo.Top4OOTDVO;
-import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
@@ -18,7 +17,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.redis.cache.RedisCacheConfiguration;
 import org.springframework.data.redis.serializer.GenericJackson2JsonRedisSerializer;
-import org.springframework.data.redis.serializer.Jackson2JsonRedisSerializer;
 import org.springframework.data.redis.serializer.RedisSerializationContext;
 import org.springframework.data.redis.serializer.StringRedisSerializer;
 
@@ -47,19 +45,7 @@ public class CacheConfig {
   }
 
   @Bean
-  public RedisCacheManagerBuilderCustomizer redisCacheManagerBuilderCustomizer(
-      ObjectMapper objectMapper) {
-    Jackson2JsonRedisSerializer<PostCountVO> postCountVOJackson2JsonRedisSerializer =
-        new Jackson2JsonRedisSerializer<>(PostCountVO.class);
-
-    JavaType top4OOTDVOListType =
-        objectMapper.getTypeFactory().constructCollectionType(List.class, Top4OOTDVO.class);
-    Jackson2JsonRedisSerializer<List<Top4OOTDVO>> top4OOTDVOJackson2JsonRedisSerializer =
-        new Jackson2JsonRedisSerializer<>(top4OOTDVOListType);
-
-    postCountVOJackson2JsonRedisSerializer.setObjectMapper(objectMapper);
-    top4OOTDVOJackson2JsonRedisSerializer.setObjectMapper(objectMapper);
-
+  public RedisCacheManagerBuilderCustomizer redisCacheManagerBuilderCustomizer() {
     return (builder ->
         builder
             .withCacheConfiguration(
@@ -72,7 +58,7 @@ public class CacheConfig {
                             new StringRedisSerializer()))
                     .serializeValuesWith(
                         RedisSerializationContext.SerializationPair.fromSerializer(
-                                new SnappyRedisSerializer<PostCountVO>(new KryoRedisSerializer<>()))))
+                            new SnappyRedisSerializer<PostCountVO>(new KryoRedisSerializer<>()))))
             .withCacheConfiguration(
                 "top4OOTD",
                 RedisCacheConfiguration.defaultCacheConfig()
@@ -83,6 +69,7 @@ public class CacheConfig {
                             new StringRedisSerializer()))
                     .serializeValuesWith(
                         RedisSerializationContext.SerializationPair.fromSerializer(
-                            new SnappyRedisSerializer<List<Top4OOTDVO>>(new KryoRedisSerializer<>())))));
+                            new SnappyRedisSerializer<List<Top4OOTDVO>>(
+                                new KryoRedisSerializer<>())))));
   }
 }

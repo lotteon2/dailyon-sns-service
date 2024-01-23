@@ -46,8 +46,7 @@ class PostServiceTest {
 
   @Autowired private PostService postService;
   @PersistenceContext private EntityManager em;
-  @Autowired private RedisTemplate<String, String> redisTemplate;
-  @Autowired private ObjectMapper objectMapper;
+  @Autowired private RedisTemplate<String, PostCountVO> redisTemplate;
   @MockBean private ProductServiceClient productServiceClient;
   @MockBean private PromotionServiceClient promotionServiceClient;
 
@@ -149,10 +148,10 @@ class PostServiceTest {
     postService.softDeletePost(postId, memberId);
 
     // then
-    String postCountVOStringValue =
+    PostCountVO postCountVO =
         redisTemplate.opsForValue().get(String.format("postCount::%s", postId));
 
-    assertThat(postCountVOStringValue).isNull();
+    assertThat(postCountVO).isNull();
     assertThrowsExactly(
         NoResultException.class,
         () ->
@@ -172,10 +171,7 @@ class PostServiceTest {
     postService.addViewCount(postId);
 
     // then
-    PostCountVO postCountVO =
-        objectMapper.readValue(
-            redisTemplate.opsForValue().get(String.format("postCount::%s", postId)),
-            PostCountVO.class);
+    PostCountVO postCountVO = redisTemplate.opsForValue().get(String.format("postCount::%s", postId));
     assertThat(postCountVO.getViewCount()).isSameAs(101);
   }
 

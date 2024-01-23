@@ -3,6 +3,9 @@ package com.dailyon.snsservice.config;
 import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
+
+import dailyon.domain.utils.KryoRedisSerializer;
+import dailyon.domain.utils.SnappyRedisSerializer;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -55,10 +58,10 @@ public class RedisConfig {
   }
 
   @Bean
-  public RedisTemplate<String, Object> redisTemplate() {
-    RedisTemplate<String, Object> redisTemplate = new RedisTemplate<>();
+  public <T> RedisTemplate<String, T> redisTemplate() {
+    RedisTemplate<String, T> redisTemplate = new RedisTemplate<>();
     redisTemplate.setKeySerializer(new StringRedisSerializer());
-    redisTemplate.setValueSerializer(new StringRedisSerializer());
+    redisTemplate.setValueSerializer(new SnappyRedisSerializer<T>(new KryoRedisSerializer<>()));
 
     boolean isCluster = Objects.nonNull(env.getProperty("spring.redis.cluster.nodes"));
     if (!isCluster) {

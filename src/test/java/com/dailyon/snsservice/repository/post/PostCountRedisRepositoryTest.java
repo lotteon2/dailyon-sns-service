@@ -27,7 +27,7 @@ class PostCountRedisRepositoryTest {
 
   @Autowired private PostCountRedisRepository postCountRedisRepository;
   @Autowired private PostRepository postRepository;
-  @Autowired private RedisTemplate<String, String> redisTemplate;
+  @Autowired private RedisTemplate<String, PostCountVO> redisTemplate;
 
   @Test
   @DisplayName("캐시 miss시 DB에서 캐시로 동기화 후 반환, 캐시 hit시 조회수, 좋아요수, 댓글수를 조회")
@@ -90,7 +90,7 @@ class PostCountRedisRepositoryTest {
 
     // when
     List<Map<String, PostCountVO>> postCountVOStore =
-        postCountRedisRepository.findPostCountVOs(cacheName);
+        postCountRedisRepository.findPostCountVOs();
 
     // then
     assertThat(postCountVOStore.size()).isNotSameAs(0);
@@ -109,9 +109,8 @@ class PostCountRedisRepositoryTest {
   void deletePostCountVO() throws JsonProcessingException {
     // given
     Long postId = 1L;
-    ObjectMapper objectMapper = new ObjectMapper();
-    String stringValue = objectMapper.writeValueAsString(new PostCountVO(1, 2, 3));
-    redisTemplate.opsForValue().set(String.format("postCount::%s", postId), stringValue);
+    PostCountVO postCountVO = new PostCountVO(1, 2, 3);
+    redisTemplate.opsForValue().set(String.format("postCount::%s", postId), postCountVO);
 
     // when
     postCountRedisRepository.deletePostCountVO(String.valueOf(postId));
