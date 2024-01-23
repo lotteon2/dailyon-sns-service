@@ -9,6 +9,9 @@ import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import java.time.Duration;
 import java.util.List;
+
+import dailyon.domain.utils.KryoRedisSerializer;
+import dailyon.domain.utils.SnappyRedisSerializer;
 import org.springframework.boot.autoconfigure.cache.RedisCacheManagerBuilderCustomizer;
 import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.context.annotation.Bean;
@@ -69,7 +72,7 @@ public class CacheConfig {
                             new StringRedisSerializer()))
                     .serializeValuesWith(
                         RedisSerializationContext.SerializationPair.fromSerializer(
-                            postCountVOJackson2JsonRedisSerializer)))
+                                new SnappyRedisSerializer<PostCountVO>(new KryoRedisSerializer<>()))))
             .withCacheConfiguration(
                 "top4OOTD",
                 RedisCacheConfiguration.defaultCacheConfig()
@@ -80,6 +83,6 @@ public class CacheConfig {
                             new StringRedisSerializer()))
                     .serializeValuesWith(
                         RedisSerializationContext.SerializationPair.fromSerializer(
-                            top4OOTDVOJackson2JsonRedisSerializer))));
+                            new SnappyRedisSerializer<List<Top4OOTDVO>>(new KryoRedisSerializer<>())))));
   }
 }
