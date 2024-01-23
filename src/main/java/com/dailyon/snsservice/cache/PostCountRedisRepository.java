@@ -2,33 +2,37 @@ package com.dailyon.snsservice.cache;
 
 import com.dailyon.snsservice.vo.PostCountVO;
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import java.nio.charset.StandardCharsets;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.data.redis.core.Cursor;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.core.ScanOptions;
 import org.springframework.stereotype.Repository;
 
 @Repository
 @RequiredArgsConstructor
 public class PostCountRedisRepository {
 
-  private final RedisTemplate<String, String> redisTemplate;
-  private final ObjectMapper objectMapper;
+  private final RedisTemplate<String, PostCountVO> redisTemplate;
 
   @Cacheable(value = "postCount", key = "#key", unless = "#result == null")
   public PostCountVO findOrPutPostCountVO(String key, PostCountVO postCountVO)
       throws JsonProcessingException {
-    String stringValue = redisTemplate.opsForValue().get(key);
-    if (isInValidValue(stringValue)) {
+    PostCountVO cachedPostCountVO = redisTemplate.opsForValue().get(key);
+    if (isInValidValue(cachedPostCountVO)) {
       return postCountVO;
     }
-    return objectMapper.readValue(stringValue, PostCountVO.class);
+    return cachedPostCountVO;
   }
 
   @CachePut(value = "postCount", key = "#key")
@@ -40,27 +44,28 @@ public class PostCountRedisRepository {
   @CacheEvict(value = "postCount", key = "#key")
   public void deletePostCountVO(String key) {}
 
-  public List<Map<String, PostCountVO>> findPostCountVOs(String cacheName) {
-    Set<String> postIds = redisTemplate.keys(cacheName + ":*");
-    if (postIds != null && !postIds.isEmpty()) {
-      return postIds.stream()
-          .map(
-              postId -> {
-                String stringValue = redisTemplate.opsForValue().get(postId);
-                PostCountVO postCountVO;
-                try {
-                  postCountVO = objectMapper.readValue(stringValue, PostCountVO.class);
-                } catch (JsonProcessingException e) {
-                  throw new RuntimeException(e);
-                }
-                return Map.of(postId, postCountVO);
-              })
-          .collect(Collectors.toList());
-    }
-    return null;
+  @Cacheable(value = "postCount", unless = "#result == null", key = "'*'")
+  public List<Map<String, PostCountVO>> findPostCountVOs() {
+    Set<String> allKeys = redisTemplate.keys("postCount::*");
+
+    // Fetch values for each key
+    List<Map<String, PostCountVO>> allValues =
+        allKeys.stream()
+            .map(
+                key -> {
+                  String postId = key.split("::")[1];
+                  PostCountVO cachedPostCountVO = redisTemplate.opsForValue().get(key);
+                  if (isInValidValue(cachedPostCountVO)) {
+                    return Map.of(postId, new PostCountVO(0, 0, 0));
+                  }
+                  return Map.of(postId, cachedPostCountVO);
+                })
+            .collect(Collectors.toList());
+
+    return allValues;
   }
 
-  private Boolean isInValidValue(String value) {
+  private Boolean isInValidValue(PostCountVO value) {
     return value == null;
   }
 }
