@@ -17,24 +17,21 @@ import org.springframework.stereotype.Repository;
 public class Top4OOTDRedisRepository {
 
   private final PostRepository postRepository;
-  private final RedisTemplate<String, String> redisTemplate;
-  private final ObjectMapper objectMapper;
+  private final RedisTemplate<String, List<Top4OOTDVO>> redisTemplate;
 
   @Cacheable(value = "top4OOTD", key = "#productId", unless = "#result == null")
   public List<Top4OOTDVO> findOrPutTop4OOTDVO(String productId) throws JsonProcessingException {
-    String stringValue = redisTemplate.opsForValue().get(productId);
-    if (isInValidValue(stringValue)) {
+    List<Top4OOTDVO> cachedTop4OOTDVOs = redisTemplate.opsForValue().get(productId);
+    if (isInValidValue(cachedTop4OOTDVOs)) {
       List<Post> posts = postRepository.findTop4ByOrderByLikeCountDesc(Long.parseLong(productId));
       return posts.stream()
           .map(post -> new Top4OOTDVO(post.getId(), post.getPostImage().getThumbnailImgUrl()))
           .collect(Collectors.toList());
     }
-    return objectMapper.readValue(
-        stringValue,
-        objectMapper.getTypeFactory().constructCollectionType(List.class, Top4OOTDVO.class));
+    return cachedTop4OOTDVOs;
   }
 
-  private Boolean isInValidValue(String value) {
+  private Boolean isInValidValue(List<Top4OOTDVO> value) {
     return value == null;
   }
 }

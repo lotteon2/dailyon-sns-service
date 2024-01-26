@@ -30,8 +30,7 @@ class CommentServiceTest {
   @Autowired private CommentService commentService;
 
   @Autowired private CommentReader commentReader;
-  @Autowired private RedisTemplate<String, String> redisTemplate;
-  @Autowired private ObjectMapper objectMapper;
+  @Autowired private RedisTemplate<String, PostCountVO> redisTemplate;
 
   @Test
   @DisplayName("댓글 등록")
@@ -47,10 +46,7 @@ class CommentServiceTest {
     Comment savedComment = commentService.createComment(memberId, postId, createCommentRequest);
 
     // then
-    PostCountVO afterPostCountVO =
-        objectMapper.readValue(
-            redisTemplate.opsForValue().get(String.format("postCount::%s", postId)),
-            PostCountVO.class);
+    PostCountVO afterPostCountVO = redisTemplate.opsForValue().get(String.format("postCount::%s", postId));
 
     assertThat(savedComment.getDescription()).isEqualTo(commentDescription);
     assertThat(savedComment.getPost().getId()).isEqualTo(postId);

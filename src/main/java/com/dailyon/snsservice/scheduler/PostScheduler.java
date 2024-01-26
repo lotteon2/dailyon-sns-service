@@ -22,7 +22,7 @@ public class PostScheduler {
   @Scheduled(cron = "0 5 * * * *", zone = "Asia/Seoul")
   public void postCountCacheSyncToDB() {
     List<Map<String, PostCountVO>> postCountVOStore =
-        postCountRedisRepository.findPostCountVOs("postCount");
+        postCountRedisRepository.findPostCountVOs();
     if (postCountVOStore != null) {
       postCountVOStore.forEach(
           store ->

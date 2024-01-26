@@ -33,7 +33,7 @@ class PostLikeServiceTest {
 
   @Autowired private PostLikeJpaRepository postLikeJpaRepository;
 
-  @Autowired private RedisTemplate<String, String> redisTemplate;
+  @Autowired private RedisTemplate<String, PostCountVO> redisTemplate;
 
   @Autowired private ObjectMapper objectMapper;
 
@@ -48,16 +48,7 @@ class PostLikeServiceTest {
 
     List<PostCountVO> beforePostCountVOs =
         postIds.stream()
-            .map(
-                postId -> {
-                  try {
-                    return objectMapper.readValue(
-                        redisTemplate.opsForValue().get(String.format("postCount::%s", postId)),
-                        PostCountVO.class);
-                  } catch (JsonProcessingException e) {
-                    throw new RuntimeException(e);
-                  }
-                })
+            .map(postId -> redisTemplate.opsForValue().get(String.format("postCount::%s", postId)))
             .collect(Collectors.toList());
 
     // when
@@ -68,42 +59,34 @@ class PostLikeServiceTest {
     // then
     postIds.forEach(
         postId -> {
-          try {
-            Optional<PostLike> postLike =
-                postLikeJpaRepository.findById(new PostLikeId(memberId, postId));
-            if (postId.equals(2L)) {
-              assertThat(postLike.orElse(null)).isNull();
-              PostCountVO afterPostCountVO =
-                  objectMapper.readValue(
-                      redisTemplate.opsForValue().get(String.format("postCount::%s", postId)),
-                      PostCountVO.class);
+          Optional<PostLike> postLike =
+              postLikeJpaRepository.findById(new PostLikeId(memberId, postId));
+          if (postId.equals(2L)) {
+            assertThat(postLike.orElse(null)).isNull();
+            PostCountVO afterPostCountVO =
+                redisTemplate.opsForValue().get(String.format("postCount::%s", postId));
 
-              assertThat(
-                      beforePostCountVOs.stream()
-                          .anyMatch(
-                              beforePostCountVO ->
-                                  beforePostCountVO
-                                      .getLikeCount()
-                                      .equals(afterPostCountVO.getLikeCount() + 1)))
-                  .isTrue();
-            } else {
-              assertThat(postLike.orElse(null)).isNotNull();
-              PostCountVO afterPostCountVO =
-                  objectMapper.readValue(
-                      redisTemplate.opsForValue().get(String.format("postCount::%s", postId)),
-                      PostCountVO.class);
+            assertThat(
+                    beforePostCountVOs.stream()
+                        .anyMatch(
+                            beforePostCountVO ->
+                                beforePostCountVO
+                                    .getLikeCount()
+                                    .equals(afterPostCountVO.getLikeCount() + 1)))
+                .isTrue();
+          } else {
+            assertThat(postLike.orElse(null)).isNotNull();
+            PostCountVO afterPostCountVO =
+                redisTemplate.opsForValue().get(String.format("postCount::%s", postId));
 
-              assertThat(
-                      beforePostCountVOs.stream()
-                          .anyMatch(
-                              beforePostCountVO ->
-                                  beforePostCountVO
-                                      .getLikeCount()
-                                      .equals(afterPostCountVO.getLikeCount() - 1)))
-                  .isTrue();
-            }
-          } catch (JsonProcessingException e) {
-            throw new RuntimeException(e);
+            assertThat(
+                    beforePostCountVOs.stream()
+                        .anyMatch(
+                            beforePostCountVO ->
+                                beforePostCountVO
+                                    .getLikeCount()
+                                    .equals(afterPostCountVO.getLikeCount() - 1)))
+                .isTrue();
           }
         });
   }
