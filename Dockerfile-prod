@@ -1,5 +1,7 @@
 FROM amazoncorretto:11-alpine
 
+RUN apk update && apk add --no-cache libc6-compat
+
 WORKDIR /app
 
 ENV PROFILES=prod
